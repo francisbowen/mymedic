@@ -1,0 +1,133 @@
+<div class="header-image accountheader{% if section.settings.image != blank %} image-bar__overlay{% else %} minimal{% endif %}">
+  <div class="header-image--text">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-30">
+          <h1>{{ 'customer.account.title' | t }}</h1>
+        </div>
+        <div class="col-lg-30 text-right">
+          {{ 'layout.customer.log_out' | t | customer_logout_link }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="account">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-40 rte">
+        <h2>{{ 'customer.orders.title' | t }}</h2>
+
+        {% paginate customer.orders by 20 %}
+          {% if customer.orders.size != 0 %}
+
+            <table class="responsive-table">
+              <thead>
+                <tr>
+                  <th>{{ 'customer.orders.order_number' | t }}</th>
+                  <th>{{ 'customer.orders.date' | t }}</th>
+                  <th>{{ 'customer.orders.payment_status' | t }}</th>
+                  <th>{{ 'customer.orders.fulfillment_status' | t }}</th>
+                  <th>{{ 'customer.orders.total' | t }}</th>
+                  {% if section.settings.reorder %}<th>Reorder</th>{% endif %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for order in customer.orders %}
+                  <tr>
+                    <td data-label="{{ 'customer.orders.order_number' | t }}">
+                      <a href="{{ order.customer_url }}" class="btn btn--secondary btn--small">{{ order.name }}</a>
+                    </td>
+                    <td data-label="{{ 'customer.orders.date' | t }}">{{ order.created_at | date: format: 'month_day_year' }}</td>
+                    <td data-label="{{ 'customer.orders.payment_status' | t }}">{{ order.financial_status_label }}</td>
+                    <td data-label="{{ 'customer.orders.fulfillment_status' | t }}">{{ order.fulfillment_status_label }}</td>
+                    <td data-label="{{ 'customer.orders.total' | t }}">{{ order.total_price | money | remove: ".00" }}</td>
+                    {% if section.settings.reorder %}
+                      <td>
+                        <a href="/cart/{% for line_item in order.line_items %}{% unless forloop.first %},{% endunless %}{{ line_item.variant_id }}:{{ line_item.quantity }}{% endfor %}">Reorder</a>
+                      </td>
+                    {% endif %}
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <em>{{ section.settings.reordernote }}</em>
+
+          {% else %}
+
+            <p>{{ 'customer.orders.none' | t }}</p>
+
+          {% endif %}
+
+          {% if paginate.pages > 1 %}
+            {% include 'pagination' %}
+          {% endif %}
+
+        {% endpaginate %}
+
+      </div>
+      <div class="col-md-20 rte">
+        <h2>{{ 'customer.account.details' | t }}</h2>
+
+        {{ customer.default_address | format_address }}
+
+        <p><a href="/account/addresses" class="btn btn--small">{{ 'customer.account.view_addresses' | t }} ({{ customer.addresses_count }})</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if section.settings.image != blank %}
+  {%- assign header_image_std = section.settings.image | img_url: '2400x' -%}
+  {%- assign header_image_desktop = section.settings.image | img_url: '1500x' -%}
+  {%- assign header_image_tablet = section.settings.image | img_url: '1000x' -%}
+  {%- assign header_image_mobile = section.settings.image | img_url: '600x' -%}
+  <style>
+    .header-image {
+      background-image: url('{{ header_image_std }}');
+    }
+    @media screen and (max-width: 1024px) {
+      .header-image {
+        background-image: url('{{ header_image_desktop }}');
+      }
+    }
+    @media screen and (max-width: 768px) {
+      .header-image {
+        background-image: url('{{ header_image_tablet }}');
+      }
+    }
+    @media screen and (max-width: 425px) {
+      .header-image {
+        background-image: url('{{ header_image_mobile }}');
+      }
+    }
+  </style>
+{% endif %}
+
+{% schema %}
+  {
+    "name": "Account Page",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Header"
+      },
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Header Image",
+        "info": "Leave blank to just use text"
+      },
+      {
+        "type": "header",
+        "content": "Reordering"
+      },
+      {
+        "type": "textarea",
+        "id": "reordernote",
+        "label": "Reorder Note",
+        "default":"*** To reorder a terms order, please find the link in the submission below."
+      }
+    ]
+  }
+{% endschema %}

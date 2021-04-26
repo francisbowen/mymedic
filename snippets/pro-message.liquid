@@ -1,0 +1,22 @@
+{% assign pro = false %}
+{% if customer %}
+  {% for tag in customer.tags %}
+	  {%- assign pro_setting = tag | slice: 0,3 -%}
+    {% if pro_setting == settings.aprovecodes %}
+      {% assign pro = true %}
+			{% break %}
+    {% endif %}
+  {% endfor %}
+
+	{% if pro %}
+    <div class="wholesale_notification" data-disc=".30">
+      <div class="container">
+        <div class="row">
+          <div class="col-60 text-center">
+            Welcome Back {{ customer.name }}! {{ settings.promsg }}.
+          </div>
+        </div>
+      </div>
+    </div>
+	{% endif %}
+{% endif %}

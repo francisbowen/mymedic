@@ -1,0 +1,10 @@
+{%- assign src_scale = 1 -%}
+{%- assign srcset_scale = 2 -%}
+{% if alt == '' %}{%- assign alt_text = file -%}{% else %}{%- assign alt_text = alt | escape -%}{% endif %}
+{% if default_size == '' %}{%- assign default_size = '600x' -%}{% endif %}
+{%- assign sizes = default_size | split: 'x' -%}
+<img
+  {% if id != '' %}id="{{ id }}"{% endif %}
+  {% if class != '' %}class="{{ class }}"{% endif %}
+  src="{{ file | img_url: default_size, crop: crop, scale: src_scale }}"
+  srcset="{{ srcset_string }}" alt="{{ alt_text }}" />

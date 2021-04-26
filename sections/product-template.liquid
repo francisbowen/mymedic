@@ -1,0 +1,176 @@
+<div id="product-form">
+  {%- assign current_variant = product.selected_or_first_available_variant -%}
+  <h1 class="product-single__title">{{ product.title }}</h1>
+
+  <p class="product-single__price product-single__price-{{ product.id }}{% unless current_variant.available %} product-price--sold-out{% endunless %}">
+    {% if current_variant.compare_at_price > current_variant.price %}
+    <span class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
+    <s id="ComparePrice-{{ product.id }}">{{ current_variant.compare_at_price | money }}</s>
+    <span class="product-price__price product-price__price-{{ product.id }} product-price__sale product-price__sale--single">
+      <span id="ProductPrice-{{ product.id }}">{{ current_variant.price | money }}</span>
+      <span class="product-price__sale-label product-price__sale-label-{{ product.id }}">{{ 'products.product.on_sale' | t }}</span>
+    </span>
+    {% else %}
+    <span class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
+    <s id="ComparePrice-{{ product.id }}" class="hide">{{ current_variant.compare_at_price | money }}</s>
+    <span class="product-price__price product-price__price-{{ product.id }}">
+      <span id="ProductPrice-{{ product.id }}">{{ current_variant.price | money }}</span>
+      <span class="product-price__sale-label product-price__sale-label-{{ product.id }} hide">{{ 'products.product.on_sale' | t }}</span>
+    </span>
+    {% endif %}
+  </p>
+
+  <form action="/cart/add" method="post" enctype="multipart/form-data" class="product-form product-form-{{ product.id }}{% unless settings.show_variant_labels %} product-form--hide-variant-labels{% endunless %}" data-section="{{ product.id }}">
+    {% unless product.options.size == 1 and product.variants[0].title == 'Default Title' %}
+    {% for option in product.options_with_values %}
+      <div class="selector-wrapper {{ product.handle }} js">
+        <label {% if option.name == 'default' %}class="label--hidden" {% endif %}for="SingleOptionSelector-{{ forloop.index0 }}">
+          {{ option.name }}
+        </label>
+        <select class="single-option-selector single-option-selector-{{ product.id }} product-form__input" id="SingleOptionSelector-{{ forloop.index0 }}" data-index="option{{ forloop.index }}">
+          {% for value in option.values %}
+          <option value="{{ value | escape }}"{% if option.selected_value == value %} selected="selected"{% endif %}>{{ value }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      {% if settings.enable_colorswatch %}
+        {% include 'swatch' with option.name %}
+      {% endif %}
+
+      {% endfor %}
+    {% endunless %}
+
+    <select name="id" id="ProductSelect-{{ product.id }}" data-section="{{ product.id }}" class="product-form__variants no-js">
+      {% for variant in product.variants %}
+        {% if variant.available %}
+          <option {% if variant == product.selected_or_first_available_variant %} selected="selected" {% endif %} value="{{ variant.id }}">
+            {{ variant.title }}
+          </option>
+        {% else %}
+          <option disabled="disabled">{{ variant.title }} - {{ 'products.product.sold_out' | t }}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+
+    {% if settings.show_quantity_selector %}
+      <div class="product-form__item product-form__item--quantity">
+        <label for="Quantity">{{ 'products.product.quantity' | t }}</label>
+        <input type="number" id="Quantity" name="quantity" value="1" min="1" class="product-form__input" pattern="[0-9]*">
+      </div>
+    {% endif %}
+
+    <div class="product-form__item product-form__item--submit">
+
+      <button type="submit" name="add" id="AddToCart-{{ product.id }}" {% unless current_variant.available %}disabled="disabled"{% endunless %} class="btn product-form__cart-submit">
+        <span id="AddToCartText-{{ product.id }}">
+          {% unless current_variant.available %}
+            {{ 'products.product.sold_out' | t }}
+          {% else %}
+            {% if product.tags contains 'coming soon' %}
+              {{ 'products.product.coming_soon' | t }}
+            {% else %}
+              {{ 'products.product.add_to_cart' | t }}
+            {% endif %}
+          {% endunless %}
+        </span>
+        <svg x="0px" y="0px" width="32px" height="32px" viewBox="0 0 32 32">
+          <path stroke-dasharray="19.79 19.79" stroke-dashoffset="19.79" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" d="M9,17l3.9,3.9c0.1,0.1,0.2,0.1,0.3,0L23,11"/>
+        </svg>
+      </button>
+
+    </div>
+  </form>
+
+  {% if settings.enable_wishlist %}
+    {% include 'wishlist' %}
+  {% endif %}
+
+  <div class="product-single__description rte">
+    {{ product.description }}
+  </div>
+</div>
+
+{% if settings.enable_colorswatch %}
+  <script type="text/javascript">
+    $(document).ready(function() {
+      jQuery('.swatch :radio').change(function() {
+        var optionIndex = jQuery(this).closest('.swatch').attr('data-option-index');
+        var optionValue = jQuery(this).val();
+        jQuery(this)
+          .closest('form')
+          .find('.single-option-selector')
+          .eq(optionIndex)
+          .val(optionValue)
+          .trigger('change');
+
+        setTimeout(function(){
+          var currentSlide = $('.active-thumb').parent('li:not(.slick-cloned)'),
+              currSlideIndex = currentSlide.data('slick-index');
+          $('.product-single__thumbnails').slick('slickGoTo',currSlideIndex);
+        },50);
+      });
+    });
+  </script>
+{% endif %}
+
+{% if settings.cartajax %}
+  <script>
+    var addToCartBtn = $('#AddToCart-{{ product.id }}'),
+        animating = false;
+    function animatedBtn() {
+      if(!animating) {
+        animating =  true;
+
+        addToCartBtn.addClass('is-added').find('path').eq(0).animate({
+          'stroke-dashoffset':0
+        }, 300, function(){
+          setTimeout(function(){
+            addToCartBtn.removeClass('is-added').find('span').on('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function(){
+              addToCartBtn.find('path').eq(0).css('stroke-dashoffset', '19.79');
+              animating =  false;
+            });
+
+            if( $('.no-csstransitions').length > 0 ) {
+              addToCartBtn.find('path').eq(0).css('stroke-dashoffset', '19.79');
+              animating =  false;
+            }
+          }, 600);
+        });
+      }
+    }
+
+    $('#ProductSection-{{ product.id }} form').on('submit', function(e){
+      e.preventDefault();
+      animatedBtn();
+      var quantity = $.grep($(this).serializeArray(), function (obj, i) {
+            return obj.name === 'quantity';
+          }),
+          variants = $.grep($(this).serializeArray(), function (obj, i) {
+            return obj.name !== 'quantity';
+          });
+      var allItems = {items: []};
+      $.each(variants, function(i,variant){
+        var item = {id: variant.value, quantity: 1};
+        allItems['items'].push(item);
+      });
+      $.ajax({
+        url: '/cart/add.js',
+        data: allItems,
+        dataType: 'json',
+        success: function(cart) {
+          cart_update();
+        }
+      });
+    });
+  </script>
+{% endif %}
+
+{% schema %}
+  {
+    "name": "Product Form",
+    "class": "col offset-md-1",
+    "settings": [
+    ]
+  }
+{% endschema %}

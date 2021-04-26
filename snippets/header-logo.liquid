@@ -1,0 +1,12 @@
+{% capture logo_size %}{{ settings.logo_max_width }}{% endcapture %}
+<{% if template == 'index' %}h1{% else %}div{% endif %} class="h2 site-header__logo" itemscope itemtype="http://schema.org/Organization">
+  <a href="/" itemprop="url" class="site-header__logo-image{% if settings.align_logo == 'center' %} site-header__logo-image--centered{% endif %}" style="max-width:{{ settings.logo_max_width }}px;">
+    {% if settings.logo != blank %}
+      {% render 'logo', logo: settings.logo, logo_size: logo_size, svg: true %}
+    {% elsif settings.logo_img %}
+      {% render 'logo', logo: settings.logo_img, logo_size: logo_size, svg: false %}
+    {% else %}
+      {{ shop.name }}
+    {% endif %}
+  </a>
+</{% if template == 'index' %}h1{% else %}div{% endif %}>

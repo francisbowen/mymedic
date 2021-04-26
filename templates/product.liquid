@@ -1,0 +1,35 @@
+{% comment %}
+  The contents of the product.liquid template can be found in /sections/product-template.liquid
+{% endcomment %}
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+{% include 'richcards' %}
+<div class="product-template__container" id="ProductSection-{{ product.id }}" data-section-id="{{ product.id }}" data-section-type="product" data-enable-history-state="true" data-crossclick="{% if settings.enable_crossclick %}allow{% endif %}" data-comingsoon="{% if product.tags contains 'coming soon' %}true{% else %}false{% endif %}">
+  <div class="container">
+    <div class="row product-single">
+
+      {% section 'product-images' %}
+
+      {% section 'product-template' %}
+
+    </div>
+  </div>
+</div>
+
+{% section 'product-related' %}
+
+{% if collection %}
+  <div class="text-center return-link-wrapper">
+    <a href="{{ collection.url }}" class="btn btn--secondary btn--has-icon-before return-link">
+      {% include 'icon-arrow-left' %}
+      {{ 'products.product.back_to_collection' | t: title: collection.title }}
+    </a>
+  </div>
+{% endif %}
+
+{% unless product.empty? %}
+  <script type="application/json" id="ProductJson-{{ product.id }}">
+    {{ product | json }}
+  </script>
+{% endunless %}
+
+{% section 'product-sizing' %}

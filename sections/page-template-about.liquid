@@ -1,0 +1,333 @@
+{% if page.content != blank %}
+  <div class="full-width">
+    <div class="container">
+      <div class="row">
+        <article class="col-lg-30 offset-lg-15 col-md-40 offset-md-10">
+          <div class="rte">
+            {%- assign start_title = page.content | slice: 0, 3 -%}
+            {% if start_title contains 'h1' %}
+              {%- assign page_title = page.content | split: '</h1>' -%}
+              {{ page_title[1] }}
+            {% else %}
+              {{ page.content }}
+            {% endif %}
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+{% for block in section.blocks %}
+  {% case block.type %}
+    {% when 'heading_row' %}
+      <div class="full-width full-{{ block.type }}">
+        <div class="container about-container">
+          <div class="row row-{{ block.type }} align-items-center">
+            <div class="col-lg-20 offset-lg-5 col-md-30 text-center">
+              {% if block.settings.subtitle != blank %}
+                <h4><i>{{ block.settings.subtitle }}</i></h4>
+              {% endif %}
+              {% if block.settings.title != blank %}
+                <h2>{{ block.settings.title }}</h2>
+                <hr />
+              {% endif %}
+              {{ block.settings.content }}
+            </div>
+            <div class="col-lg-25 offset-lg-10 col-md-25 offset-md-5">
+              {% include 'image', file: block.settings.image, default_size: '650x550', alt: block.settings.image.alt | escape %}
+            </div>
+          </div>  
+        </div>
+      </div>
+
+    {% when 'bullet_row' %}
+      <div class="full-width full-{{ block.type }}">
+        <div class="container about-container">
+          <div class="row row-{{ block.type }}">
+            <div class="col-md-20 text-center">
+              <i class="fa {{ block.settings.icon_one }}"></i>
+              <h3>{{ block.settings.title_one }}</h3>
+              {{ block.settings.content_one }}
+            </div>
+            <div class="col-md-20 text-center">
+              <i class="fa {{ block.settings.icon_two }}"></i>
+              <h3>{{ block.settings.title_two }}</h3>
+              {{ block.settings.content_two }}
+            </div>
+            <div class="col-md-20 text-center">
+              <i class="fa {{ block.settings.icon_three }}"></i>
+              <h3>{{ block.settings.title_three }}</h3>
+              {{ block.settings.content_three }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    {% when 'full_text' %}
+      <div class="full-width full-{{ block.type }}">
+        <div class="container about-container">
+          <div class="row row-{{ block.type }}">
+            <div class="col-lg-40 offset-lg-10 col-md-50 offset-md-5 text-center">
+              {% if block.settings.title != blank %}
+                <h1>{{ block.settings.title }}</h1>
+              {% endif %}
+              {{ block.settings.content }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    {% when 'full_image' %}
+      <div class="full-width full-{{ block.type }}">
+        <img src="{{ block.settings.image | img_url: '1500x' }}" alt="{{ block.settings.image.alt }}" />
+      </div>
+
+    {% when 'pull_quote' %}
+      <div class="full-width full-{{ block.type }}">
+        <div class="container about-container">
+          <div class="row row-{{ block.type }} align-items-center">
+            {% if block.settings.image != blank %}
+              <div class="col-md-30">
+                <img src="{{ block.settings.image | img_url: '650x' }}" alt="{{ block.settings.image.alt }}" />
+              </div>
+              <div class="col-md-25 offset-md-5">
+            {% else %}
+              <div class="col-lg-40 offset-lg-10 col-md-50 offset-md-5 text-center">
+            {% endif %}
+              <div class="border-lr">
+                <blockquote>"{{ block.settings.quote }}"</blockquote>
+              </div>
+              {% if block.settings.quotee != blank %}
+                <cite>- {{ block.settings.quotee }}</cite>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    {% when 'content_row' %}
+      <div class="full-width full-{{ block.type }}">
+        <div class="container about-container">
+          <div class="row row-{{ block.type }}">
+            <div class="col-md-35">
+              {% if block.settings.subtitle != blank %}
+                <h4><i>{{ block.settings.subtitle }}</i></h4>
+              {% endif %}
+              {% if block.settings.title != blank %}
+                <h2>{{ block.settings.title }}</h2>
+                <hr />
+              {% endif %}
+              <div class="rte">
+                {{ block.settings.content }}
+              </div>
+            </div>
+            <div class="col-md-20 offset-md-5">
+              {% if block.settings.sidebar_image != blank %}
+                <a href="{{ block.settings.sidebar_url }}"><img src="{{ block.settings.sidebar_image | img_url: '650x550' }}" alt="{{ block.settings.image.alt }}" /></a>
+              {% endif %}
+              {% if block.settings.sidebar_text != blank %}
+              <div class="rte">
+                {{ block.settings.sidebar_text }}
+              </div>
+              {% endif %}
+              {% if block.settings.sidebar_btn != blank %}
+                <a class="btn" href="{{ block.settings.sidebar_url }}">{{ block.settings.sidebar_btn }}</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+  {% endcase %}
+{% endfor %}
+{% if section.blocks.size == 0 %}
+  <div class="container about-container">
+    <div class="row row-{{ block.type }}{% if block.type == 'heading_row' %} align-items-center{% endif %}">
+      {% include 'no-blocks' %}
+    </div>
+  </div>
+{% endif %}
+
+{% schema %}
+  {
+    "name": "About Us",
+    "settings": [
+    ],
+    "blocks": [
+      {
+        "type": "heading_row",
+        "name": "50/50 Image/Short",
+        "settings": [
+          {
+            "type": "text",
+            "id": "subtitle",
+            "label": "Sub Title"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title"
+          },
+          {
+            "type": "richtext",
+            "id": "content",
+            "label": "Content"
+          },
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          }
+        ]
+      },
+      {
+        "type": "bullet_row",
+        "name": "Quick Info Bullets",
+        "settings": [
+          {
+            "type": "text",
+            "id": "icon_one",
+            "label": "Icon",
+            "info": "[Click here](http:\/\/fontawesome.io\/cheatsheet\/) to view the list of available icons. Example: fa-anchor"
+          },
+          {
+            "type": "text",
+            "id": "title_one",
+            "label": "Title"
+          },
+          {
+            "type": "richtext",
+            "id": "content_one",
+            "label": "Content"
+          },
+          {
+            "type": "text",
+            "id": "icon_two",
+            "label": "Icon",
+            "info": "[Click here](http:\/\/fontawesome.io\/cheatsheet\/) to view the list of available icons. Example: fa-anchor"
+          },
+          {
+            "type": "text",
+            "id": "title_two",
+            "label": "Title"
+          },
+          {
+            "type": "richtext",
+            "id": "content_two",
+            "label": "Content"
+          },
+          {
+            "type": "text",
+            "id": "icon_three",
+            "label": "Icon",
+            "info": "[Click here](http:\/\/fontawesome.io\/cheatsheet\/) to view the list of available icons. Example: fa-anchor"
+          },
+          {
+            "type": "text",
+            "id": "title_three",
+            "label": "Title"
+          },
+          {
+            "type": "richtext",
+            "id": "content_three",
+            "label": "Content"
+          }
+        ]
+      },
+      {
+        "type": "full_text",
+        "name": "Text Only",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title"
+          },
+          {
+            "type": "richtext",
+            "id": "content",
+            "label": "Content"
+          }
+        ]
+      },
+      {
+        "type": "full_image",
+        "name": "Image Only",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          }
+        ]
+      },
+      {
+        "type": "pull_quote",
+        "name": "Pull Quote",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image",
+            "info": "Optional"
+          },
+          {
+            "type": "textarea",
+            "id": "quote",
+            "label": "Quote"
+          },
+          {
+            "type": "text",
+            "id": "quotee",
+            "label": "Quotee"
+          }
+        ]
+      },
+      {
+        "type": "content_row",
+        "name": "50/50 Long Contnt/Sidebar",
+        "settings": [
+          {
+            "type": "header",
+            "content": "Long Content"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title"
+          },
+          {
+            "type": "richtext",
+            "id": "content",
+            "label": "Content"
+          },
+          {
+            "type": "header",
+            "content": "Sidebar"
+          },
+          {
+            "type": "url",
+            "id": "sidebar_url",
+            "label": "Link to"
+          },
+          {
+            "type": "image_picker",
+            "id": "sidebar_image",
+            "label": "Image"
+          },
+          {
+            "type": "richtext",
+            "id": "sidebar_text",
+            "label": "Sidebar content"
+          },
+          {
+            "type": "text",
+            "id": "sidebar_btn",
+            "label": "Sidebar button text"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,77 @@
+{% if settings.header_sticky %}
+  <script>
+    var lastScrollTop = 0,
+        delta = 5,
+        navbarHeight = $('#header-container').outerHeight()*1 + 70;
+    function sticky_relocate() {
+      var window_top = $(window).scrollTop();
+      if(Math.abs(lastScrollTop - window_top) <= delta)
+        return;
+      if (window_top > lastScrollTop && window_top > navbarHeight){
+        $('#header-container').removeClass('nav-down').addClass('nav-up');
+      } else {
+        if(window_top + $(window).height() < $(document).height()) {
+          $('#header-container').removeClass('nav-up').addClass('nav-down');
+        }
+      }
+      lastScrollTop = window_top;
+    }
+    $(window).scroll( $.throttle( 250, sticky_relocate ) );
+    $(document).ready(function(){
+      var headerHeight = $('#shopify-section-header').outerHeight(),
+          top_style = headerHeight + 70,
+          style = $('<style>#header-container.sticky-header.nav-up { top: -'+ top_style +'px; }</style>');
+      $('html > head').append(style);
+      $('#shopify-section-header').height(headerHeight).find('#header-container').addClass('sticky-header');
+    });
+  </script>
+{% endif %}
+
+<header data-section-type="header-section" id="header-container">
+  <div class="container site-header" role="banner">
+    <div class="row align-items-center">
+      <div class="col-auto order-{% if settings.align_logo == 'center' %}3{% else %}1{% endif %}">
+        {% include 'header-logo' %}
+      </div>
+
+      <div class="col d-none d-md-block order-2">
+        <nav class="d-none d-md-block text-{{ settings.align_menu_text }}" id="AccessibleNav" role="navigation">
+          {% include 'site-nav' %}
+        </nav>
+      </div>
+
+      <div class="col{% unless settings.align_logo == 'center' %}-auto{% endunless %} order-5 text-right site-header__icons">
+        <div class="site-header__icons-wrapper">
+
+          {% include 'search-toggle' %}
+
+          {% include 'header-account' %}
+
+          {% include 'header-cart_icon' %}
+
+          {% include 'header-menu_icon' %}
+
+        </div>
+
+        {% if settings.cartdropdown == 'dropdown' %}
+          {% include 'cart-dropdown' %}
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  {% if settings.logo != blank %}
+    .site-header__logo-image {
+      max-width: {{ settings.logo_max_width }}px;
+    }
+  {% endif %}
+
+  {% if settings.align_logo == 'left' %}
+    .site-header__logo-image {
+      margin: 0;
+    }
+  {% endif %}
+</style>

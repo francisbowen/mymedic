@@ -1,0 +1,9 @@
+<img {% if svg %}src="{{ logo }}"
+     src="{{ logo }}"
+     {% else %}
+     src="{{ logo | img_url: logo_size }}"
+     srcset="{{ logo | img_url: logo_size }} 1x, {{ logo | img_url: logo_size, scale: 2 }} 2x"
+     {% endif %}
+     alt="{{ shop.name }}"
+     itemprop="logo">
+<span class="visually-hidden">{{ shop.name }}</span>

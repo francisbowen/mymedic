@@ -1,0 +1,75 @@
+{% if section.settings.show_product_recommendations %}
+  <div class="product-recommendations" data-product-id="{{ product.id }}" data-limit="4">
+    <div class="container">
+      {% if section.settings.title != blank %}
+        <div class="row">
+          <div class="col-60 text-center">
+            <h3>{{ section.settings.title | escape }}</h3>
+          </div>
+        </div>
+      {% endif %}
+      <div class="row">
+        {% if recommendations.products_count > 0 %}
+          {% for product in recommendations.products %}
+            <div class="col-lg-15 col-md-30">
+              {% include 'product-card-grid' %}
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% else %}
+  <style>
+    #shopify-section-{{ section.id }} { display: none; }
+  </style>
+{% endif %}
+
+<script>
+  var loadProductRecommendationsIntoSection = function() {
+    var productRecommendationsSection = document.querySelector(".product-recommendations");
+    if (productRecommendationsSection === null) { return; }
+    var productId = productRecommendationsSection.dataset.productId;
+    var limit = productRecommendationsSection.dataset.limit;
+    var requestUrl = "/recommendations/products?section_id=product-related&limit="+limit+"&product_id="+productId;
+    var request = new XMLHttpRequest();
+    request.open("GET", requestUrl);
+    request.onload = function() {
+      if (request.status >= 200 && request.status < 300) {
+        var container = document.createElement("div");
+        container.innerHTML = request.response;
+        var element = container.querySelector('.grid-view-item');
+        productRecommendationsSection.parentElement.innerHTML = container.querySelector(".product-recommendations").innerHTML;
+        if(typeof(element) == 'undefined' || element == null){
+          document.getElementById('shopify-section-{{ section.id }}').style.display = 'none';
+        }
+      }
+    };
+    request.send();
+  };
+  document.addEventListener("shopify:section:load", function(event) {
+    if (event.detail.sectionId === "product-related") {
+      loadProductRecommendationsIntoSection();
+    }
+  });
+  loadProductRecommendationsIntoSection();
+</script>
+
+{% schema %}
+  {
+    "name": "Related Products",
+    "class": "product-related",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "show_product_recommendations",
+        "label": "Show Product Recommendations?"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Related section title"
+      }
+    ]
+  }
+{% endschema %}

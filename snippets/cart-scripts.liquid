@@ -1,0 +1,243 @@
+{% if settings.cartdropdown == 'dropdown'  %}
+  <script id="CartTemplate" type="text/template">
+    {% raw %}
+      <ul class="shopping-cart-items">
+        {{#variants}}
+          <li id="cart-item-{{id}}" class="cart-item">
+            <a class="delete-cart-item" data-itemid="{{key}}"><em class="fal fa-times"></em></a>
+            <div class="d-flex align-items-center">
+              <a href="{{url}}" class="align-self-stretch cart-item--image">
+                <img src="{{image}}" alt="{{title}}" />
+              </a>
+              <div class="cart-item--product-details">
+                <h5><a href="{{url}}">{{title}}</a></h5>
+                {{#options}}
+                  <p{{#if_eq value '==' 'Default Title'}} class="hide"{{/if_eq}}><strong>{{name}}:</strong> {{value}}</p>
+                {{/options}}
+                <div class="cart-item--updates d-flex justify-content-between">
+                  <div class="cart-item--qty">
+                    <select class="cart-prod-qty pretty-dropdown" data-item="{{key}}" name="cart-prod-qty">
+                      {{#times 10}}
+                        <option value="{{this}}"{{#if_eq ../quantity '==' this}} selected{{/if_eq}}>{{this}}</option>
+                      {{/times}}
+                    </select>
+                  </div>
+                  <div class="cart-sidebar-item--price text-right">
+                    {{#if message}}
+                      <b>{{message}}</b><br />
+                      <s>{{finalprice}}</s>
+                    {{/if}}
+                    {{price}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        {{/variants}}
+      </ul>
+    {% endraw %}
+  </script>
+{% endif %}
+{% if settings.cartdropdown == 'flyout'  %}
+  <script id="CartTemplate" type="text/template">
+    {% raw %}
+      <ul class="shopping-cart-items">
+        {{#variants}}
+          <li class="cart-sidebar-item">
+            <a class="delete-cart-item" data-itemid="{{key}}"><em class="fal fa-times"></em></a>
+            <div class="d-flex align-items-center">
+              <a href="{{url}}" class="align-self-stretch cart-sidebar-item--image">
+                <img src="{{image}}" alt="{{title}}" />
+              </a>
+              <div class="cart-sidebar-item--product-info flex-grow-1">
+                <h5><a href="{{url}}">{{title}}</a></h5>
+                {{#options}}
+                  <p{{#if_eq value '==' 'Default Title'}} class="hide"{{/if_eq}}><strong>{{name}}:</strong> {{value}}</p>
+                {{/options}}
+                <div class="cart-sidebar-item--updates d-flex justify-content-between">
+                  <div class="cart-sidebar-item--qty">
+                    <select class="cart-prod-qty pretty-dropdown" data-item="{{key}}" name="cart-prod-qty">
+                      {{#times 10}}
+                        <option value="{{this}}"{{#if_eq ../quantity '==' this}} selected{{/if_eq}}>{{this}}</option>
+                      {{/times}}
+                    </select>
+                  </div>
+                  <div class="cart-sidebar-item--price text-right">
+                    {{#if message}}
+                      <b>{{message}}</b><br />
+                      <s>{{finalprice}}</s>
+                    {{/if}}
+                    {{price}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        {{/variants}}
+      </ul>
+    {% endraw %}
+  </script>
+{% endif %}
+<script>
+  Handlebars.registerHelper('times', function(n, block) {
+    var accum = '';
+    for(var i = 1; i <= n; ++i)
+      accum += block.fn(i);
+    return accum;
+  });
+
+  Handlebars.registerHelper('if_eq', function(a, operator, b, opts) {
+    var bool = false;
+    console.log(a,b);
+    switch(operator) {
+      case '==':
+        bool = a == b;
+        break;
+      case '>':
+        bool = a > b;
+        break;
+      case '<':
+        bool = a < b;
+        break;
+      default:
+        throw "Unknown operator " + operator;
+    }
+
+    if (bool) {
+      return opts.fn(this);
+    } else {
+      return opts.inverse(this);
+    }
+  });
+
+  var openCart = function(){
+    $('.cart-black-overlay').fadeIn();
+    $('.cart-sidebar,.cart-dropdown').removeClass('closed');
+  }
+
+  var root_url = "{% unless request.locale.primary %}{{ request.locale.root_url }}{% endunless %}";
+
+  function cart_update() {
+    $.ajax({
+      type: 'GET',
+      url: '/cart.js',
+      dataType: 'json',
+      success: function(cartdata){
+        $('.cart-subtotals').html(Shopify.formatMoney(cartdata.total_price, '${% raw %}{{amount}}{% endraw %}'));
+        if(cartdata.item_count > 0) {
+
+          if(!$('#CartCount').length) {
+            $('.site-header__cart').append('<div id="CartCount" class="site-header__cart-count"><span></span><span class="icon__fallback-text hidden-md-up">{{ 'layout.cart.items_count' | t: count: cart.item_count }}</span></div>');
+          }
+          $('#CartCount').find('span').first().text(cartdata.item_count);
+
+          {% if settings.cartdropdown != 'none' %}
+            // Handlebars.js bralette layout
+            var source = $("#CartTemplate").html(),
+                template = Handlebars.compile(source);
+
+            var allItems = cartdata.items,
+                items = [],
+                item = {};
+
+            console.log(cartdata.items);
+
+            // Add each item to our handlebars.js data
+            $.each(allItems, function(index,varItem) {
+              var imageSmall = Shopify.resizeImage(varItem.image,'small'),
+                  discountMessage = '',
+                  discounts = varItem.discounts;
+              if(discounts.length > 0) {
+                discountMessage = varItem.discounts[0].title
+              }
+              item = {
+                id: varItem.id,
+                key: varItem.key,
+                title: varItem.product_title,
+                options: varItem.options_with_values,
+                url: varItem.url,
+                price: Shopify.formatMoney(varItem.price, '${% raw %}{{amount}}{% endraw %}'),
+                finalprice: Shopify.formatMoney(varItem.final_price, '${% raw %}{{amount}}{% endraw %}'),
+                message: discountMessage,
+                quantity: varItem.quantity,
+                image: imageSmall
+              };
+
+              items.push(item);
+            });
+
+            // Gather all  data and add to DOM
+            data = {
+              variants: items
+            }
+
+            $('.shopping-cart').addClass('filled').html(template(data)).find($('select.pretty-dropdown')).prettyDropdown();
+            openCart();
+          {% endif %}
+
+        } else {
+          $('#CartCount').remove();
+          $('.cart-sidebar--items-wrapper').removeClass('filled').append('<li class="cart-sidebar-empty text-center">{{ 'cart.general.empty' | t | escape }}</li>');
+        }
+      },
+      error: function(data){
+        console.log(data);
+      }
+    });
+  }
+
+  $(document).ready(function(){
+    // Delete Item
+    $('.shopping-cart').on('click','.delete-cart-item',function(){
+      var itemid = $(this).data('itemid'),
+          $item = $(this).closest('.cart-sidebar-item');
+      $.ajax({
+        url:"/cart/change.js",
+        dataType: 'json',
+        data: {
+          quantity:0,
+          id: itemid
+        },
+        success: function(resp) {
+          $.ajax({
+            url:"/cart.js",
+            dataType: 'json',
+            success: function(res) {
+              $item.fadeOut();
+              cart_update();
+            }
+          });
+        }
+      });
+    });
+
+    // Update Item From Cart
+    $('.shopping-cart').on('change','.cart-prod-qty',function(){
+      var item = $(this).data('item');
+      var qty = $(this).val();
+      $.ajax({
+        url:"/cart/change.js",
+        dataType: 'json',
+        data: {
+          quantity:qty,
+          id: item
+        },
+        success: function(resp) {
+          cart_update();
+        }
+      })
+    });
+
+    // Close Cart
+    $('.cart-sidebar--header a, .cart-black-overlay').click(function(){
+      $('.cart-black-overlay').fadeOut();
+      $('.cart-sidebar').addClass('closed');
+    });
+
+    // Open Cart
+    $('.site-header__cart').click(function(e){
+      e.preventDefault();
+      openCart();
+    });
+  });
+</script>
