@@ -1,9 +1,119 @@
-{% comment %}
-  The contents of the collection.liquid template can be found in /sections/collection-template.liquid
-{% endcomment %}
-
-{% section 'filters' %}
-
-{% section 'collection-template' %}
-
-{% section 'swatch-colors' %}
+{%- liquid
+paginate collection.products by 50
+  assign pageurl_params = content_for_header | split:'"pageurl":"' | last | split:'"' | first | split: '?' | last
+  if pageurl_params contains 'layout='
+    layout none
+    assign loop_indexes = ''
+    assign page_url_param_parts = pageurl_params | split: '\u0026'
+    assign product_prices = collection.products | map: 'price'
+    assign product_tags = collection.products | map: 'tags'
+    for page_url_param_part in page_url_param_parts
+      unless page_url_param_part contains 'layout=' or page_url_param_part contains 'page='
+        assign loop_indexes_single = ''
+        if page_url_param_part contains 'prices='
+          assign price_filter = page_url_param_part | split: 'prices=' | last | split: '-'
+          assign price_filter_min = price_filter[0] | times: 100
+          assign price_filter_max = price_filter[1] | times: 100
+          for product_price in product_prices
+            if product_price < price_filter_min or product_price > price_filter_max
+              capture loop_indexes_single
+                echo loop_indexes_single
+                echo ','
+                echo forloop.index
+              endcapture
+            endif
+          endfor
+          assign loop_indexes_single = loop_indexes_single | remove_first: ',' | split: ',' | uniq
+        elsif page_url_param_part contains 'sort_by='
+          continue
+        else
+          assign filters = page_url_param_part | split: '=' | last | split: '+'
+          for filter in filters
+          echo filter
+            echo '<br />'
+            assign loop_indexes_temp = ''
+            for product_tag in product_tags
+              unless product_tag contains filter
+                capture loop_indexes_temp 
+                  echo loop_indexes_temp
+                  echo ','
+                  echo forloop.index
+                endcapture
+              endunless
+            endfor
+            assign loop_indexes_temp = loop_indexes_temp | remove_first: ',' | split: ',' | uniq
+            echo loop_indexes_temp
+            echo '<br />'
+            echo '<br />'
+            if loop_indexes_single != ''
+              assign loop_indexes_combine = loop_indexes_single | concat: loop_indexes_temp | uniq
+              for loop_indexes_compare in loop_indexes_combine
+                if loop_indexes_single contains loop_indexes_compare and loop_indexes_temp contains loop_indexes_compare
+                  capture loop_indexes_endcombine
+                    echo loop_indexes_endcombine
+                    echo ','
+                    echo loop_indexes_compare
+                  endcapture
+                  assign comma_check = loop_indexes_endcombine | slice: 0
+                  if comma_check == ','
+                    assign loop_indexes_endcombine = loop_indexes_endcombine | remove_first: ','
+                  endif
+                endif
+              endfor
+              assign loop_indexes_single = loop_indexes_endcombine | split: ','
+            else
+              assign loop_indexes_single = loop_indexes_temp
+            endif
+          endfor
+        endif
+        if loop_indexes != ''
+          assign loop_indexes = loop_indexes_single | concat: loop_indexes | uniq
+        else
+          assign loop_indexes = loop_indexes_single
+        endif
+      endunless
+    endfor
+    assign sort_option_values = collection.sort_options | map: 'value'
+    if pageurl_params contains 'layout=price_get' and collection.sort_by != blank and sort_option_values contains collection.sort_by
+      if collection.sort_by == 'price-ascending' 
+        echo collection.products[0].price
+      elsif collection.sort_by == 'price-descending'
+        echo collection.products[0].price
+      endif
+    else
+        echo '<br />'
+        echo '<br />'
+      for product in collection.products
+        capture loop_index
+          echo forloop.index
+        endcapture
+        if loop_indexes contains loop_index
+          continue
+        endif
+        echo product.title
+        echo '<br />'
+      endfor
+      echo '<div id="filter_results">'
+      for product in collection.products
+        capture loop_index
+          echo forloop.index
+        endcapture
+        if loop_indexes contains loop_index
+          continue
+        endif
+        echo '<div class="col-30 col-md-20 col-sm-30 p-item">'
+        include 'product-card-grid', grid_image_width: '690x'
+        echo '</div>'
+      endfor
+      echo '</div>'
+      echo '<a id="total_pages">'
+      echo paginate.pages
+      echo '</a>'
+    endif
+  else
+    section 'filters'
+    section 'collection-template'
+    section 'swatch-colors'
+  endif
+endpaginate
+-%}

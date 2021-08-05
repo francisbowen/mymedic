@@ -1,7 +1,13 @@
+{% assign menu_block_index = 0 %}
+
 <div class="container">
   <div class="row">
     {% for block in section.blocks %}
-      <div class="{{ block.settings.column_width }}">
+      {% if block.type ==  'megamenu_menu' %}
+        {% assign menu_block_index = menu_block_index | plus: 1 %}
+      {% endif %}
+
+      <div class="{% if menu_block_index == 1 %}first_menu_block {% endif %} {{ block.settings.column_width }} menu-column">
 
         {% case block.type %}
           {% when 'megamenu_image' %}
@@ -22,31 +28,110 @@
             {% endif %}
             <a class="megamenu_image" href="{{ block.settings.link }}">
               {% include 'image', file: block.settings.image, default_size: image_size %}
-              {% if block.settings.title != blank %}<h4>{{ block.settings.title }}</h4>{% endif %}
+              {% if block.settings.title != blank %}{{ block.settings.title }}</h4>{% endif %}
             </a>
 
           {% when 'megamenu_menu' %}
+
             {% if block.settings.title != blank %}
-              <h4>{% if block.settings.url != blank %}<a href="{{ block.settings.url }}">{% endif %}{{ block.settings.title }}{% if block.settings.url != blank %}</a>{% endif %}</h4>
-            {% endif %}
-            {% if block.settings.linklist %}
-              <ul class="submenu_links">
-                {% for link in linklists[block.settings.linklist].links %}
-                  <li><a href="{{ link.url }}">{{ link.title }}</a></li>
-                {% endfor %}
-              </ul>
-            {% endif %}
-            {% if block.settings.title_2 != blank %}
-              <h4>{% if block.settings.url_2 != blank %}<a href="{{ block.settings.url_2 }}">{% endif %}{{ block.settings.title_2 }}{% if block.settings.url_2 != blank %}</a>{% endif %}</h4>
-            {% endif %}
-            {% if block.settings.linklist != blank %}
-              <ul class="submenu_links">
-                {% for link in linklists[block.settings.linklist_2].links %}
-                  <li><a href="{{ link.url }}">{{ link.title }}</a></li>
-                {% endfor %}
-              </ul>
+              {% capture menu_column_heading  %}
+                {% assign block_title = block.settings.title | downcase %}            
+                <a {% if block.settings.url != blank %}href="{{ block.settings.url }}"{% endif %}
+                  style="{% if block_title == 'clearance' or block_title == 'sale' %}color: #E0222D;{% endif %}
+                   font-weight: 700;
+                  {% if block.settings.title_size %}font-size:{{ block.settings.title_size }}px;{% endif %}">              
+                {{ block.settings.title }}
+                </a>
+              {% endcapture %}
             {% endif %}
 
+            {% if block.settings.title != blank and menu_block_index != 1 %}
+            <h4>
+              {{ menu_column_heading }}
+            </h4>
+            {% endif %}
+
+            <ul class="submenu_links">
+              {% if block.settings.title != blank and menu_block_index == 1 %}
+              <li>
+                {{ menu_column_heading }}
+              </li>            
+              {% endif %}
+
+              {% if block.settings.enable_linklist_hover_image and block.settings.linklist_hover_image_array != blank %}
+                {% assign image_arr = block.settings.linklist_hover_image_array | split: ',' %}
+              {% else %}
+                {% assign image_arr = blank %}
+              {% endif %}
+
+              {% for link in linklists[block.settings.linklist].links %}
+
+                {% if image_arr != blank and image_arr[forloop.index0] != blank %}
+                  {% assign product_image = image_arr[forloop.index0] %}
+                {% else %}
+                  {% assign product_image = blank %}
+                {% endif %}
+
+                <li>
+                  {% assign link_title = link.title | downcase %}
+                  <a style="
+                    {% if link_title == 'clearance' 
+                      or link_title == 'sale' %}color: #E0222D;{% endif %}
+                    {% if menu_block_index == 1 %}
+                      {% if block.settings.title_size %}font-size:{{ block.settings.title_size }}px;{% endif %}
+                      font-weight: 700;
+                    {% else %}
+                      {% if block.settings.link_size %}font-size:{{ block.settings.link_size }}px;{% endif %}
+                    {% endif %}" 
+                    {% if link.url != blank %} href="{{ link.url }}" {% endif %}
+                    {% if product_image != blank %} data-product-image="{{ product_image }}" {% endif %}>{{ link.title }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+
+            {% if block.settings.title_2 != blank %}
+              {% assign block_title_2 = block.settings.title_2 | downcase %}
+              <h4>
+                <a style="{% if block_title_2 == 'clearance' or block_title_2 == 'sale' %}color: #E0222D;{% endif %}
+                    font-weight: 700;
+                    {% if block.settings.title_size %}font-size:{{ block.settings.title_size }}px;{% endif %}"
+                  {% if block.settings.url_2 != blank %}href="{{ block.settings.url_2 }}"{% endif %}>
+                  {{ block.settings.title_2 }}</a>
+              </h4>
+            {% endif %}
+            {% if block.settings.linklist_2 != blank %}
+              <ul class="submenu_links">
+                {% if block.settings.enable_linklist_hover_image_2 and block.settings.linklist_hover_image_array_2 != blank %}
+                  {% assign image_arr_2 = block.settings.linklist_hover_image_array_2 | split: ',' %}
+                {% else %}
+                  {% assign image_arr_2 = blank %}
+                {% endif %}
+
+                {% for link in linklists[block.settings.linklist_2].links %}
+                  
+                  {% if image_arr_2 != blank and image_arr_2[forloop.index0] != blank %}
+                    {% assign product_image_2 = image_arr_2[forloop.index0] %}
+                  {% else %}
+                    {% assign product_image_2 = blank %}
+                  {% endif %}
+
+                  <li>
+                    {% assign link_title = link.title | downcase %}
+                    <a style="
+                      {% if link_title == 'clearance' 
+                        or link_title == 'sale' %}color: #E0222D;{% endif %}
+                      {% if menu_block_index == 1 %}
+                        {% if block.settings.title_size %}font-size:{{ block.settings.title_size }}px;{% endif %}
+                        font-weight: 700;
+                      {% else %}
+                        {% if block.settings.link_size %}font-size:{{ block.settings.link_size }}px;{% endif %}
+                      {% endif %}" 
+                      {% if link.url != blank %} href="{{ link.url }}" {% endif %}
+                      {% if product_image_2 != blank %} data-product-image="{{ product_image_2 }}" {% endif %}>{{ link.title }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
         {% endcase %}
       </div>
     {% endfor %}

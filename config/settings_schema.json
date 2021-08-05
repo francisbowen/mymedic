@@ -40,6 +40,36 @@
     ]
   },
   {
+    "name": "WAM! Settings",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "WAM! (Website Accessibility Mode) is not only your guard to a wafe, WCAG compliant experience, but it helps your customers of all needs have a great experience on your site."
+      },
+      {
+        "type": "checkbox",
+        "id": "wamon",
+        "label": "Enable WAM?",
+        "default": true,
+        "info": "This will not allow bulk testing tools to work in evaluating your site."
+      },
+      {
+        "type": "checkbox",
+        "id": "trollblock",
+        "label": "Enable blocking for iframe bulk testers?",
+        "default": true,
+        "info": "This will not allow bulk testing tools to work in evaluating your site."
+      },
+      {
+        "type": "checkbox",
+        "id": "debug",
+        "label": "Turn on console debugger?",
+        "default": false,
+        "info": "This will make it so you can view all the errors in the browser console that WAM has fixed for you, allowing you to focus on correcting these issues outside of WAM."
+      }
+    ]
+  },
+  {
     "name": "Colors",
     "settings": [
       {
@@ -375,6 +405,16 @@
         "type": "checkbox",
         "id": "type_bold_product_titles",
         "label": "Bold product titles"
+      },
+      {
+        "type": "header",
+        "content": "Original Body Text"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_original_body_font",
+        "label": "Font",
+        "default": "helvetica_n4"
       }
     ]
   },
@@ -401,9 +441,20 @@
         "info": "Upload to File Settings *Recommended*"
       },
       {
+        "type": "text",
+        "id": "logo_1",
+        "label": "Logo SVG URL (1) :hover",
+        "info": "Upload to File Settings *Recommended*"
+      },
+      {
         "type": "image_picker",
         "id": "logo_img",
         "label": "Logo image"
+      },
+      {
+        "type": "image_picker",
+        "id": "logo_img_1",
+        "label": "Logo image - Secondary"
       },
       {
         "type": "text",
@@ -530,6 +581,16 @@
         "id": "megamenu6",
         "label": "Megamenu 6 Name",
         "info": "Putting the menu title here will pull 'Megamenu 1' below this menu item [Located on the Sections tab]"
+      },
+      {
+        "type": "header",
+        "content": "Mobile Header"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_socialicons_mobile",
+        "label": "Enable Social Icons Mobile",
+        "default": true
       }
     ]
   },
@@ -662,6 +723,12 @@
     "name": "Product General Settings",
     "settings": [
       {
+        "type": "color",
+        "id": "product_background_color",
+        "label": "Product Background Color",
+        "default": "#efefef"
+      },
+      {
         "type": "header",
         "content": "Image"
       },
@@ -707,6 +774,17 @@
         "type": "checkbox",
         "id": "cartajax",
         "label": "Enable AJAX for add to cart functionality?"
+      }
+    ]
+  },
+  {
+    "name": "Product tags",
+    "settings": [
+      {
+        "type": "text",
+        "id": "product_color_tag",
+        "label": "Product color tag",
+        "default": "colorFilter_"
       }
     ]
   },

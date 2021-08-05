@@ -1,29 +1,131 @@
-<div id="product-form">
-  {%- assign current_variant = product.selected_or_first_available_variant -%}
-  <h1 class="product-single__title">{{ product.title }}</h1>
+<style>
+#shopify-section-{{ section.id }} #product-form .product-core-infos .product-single__title {
+  font-size: {{ section.settings.product_title_size }}px;
+  {% if section.settings.product_title_color != blank %}
+    color: {{ section.settings.product_title_color }};
+  {% endif %}
+}
+#shopify-section-{{ section.id }} #product-form .product-core-infos .product-single__subtitle {
+  font-size: {{ section.settings.product_subtitle_size }}px;
+  {% if section.settings.product_subtitle_color != blank %}
+    color: {{ section.settings.product_subtitle_color }};
+  {% endif %}
+}
+#shopify-section-{{ section.id }} #product-form .product-core-infos .product-single__price .comparePrice {
+  font-size: {{ section.settings.product_compare_price_size }}px;
+}
+#shopify-section-{{ section.id }} #product-form .product-core-infos .product-single__price .ProductPrice {
+  font-size: {{ section.settings.product_price_size }}px;
+}
+#shopify-section-{{ section.id }} #product-form .product-form .swatch legend.label {
+  font-size: {{ section.settings.product_variant_size }}px;
+}
+#shopify-section-{{ section.id }} #product-form .product-single__description .description_item {
+  {% if section.settings.accordion_border_bottom_length %}
+  border-bottom: {{ section.settings.accordion_border_bottom_length }}px solid;
+  {% endif %}
+  border-color: {{ section.settings.accordion_border_color }};
+}
+#shopify-section-{{ section.id }} #product-form .product-single__description .description_item .desc_headline {
+  {% if section.settings.accordion_heading_size != blank %}
+  font-size: {{ section.settings.accordion_heading_size }}px;
+  {% endif %}
+}
 
-  <p class="product-single__price product-single__price-{{ product.id }}{% unless current_variant.available %} product-price--sold-out{% endunless %}">
-    {% if current_variant.compare_at_price > current_variant.price %}
-    <span class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
-    <s id="ComparePrice-{{ product.id }}">{{ current_variant.compare_at_price | money }}</s>
-    <span class="product-price__price product-price__price-{{ product.id }} product-price__sale product-price__sale--single">
-      <span id="ProductPrice-{{ product.id }}">{{ current_variant.price | money }}</span>
-      <span class="product-price__sale-label product-price__sale-label-{{ product.id }}">{{ 'products.product.on_sale' | t }}</span>
-    </span>
-    {% else %}
-    <span class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
-    <s id="ComparePrice-{{ product.id }}" class="hide">{{ current_variant.compare_at_price | money }}</s>
-    <span class="product-price__price product-price__price-{{ product.id }}">
-      <span id="ProductPrice-{{ product.id }}">{{ current_variant.price | money }}</span>
-      <span class="product-price__sale-label product-price__sale-label-{{ product.id }} hide">{{ 'products.product.on_sale' | t }}</span>
-    </span>
+@media screen and (max-width: 767px) {
+  #shopify-section-{{ section.id }} #product-form .product-core-infos .product-single__title {
+    font-size: {{ section.settings.product_title_mobile_size }}px;
+  }
+  #shopify-section-{{ section.id }} #product-form .product-core-infos .product-single__subtitle {
+    font-size: {{ section.settings.product_subtitle_mobile_size }}px;
+  }
+  #shopify-section-{{ section.id }} #product-form .product-core-infos .product-single__price .comparePrice {
+    font-size: {{ section.settings.product_compare_price_mobile_size }}px;
+  }
+  #shopify-section-{{ section.id }} #product-form .product-core-infos .product-single__price .ProductPrice {
+    font-size: {{ section.settings.product_price_mobile_size }}px;
+  }
+  #shopify-section-{{ section.id }} #product-form .product-form .swatch legend.label {
+    font-size: {{ section.settings.product_variant_mobile_size }}px;
+  }
+  #shopify-section-{{ section.id }} #product-form .product-single__description .description_item {
+    {% if section.settings.accordion_border_bottom_length_mobile %}
+    border-bottom-width: {{ section.settings.accordion_border_bottom_length_mobile }}px;
     {% endif %}
-  </p>
+  }
+  #shopify-section-{{ section.id }} #product-form .product-single__description .description_item .desc_headline {
+    {% if section.settings.accordion_heading_size_mobile != blank %}
+    font-size: {{ section.settings.accordion_heading_size_mobile }}px;
+    {% endif %}
+  }
 
-  <form action="/cart/add" method="post" enctype="multipart/form-data" class="product-form product-form-{{ product.id }}{% unless settings.show_variant_labels %} product-form--hide-variant-labels{% endunless %}" data-section="{{ product.id }}">
+}
+</style>
+
+{%- assign product_descriptions = product.description | split: '<h6>' -%}
+
+{% for product_description in product_descriptions %}
+
+  {%- assign product_headline_split = product_description | split: '</h6>' -%}
+  {%- assign product_headline = product_headline_split[0] | downcase -%}
+
+  {% if product_headline contains 'subtitle' %}
+    {% assign product_subtitle = product_headline_split[1] %}
+  {% elsif product_headline contains 'description' %}
+    {%- assign product_detail_headline = product_headline_split[0] -%}
+    {%- assign product_detail = product_headline_split[1] -%}
+  {% elsif product_headline contains 'contents' %}
+    {%- assign product_contents_headline = product_headline_split[0] -%}
+    {%- assign product_contents = product_headline_split[1] -%}
+  {% elsif product_headline contains 'specs' %}
+    {%- assign product_specs_headline = product_headline_split[0] -%}
+    {%- assign product_specs = product_headline_split[1] -%}
+  {% elsif product_headline contains 'testimonial' %}
+    {%- assign product_testimonial = product_headline_split[1] -%}
+  {% endif %}
+{% endfor %}
+
+<div id="product-form">
+  <p class="breadcrumbs d-none d-md-block">Shop \ {% if collection != blank %}<a href="{{ collection.url }}">{{ collection.title }}</a> \{% endif %} <a href="{{ product.url }}">{{ product.title }}</a></p>
+  {%- assign current_variant = product.selected_or_first_available_variant -%}
+  
+  <div class="product-core-infos">
+    <h1 class="col no-padding product-single__title">{{ product.title }} {% if product_subtitle != blank %}<span class="product-single__subtitle">{{ product_subtitle }}</span>{% endif %}</h1>
+
+    <div class="col-auto no-padding product-single__price product-single__price-{{ product.id }}{% unless current_variant.available %} product-price--sold-out{% endunless %}">
+      {% if current_variant.compare_at_price > current_variant.price %}
+      <span class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
+      <s id="ComparePrice-{{ product.id }}" class="comparePrice">{{ current_variant.compare_at_price | money }}</s>
+      <div class="product-price__price product-price__price-{{ product.id }} product-price__sale product-price__sale--single">
+        <h1 id="ProductPrice-{{ product.id }}" class="ProductPrice">{{ current_variant.price | money }}</h1>
+        <span class="product-price__sale-label product-price__sale-label-{{ product.id }}">{{ 'products.product.on_sale' | t }}</span>
+      </div>
+      {% else %}
+      <span class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
+      <s id="ComparePrice-{{ product.id }}" class="hide comparePrice">{{ current_variant.compare_at_price | money }}</s>
+      <div class="product-price__price product-price__price-{{ product.id }}">
+        <h1 id="ProductPrice-{{ product.id }}" class="ProductPrice">{{ current_variant.price | money }}</h1>
+        <span class="product-price__sale-label product-price__sale-label-{{ product.id }} hide">{{ 'products.product.on_sale' | t }}</span>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% capture form_class %}
+  product-form product-form-{{ product.id }}{% unless settings.show_variant_labels %} product-form--hide-variant-labels{% endunless %}
+  {% endcapture %}
+
+  {% form 'product', product, class:form_class, novalidate: 'novalidate' %}
+
+  {% comment %}
+  <form action="/cart/add" method="post" enctype="multipart/form-data" 
+    class="product-form product-form-{{ product.id }}{% unless settings.show_variant_labels %} product-form--hide-variant-labels{% endunless %}" 
+    data-section="{{ product.id }}">
+  {% endcomment %}
+
     {% unless product.options.size == 1 and product.variants[0].title == 'Default Title' %}
     {% for option in product.options_with_values %}
-      <div class="selector-wrapper {{ product.handle }} js">
+      <div class="selector-wrapper {{ product.handle }} js" style="display:none">
         <label {% if option.name == 'default' %}class="label--hidden" {% endif %}for="SingleOptionSelector-{{ forloop.index0 }}">
           {{ option.name }}
         </label>
@@ -53,43 +155,193 @@
       {% endfor %}
     </select>
 
-    {% if settings.show_quantity_selector %}
-      <div class="product-form__item product-form__item--quantity">
-        <label for="Quantity">{{ 'products.product.quantity' | t }}</label>
-        <input type="number" id="Quantity" name="quantity" value="1" min="1" class="product-form__input" pattern="[0-9]*">
-      </div>
-    {% endif %}
+    <div class="product-form__items">
+      {% if settings.show_quantity_selector %}
+        <div class="product-form__item product-form__item--quantity">
 
-    <div class="product-form__item product-form__item--submit">
+          <label class="noshow" for="Quantity">{{ 'products.product.quantity' | t }}</label>
 
-      <button type="submit" name="add" id="AddToCart-{{ product.id }}" {% unless current_variant.available %}disabled="disabled"{% endunless %} class="btn product-form__cart-submit">
-        <span id="AddToCartText-{{ product.id }}">
-          {% unless current_variant.available %}
-            {{ 'products.product.sold_out' | t }}
-          {% else %}
-            {% if product.tags contains 'coming soon' %}
-              {{ 'products.product.coming_soon' | t }}
+          <div class="quantitiy-button quantity-down">-</div>
+          
+          <input type="number" id="Quantity" name="quantity" value="1" min="1" class="product-form__input" pattern="[0-9]*">
+
+          <div class="quantitiy-button quantity-up">+</div>
+        </div>
+      {% endif %}
+
+      <div class="product-form__item product-form__item--submit">
+        <button type="submit" name="add" id="AddToCart-{{ product.id }}" {% unless current_variant.available %}disabled="disabled"{% endunless %} class="btn product-form__cart-submit">
+          <span id="AddToCartText-{{ product.id }}">
+            {% unless current_variant.available %}
+              {{ 'products.product.sold_out' | t }}
             {% else %}
-              {{ 'products.product.add_to_cart' | t }}
-            {% endif %}
-          {% endunless %}
-        </span>
-        <svg x="0px" y="0px" width="32px" height="32px" viewBox="0 0 32 32">
-          <path stroke-dasharray="19.79 19.79" stroke-dashoffset="19.79" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" d="M9,17l3.9,3.9c0.1,0.1,0.2,0.1,0.3,0L23,11"/>
-        </svg>
-      </button>
-
+              {% if product.tags contains 'coming soon' %}
+                {{ 'products.product.coming_soon' | t }}
+              {% else %}
+                {{ 'products.product.add_to_cart' | t }}
+              {% endif %}
+            {% endunless %}
+          </span>
+          <svg x="0px" y="0px" width="32px" height="32px" viewBox="0 0 32 32" style="display: none;">
+            <path stroke-dasharray="19.79 19.79" stroke-dashoffset="19.79" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" d="M9,17l3.9,3.9c0.1,0.1,0.2,0.1,0.3,0L23,11"/>
+          </svg>
+        </button>
+      </div>
     </div>
+
+    {% if section.settings.enable_payment_button %}
+      <style>
+        #shopify-section-{{ section.id }} .shopify-payment-button__button.shopify-payment-button__button--unbranded {
+          {% if section.settings.payment_button_color != blank %}
+            color: {{ section.settings.payment_button_color }};
+          {% endif %} 
+          {% if section.settings.payment_button_background_color != blank %}
+            background-color: {{ section.settings.payment_button_background_color }};
+          {% endif %}
+        }
+        #shopify-section-{{ section.id }} .shopify-payment-button__button.shopify-payment-button__button--unbranded:hover {
+          {% if section.settings.payment_button_hover_color != blank %}
+            color: {{ section.settings.payment_button_hover_color }};
+          {% endif %} 
+          {% if section.settings.payment_button_background_hover_color != blank %}
+            background-color: {{ section.settings.payment_button_background_hover_color }};
+          {% endif %}
+        }
+      </style>
+      {{ form | payment_button }}
+    {% endif %}
+  {% comment %}
   </form>
+  {% endcomment %}
+  {% endform %}
 
   {% if settings.enable_wishlist %}
     {% include 'wishlist' %}
   {% endif %}
 
   <div class="product-single__description rte">
-    {{ product.description }}
+
+    {% if product_descriptions.size == 1 %}
+      {{ product.description }}
+    {% else %}
+      {% assign descriptionaccordion_accordion_count = 0 %}
+
+      {% if product_detail_headline != blank %}
+        {% assign descriptionaccordion_accordion_count = descriptionaccordion_accordion_count | plus: 1 %}
+        <div class="description_item {% if descriptionaccordion_accordion_count == 1 %} show{% endif %}">
+          <h2 class="h5 desc_headline {% if descriptionaccordion_accordion_count == 1 %} show{% endif %}">
+            {{ product_detail_headline }}
+          </h2>
+          <div class="desc_content" {% if descriptionaccordion_accordion_count == 1 %} style="display:block;"{% endif %}>
+            {{ product_detail }}
+          </div>
+        </div>
+      {% endif %}
+      {% if product_contents_headline != blank %}
+        {% assign descriptionaccordion_accordion_count = descriptionaccordion_accordion_count | plus: 1 %}
+        <div class="description_item {% if descriptionaccordion_accordion_count == 1 %} show{% endif %}">
+          <h2 class="h5 desc_headline {% if descriptionaccordion_accordion_count == 1 %} show{% endif %}">
+            {{ product_contents_headline }}
+          </h2>
+          <div class="desc_content" {% if descriptionaccordion_accordion_count == 1 %} style="display:block;"{% endif %}>
+            {{ product_contents }}
+          </div>
+        </div>
+      {% endif %}
+      {% if product_specs_headline != blank %}
+        {% assign descriptionaccordion_accordion_count = descriptionaccordion_accordion_count | plus: 1 %}
+        <div class="description_item {% if descriptionaccordion_accordion_count == 1 %} show{% endif %}">
+          <h2 class="h5 desc_headline {% if descriptionaccordion_accordion_count == 1 %} show{% endif %}">
+            {{ product_specs_headline }}
+          </h2>
+          <div class="desc_content" {% if descriptionaccordion_accordion_count == 1 %} style="display:block;"{% endif %}>
+            {{ product_specs }}
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+
+    {% if product_testimonial != blank %}
+    <style>
+      #shopify-section-{{ section.id }} .product_testimonial {
+        {% if section.settings.description_size != blank %}
+          font-size: {{ section.settings.description_size  }}px;
+        {% endif %}
+        {% if section.settings.description_color != blank %}
+          color: {{ section.settings.description_color }};
+        {% endif %}
+      }
+      @media screen and (max-width: 767px) {
+        #shopify-section-{{ section.id }} .product_testimonial {
+          {% if section.settings.description_size_mobile != blank %}
+            font-size: {{ section.settings.description_size_mobile  }}px;
+          {% endif %}
+        }
+      }
+    </style>
+    <div class="product_testimonial" style="">
+      {{ product_testimonial }}
+    </div>
+    {% endif %}
   </div>
+
+  {% if section.blocks.size > 0 %}
+  <div class="logo-bar d-flex justify-content-between align-items-center" 
+    style="{% if section.settings.logoitem_margin_top != blank %}margin-top:{{ section.settings.logoitem_margin_top }}px;{% endif %}">
+    {% for block in section.blocks %}
+      <div class="logo-bar__item d-flex align-items-center title-{{ block.settings.title_layout }}">
+        {% if block.settings.logo_svg != blank %}
+         <img src="{{ block.settings.image_svg }}" class= "logo-bar__image" alt="{{ block.settings.logo.alt | escape }}" >
+        {% elsif block.settings.logo != blank %}
+          {% include 'image', class: 'logo-bar__image', file: block.settings.logo, default_size: 'x30', alt: block.settings.logo.alt | escape %}
+        {% else %}
+          {{ 'logo' | placeholder_svg_tag: 'placeholder-svg' }}
+        {% endif %}
+        {% if block.settings.title != blank %}
+          <span style="{% if block.settings.title_size != blank %}font-size: {{ block.settings.title_size }}px;{% endif %}
+            {% if block.settings.title_color != blank %}color: {{ block.settings.title_color }};{% endif %}"
+            >{{ block.settings.title }}</span>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
 </div>
+
+{% if settings.show_quantity_selector %}
+<script>
+  jQuery('.product-form__item.product-form__item--quantity').each(function(){
+    var spinner = jQuery(this),
+        input = spinner.find('#Quantity'),
+        btnUp = spinner.find('.quantity-up'),
+        btnDown = spinner.find('.quantity-down'),
+        min = input.attr('min'),
+        max = input.attr('max');
+    
+    btnUp.click(function() {
+      var oldValue = parseFloat(input.val());
+      if (oldValue >= max) {
+        var newVal = oldValue;
+      } else {
+        var newVal = oldValue + 1;
+      }
+      spinner.find("input").val(newVal);
+      spinner.find("input").trigger("change");
+    });
+
+    btnDown.click(function() {
+      var oldValue = parseFloat(input.val());
+      if (oldValue <= min) {
+        var newVal = oldValue;
+      } else {
+        var newVal = oldValue - 1;
+      }
+      spinner.find("input").val(newVal);
+      spinner.find("input").trigger("change");
+    });
+  });
+</script>
+{% endif %}
 
 {% if settings.enable_colorswatch %}
   <script type="text/javascript">
@@ -103,13 +355,23 @@
           .eq(optionIndex)
           .val(optionValue)
           .trigger('change');
-
+          
         setTimeout(function(){
           var currentSlide = $('.active-thumb').parent('li:not(.slick-cloned)'),
               currSlideIndex = currentSlide.data('slick-index');
           $('.product-single__thumbnails').slick('slickGoTo',currSlideIndex);
         },50);
       });
+
+      $('.desc_headline').click(function() {
+        if($(this).closest('.description_item').hasClass('show')) {
+          $(this).closest('.description_item').removeClass('show').find('.desc_content').slideUp();
+        } else {
+          $(this).closest('.description_item').addClass('show').find('.desc_content').slideDown();
+        }
+        $(this).toggleClass( "show" );
+      });
+
     });
   </script>
 {% endif %}
@@ -121,13 +383,15 @@
     function animatedBtn() {
       if(!animating) {
         animating =  true;
-
+        console.log('animation');
+        addToCartBtn.find('svg').show();
         addToCartBtn.addClass('is-added').find('path').eq(0).animate({
           'stroke-dashoffset':0
         }, 300, function(){
           setTimeout(function(){
+            addToCartBtn.find('svg').hide();
             addToCartBtn.removeClass('is-added').find('span').on('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function(){
-              addToCartBtn.find('path').eq(0).css('stroke-dashoffset', '19.79');
+              addToCartBtn.find('path').eq(0).css('stroke-dashoffset', '19.79');            
               animating =  false;
             });
 
@@ -135,7 +399,9 @@
               addToCartBtn.find('path').eq(0).css('stroke-dashoffset', '19.79');
               animating =  false;
             }
-          }, 600);
+            addToCartBtn.find('path').eq(0).css('stroke-dashoffset', '19.79');
+            animating =  false;
+          }, 1000);
         });
       }
     }
@@ -143,22 +409,35 @@
     $('#ProductSection-{{ product.id }} form').on('submit', function(e){
       e.preventDefault();
       animatedBtn();
+
       var quantity = $.grep($(this).serializeArray(), function (obj, i) {
             return obj.name === 'quantity';
           }),
           variants = $.grep($(this).serializeArray(), function (obj, i) {
-            return obj.name !== 'quantity';
+            return obj.name === 'id';
           });
       var allItems = {items: []};
+
+
+      console.log('quantity = ', quantity);
+
       $.each(variants, function(i,variant){
-        var item = {id: variant.value, quantity: 1};
+        console.log('variant = ', variant);
+        var item = {id: variant.value, quantity: quantity[0].value};
+        console.log('item = ', item);
         allItems['items'].push(item);
       });
+
+      console.log('product form submit');
+
       $.ajax({
         url: '/cart/add.js',
         data: allItems,
         dataType: 'json',
         success: function(cart) {
+
+          console.log('product form submit - success');
+
           cart_update();
         }
       });
@@ -169,8 +448,287 @@
 {% schema %}
   {
     "name": "Product Form",
-    "class": "col offset-md-1",
+    "class": "offset-md-1 col",
     "settings": [
+      {
+        "type": "header",
+        "content": "Texts"
+      },
+      {
+        "type": "range",
+        "id": "product_title_size",
+        "label": "Title size",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 35
+      },
+      {
+        "type": "range",
+        "id": "product_title_mobile_size",
+        "label": "Title size (mobile)",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 24
+      },
+{
+  "type": "color",
+  "id": "product_title_color",
+  "label": "Color"
+},
+      {
+        "type": "range",
+        "id": "product_subtitle_size",
+        "label": "Subtitle size",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 28
+      },
+      {
+        "type": "range",
+        "id": "product_subtitle_mobile_size",
+        "label": "Subtitle size (mobile)",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 20
+      },
+      {
+        "type": "color",
+        "id": "product_subtitle_color",
+        "label": "Color"
+      },
+
+      {
+        "type": "range",
+        "id": "product_compare_price_size",
+        "label": "Compare price size",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 14
+      },
+      {
+        "type": "range",
+        "id": "product_compare_price_mobile_size",
+        "label": "Compare price size (mobile)",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 14
+      },
+
+      {
+        "type": "range",
+        "id": "product_price_size",
+        "label": "Price size",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 35
+      },
+      {
+        "type": "range",
+        "id": "product_price_mobile_size",
+        "label": "Price size (mobile)",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 24
+      },
+
+      {
+        "type": "range",
+        "id": "product_variant_size",
+        "label": "Variant size",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 15
+      },
+      {
+        "type": "range",
+        "id": "product_variant_mobile_size",
+        "label": "Variant size (mobile)",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 15
+      },
+
+      {
+        "type": "header",
+        "content": "Product testimonial "
+      },
+      {
+        "type": "range",
+        "id": "description_size",
+        "label": "Font size",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 12
+      },
+      {
+        "type": "range",
+        "id": "description_size_mobile",
+        "label": "Font size (mobile)",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 10
+      },
+      {
+        "type": "color",
+        "id": "description_color",
+        "label": "Color"
+      },
+      {
+        "type": "header",
+        "content": "Icon list Block"
+      },
+      {
+        "type": "range",
+        "id": "logoitem_margin_top",
+        "label": "Margin top",
+        "min": 0,
+        "max": 500,
+        "step": 10,
+        "default": 40
+      },
+      {
+        "type": "header",
+        "content": "Product form"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_payment_button",
+        "label": "Enable checkout button"
+      },
+      {
+        "type": "color",
+        "id": "payment_button_color",
+        "label": "Text color"
+      },
+      {
+        "type": "color",
+        "id": "payment_button_background_color",
+        "label": "Background color"
+      },
+      {
+        "type": "color",
+        "id": "payment_button_hover_color",
+        "label": "Text hover color"
+      },
+      {
+        "type": "color",
+        "id": "payment_button_background_hover_color",
+        "label": "Background hover color"
+      },
+      {
+        "type": "header",
+        "content": "Accordion Menu"
+      },
+      {
+        "type": "range",
+        "id": "accordion_heading_size",
+        "label": "Heading size",
+        "min": 10,
+        "max": 50,
+        "step": 1,
+        "default": 18
+      },
+      {
+        "type": "range",
+        "id": "accordion_heading_size_mobile",
+        "label": "Heading size (mobile)",
+        "min": 10,
+        "max": 50,
+        "step": 1,
+        "default": 14
+      },
+      {
+        "type": "color",
+        "id": "accordion_border_color",
+        "label": "Border color",
+        "default": "#a7a9ac"
+      },
+      {
+        "type": "range",
+        "id": "accordion_border_bottom_length",
+        "label": "Border bottom length",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "default": 5
+      },
+      {
+        "type": "range",
+        "id": "accordion_border_bottom_length_mobile",
+        "label": "Border bottom length (mobile)",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "default": 3
+      }
+      
+    ],
+    "blocks": [
+      {
+        "type": "logo",
+        "name": "logo",
+        "limit": 4,
+        "settings": [
+          {
+            "type": "text",
+            "id": "logo_svg",
+            "label": "logo svg"
+          },
+          {
+            "type": "image_picker",
+            "id": "logo",
+            "label": "logo"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title"
+          },
+          {
+            "type": "range",
+            "id": "title_size",
+            "label": "Font size",
+            "min": 10,
+            "max": 100,
+            "step": 1,
+            "default": 10
+          },
+          {
+            "type": "color",
+            "id": "title_color",
+            "label": "Color"
+          },
+                    
+          {
+            "type": "select",
+            "id": "title_layout",
+            "label": "Title Position",
+            "default": "right",
+            "options": [
+              {
+                "value": "right",
+                "label": "Title on Left"
+              },
+              {
+                "value": "bottom",
+                "label": "Title on Bottom"
+              }
+            ]
+          }
+        ]
+      }
     ]
   }
 {% endschema %}

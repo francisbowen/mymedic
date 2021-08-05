@@ -38,9 +38,11 @@
     {% endraw %}
   </script>
 {% endif %}
+
 {% if settings.cartdropdown == 'flyout'  %}
   <script id="CartTemplate" type="text/template">
     {% raw %}
+      <p id="your-cart">Your Cart({{totalCart}})</p>
       <ul class="shopping-cart-items">
         {{#variants}}
           <li class="cart-sidebar-item">
@@ -49,26 +51,41 @@
               <a href="{{url}}" class="align-self-stretch cart-sidebar-item--image">
                 <img src="{{image}}" alt="{{title}}" />
               </a>
-              <div class="cart-sidebar-item--product-info flex-grow-1">
-                <h5><a href="{{url}}">{{title}}</a></h5>
-                {{#options}}
-                  <p{{#if_eq value '==' 'Default Title'}} class="hide"{{/if_eq}}><strong>{{name}}:</strong> {{value}}</p>
-                {{/options}}
-                <div class="cart-sidebar-item--updates d-flex justify-content-between">
-                  <div class="cart-sidebar-item--qty">
-                    <select class="cart-prod-qty pretty-dropdown" data-item="{{key}}" name="cart-prod-qty">
-                      {{#times 10}}
-                        <option value="{{this}}"{{#if_eq ../quantity '==' this}} selected{{/if_eq}}>{{this}}</option>
-                      {{/times}}
-                    </select>
-                  </div>
-                  <div class="cart-sidebar-item--price text-right">
+              <div class="cart-sidebar-item--product-info flex-grow-1 d-flex justify-content-between">
+                <div class="item-product-info">
+                  <h6><a href="{{url}}">{{title}}</a></h6>
+                  <p>QTY: {{ quantity }}</p>
+                  {{#options}}
+                    <p{{#if_eq value '==' 'Default Title'}} class="hide"{{/if_eq}}>{{name}}: {{value}}</p>
+                  {{/options}}
+                </div>
+                <div class="cart-sidebar-item--updates">
+                  <div class="h5 cart-sidebar-item--price text-right">
                     {{#if message}}
                       <b>{{message}}</b><br />
                       <s>{{finalprice}}</s>
                     {{/if}}
                     {{price}}
                   </div>
+
+                  <div class="cart-sidebar-item--qty">
+                    <div class="cart-item--qty product-form__item--quantity" data-item="{{ key }}">
+                      <div class="quantitiy-button quantity-down">-</div>
+
+                      <label class="noshow" for="Quantity">Quantity</label>
+                      <input type="number" id="Quantity" name="quantity" value="{{ quantity }}" min="0" 
+                        class="product-form__input" pattern="[0-9]*">
+                        
+                      <div class="quantitiy-button quantity-up">+</div>
+                    </div>
+
+                    <!-- <select class="cart-prod-qty pretty-dropdown" data-item="{{key}}" name="cart-prod-qty">
+                      {{#times 10}}
+                        <option value="{{this}}"{{#if_eq ../quantity '==' this}} selected{{/if_eq}}>{{this}}</option>
+                      {{/times}}
+                    </select> -->
+                  </div>
+
                 </div>
               </div>
             </div>
@@ -78,6 +95,7 @@
     {% endraw %}
   </script>
 {% endif %}
+
 <script>
   Handlebars.registerHelper('times', function(n, block) {
     var accum = '';
@@ -88,7 +106,6 @@
 
   Handlebars.registerHelper('if_eq', function(a, operator, b, opts) {
     var bool = false;
-    console.log(a,b);
     switch(operator) {
       case '==':
         bool = a == b;
@@ -122,7 +139,7 @@
       type: 'GET',
       url: '/cart.js',
       dataType: 'json',
-      success: function(cartdata){
+      success: function(cartdata){        
         $('.cart-subtotals').html(Shopify.formatMoney(cartdata.total_price, '${% raw %}{{amount}}{% endraw %}'));
         if(cartdata.item_count > 0) {
 
@@ -130,6 +147,7 @@
             $('.site-header__cart').append('<div id="CartCount" class="site-header__cart-count"><span></span><span class="icon__fallback-text hidden-md-up">{{ 'layout.cart.items_count' | t: count: cart.item_count }}</span></div>');
           }
           $('#CartCount').find('span').first().text(cartdata.item_count);
+          $('#your-cart').text("Your Cart(" + cartdata.item_count + ")");
 
           {% if settings.cartdropdown != 'none' %}
             // Handlebars.js bralette layout
@@ -160,7 +178,8 @@
                 finalprice: Shopify.formatMoney(varItem.final_price, '${% raw %}{{amount}}{% endraw %}'),
                 message: discountMessage,
                 quantity: varItem.quantity,
-                image: imageSmall
+                image: imageSmall,
+                cart_item: cartdata.item_count
               };
 
               items.push(item);
@@ -168,6 +187,7 @@
 
             // Gather all  data and add to DOM
             data = {
+              totalCart: cartdata.item_count,
               variants: items
             }
 
@@ -189,6 +209,9 @@
   $(document).ready(function(){
     // Delete Item
     $('.shopping-cart').on('click','.delete-cart-item',function(){
+
+      console.log('delete button clicked');
+
       var itemid = $(this).data('itemid'),
           $item = $(this).closest('.cart-sidebar-item');
       $.ajax({
@@ -209,6 +232,39 @@
           });
         }
       });
+    });
+
+    $('.shopping-cart').on('click','.quantitiy-button',function(){
+      console.log('quantitiy-button ----------------- ');
+
+      var spinner = $(this).closest('.cart-item--qty.product-form__item--quantity');
+        input = spinner.find('#Quantity'),
+        min = input.attr('min'),
+        max = input.attr('max');
+
+      if ($(this).hasClass('quantity-up')) {
+        var oldValue = parseFloat(input.val());
+        if (oldValue >= max) {
+          var newVal = oldValue;
+        } else {
+          var newVal = oldValue + 1;
+        }
+      } else {
+        var oldValue = parseFloat(input.val());
+        console.log('oldValue = ', oldValue);
+        console.log('min = ', min);
+        if (oldValue <= min) {
+          var newVal = oldValue;
+        } else {
+          var newVal = oldValue - 1;
+        }
+      }
+
+      console.log('newVal = ', newVal);
+
+      spinner.find("input").val(newVal);
+      spinner.find("input").trigger("change");
+      qty_update(spinner, newVal);
     });
 
     // Update Item From Cart
@@ -239,5 +295,60 @@
       e.preventDefault();
       openCart();
     });
+  
+    // $('.cart-item--qty.product-form__item--quantity').each(function(){
+
+    //   console.log('.cart-item--qty.product-form__item--quantity');
+
+    //   var spinner = jQuery(this),
+    //     input = spinner.find('#Quantity'),
+    //     btnUp = spinner.find('.quantity-up'),
+    //     btnDown = spinner.find('.quantity-down'),
+    //     min = input.attr('min'),
+    //     max = input.attr('max');
+    
+    //   btnUp.click(function() {
+    //     var oldValue = parseFloat(input.val());
+    //     if (oldValue >= max) {
+    //       var newVal = oldValue;
+    //     } else {
+    //       var newVal = oldValue + 1;
+    //     }
+    //     spinner.find("input").val(newVal);
+    //     spinner.find("input").trigger("change");
+    //     qty_update(spinner, newVal);
+    //   });
+
+    //   btnDown.click(function() {
+    //     var oldValue = parseFloat(input.val());
+    //     if (oldValue <= min) {
+    //       var newVal = oldValue;
+    //     } else {
+    //       var newVal = oldValue - 1;
+    //     }
+    //     spinner.find("input").val(newVal);
+    //     spinner.find("input").trigger("change");
+    //     qty_update(spinner, newVal);
+    //   });
+    // });
+
+    function qty_update(object, qty) {
+      var item = $(object).data('item');
+      console.log('qty = ', qty);
+      $item = $(object).closest('.cart-sidebar-item');
+
+      $.ajax({
+        url:"/cart/change.js",
+        dataType: 'json',
+        data: {
+          quantity:qty,
+          id: item
+        },
+        success: function(resp) {
+          $item.fadeOut();
+          cart_update();
+        }
+      })
+    }
   });
 </script>

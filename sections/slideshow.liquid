@@ -3,7 +3,6 @@
 {% schema %}
   {
     "name": "Slideshow",
-    "class": "index-section",
     "max_blocks": 4,
     "settings": [
       {
@@ -15,6 +14,11 @@
           { "value": "container-fluid", "label": "Flow to the width of screen" }
         ],
         "default": "container"
+      },
+      {
+        "type": "color",
+        "id": "background_color",
+        "label": "Background Color"
       },
       {
         "type": "checkbox",
@@ -84,10 +88,29 @@
             "label": "Image"
           },
           {
+            "type": "image_picker",
+            "id": "image_mobile",
+            "label": "Image Mobile"
+          },
+          {
             "type": "checkbox",
             "id": "overlay",
             "label": "Overlay image with color?",
             "info": "Color and opacity found in 'General settings'"
+          },
+          {
+            "type": "color",
+            "id": "overlay_color",
+            "label": "Overay color"
+          },
+          {
+            "type": "range",
+            "id": "overlay_opacity",
+            "label": "Overay opacity",
+            "min": 0,
+            "max": 1,
+            "step": 0.1,
+            "default": 0
           },
           {
             "type": "select",
@@ -153,6 +176,26 @@
               }
             ]
           },
+          { 
+            "type": "select",
+            "id": "text_layout_height",
+            "label": "Text Height Position",
+            "default": "center",
+            "options": [
+              {
+                "value": "top",
+                "label": "Text on top"
+              },
+              {
+                "value": "center",
+                "label": "Text on Center"
+              },
+              {
+                "value": "bottom",
+                "label": "Text on bottom"
+              }
+            ]
+          },
           {
             "type": "select",
             "id": "text_align",
@@ -174,26 +217,122 @@
             ]
           },
           {
+            "type": "header",
+            "content": "Heading"
+          },
+          {
             "type": "text",
             "id": "title",
             "label": "Heading",
             "default": "Image slide"
           },
           {
+            "type": "range",
+            "id": "title_size",
+            "label": "Font size",
+            "min": 10,
+            "max": 100,
+            "step": 1,
+            "default": 32
+          },
+          {
+            "type": "range",
+            "id": "title_size_tablet",
+            "label": "Font size (tablet)",
+            "min": 10,
+            "max": 100,
+            "step": 1,
+            "default": 28
+          },
+          {
+            "type": "range",
+            "id": "title_mobile_size",
+            "label": "Font size (mobile)",
+            "min": 10,
+            "max": 100,
+            "step": 1,
+            "default": 38
+          },
+          {
+            "type": "range",
+            "id": "title_margin_bottom",
+            "label": "Margin bottom",
+            "min": 0,
+            "max": 50,
+            "step": 1,
+            "default": 15
+          },
+          {
             "type": "color",
-            "id": "heading_color",
-            "label": "Heading color"
+            "id": "title_color",
+            "label": "Color"
+          },
+          {
+            "type": "checkbox",
+            "id": "title_bold",
+            "label": "Bold",
+            "default": true
+          },
+          {
+            "type": "checkbox",
+            "id": "heading_border",
+            "label": "Heading Border"
+          },
+          {
+            "type": "range",
+            "id": "heading_border_width",
+            "label": "Border Width",
+            "min": 0,
+            "max": 700,
+            "step": 10,
+            "default": 150 
+          },
+          {
+            "type": "range",
+            "id": "heading_border_bottom",
+            "label": "Border height",
+            "min": 0,
+            "max": 10,
+            "step": 1,
+            "default": 5 
+          },
+         
+          {
+            "type": "color",
+            "id": "heading_border_color",
+            "label": "Color"
+          },
+
+          
+          {
+            "type": "header",
+            "content": "Subtitle"
           },
           {
             "type": "text",
-            "id": "subheading",
-            "label": "Subheading",
-            "default": "Tell your brand's story through video and images"
+            "id": "subtitle",
+            "label": "Subtitle"
+          },
+          {
+            "type": "range",
+            "id": "subtitle_size",
+            "label": "Font size",
+            "min": 10,
+            "max": 100,
+            "step": 1,
+            "default": 17
           },
           {
             "type": "color",
-            "id": "subheading_color",
-            "label": "Subheading color"
+            "id": "subtitle_color",
+            "label": "Color"
+          },
+
+          
+          
+          {
+            "type": "header",
+            "content": "Button"
           },
           {
             "type": "text",
@@ -203,9 +342,101 @@
             "default": "Shop Now"
           },
           {
+            "type": "range",
+            "id": "button_width",
+            "label": "Button Width",
+            "min": 50,
+            "max": 300,
+            "step": 5,
+            "default": 170
+          },
+          {
+            "type": "range",
+            "id": "button_width_mobile",
+            "label": "Button Width (Mobile)",
+            "min": 50,
+            "max": 300,
+            "step": 5,
+            "default": 170
+          },
+
+          {
+            "type": "range",
+            "id": "button_title_size",
+            "label": "Font size",
+            "min": 10,
+            "max": 100,
+            "step": 1,
+            "default": 14
+          },
+          {
+            "type": "range",
+            "id": "button_title_size_mobile",
+            "label": "Font size (mobile)",
+            "min": 10,
+            "max": 100,
+            "step": 1,
+            "default": 14
+          },
+
+          {
+            "type": "color",
+            "id": "button_text_color",
+            "label": "Text Color"
+          },
+          {
+            "type": "color",
+            "id": "button_background_color",
+            "label": "Background Color"
+          },
+          {
+            "type": "color",
+            "id": "button_text_hover_color",
+            "label": "Text Hover Color"
+          },
+          {
+            "type": "color",
+            "id": "button_background_hover_color",
+            "label": "Background Hover Color"
+          },
+
+          {
             "type": "url",
             "id": "link",
             "label": "Slide link"
+          },
+          {
+            "type": "header",
+            "content": "Cross Mark"
+          },
+          {
+            "type": "image_picker",
+            "id": "cross_mark",
+            "label": "Cross Mark Image"
+          },
+          {
+            "type": "select",
+            "id": "cross_align",
+            "label": "Cross Mark Aligment",
+            "default": "top_right",
+            "options": [
+              {
+                "value": "top_left",
+                "label": "Top Left"
+              },
+              {
+                "value": "top_right",
+                "label": "Top Right"
+              },
+              {
+                "value": "bottom_left",
+                "label": "Bottom Left"
+              },
+              {
+                "value": "bottom_right",
+                "label": "Bottom Right"
+              }
+            ]
           }
         ]
       },
@@ -254,7 +485,7 @@
           {
             "type": "select",
             "id": "text_layout",
-            "label": "Text Position",
+            "label": "Text Width Position",
             "default": "center",
             "options": [
               {
@@ -268,6 +499,26 @@
               {
                 "value": "right",
                 "label": "Text on right"
+              }
+            ]
+          },
+          { 
+            "type": "select",
+            "id": "text_layout_height",
+            "label": "Text Height Position",
+            "default": "center",
+            "options": [
+              {
+                "value": "top",
+                "label": "Text on top"
+              },
+              {
+                "value": "center",
+                "label": "Text on Center"
+              },
+              {
+                "value": "bottom",
+                "label": "Text on bottom"
               }
             ]
           },

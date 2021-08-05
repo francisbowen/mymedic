@@ -1,0 +1,156 @@
+{% include 'logo-bar-content' %}
+
+{% schema %}
+    {
+      "name": "Logo list",
+      "class": "index-section team-logo-bar",
+      "max_blocks": 20,
+      "settings": [
+      {
+        "type": "header",
+        "content": "Spacing"
+      },
+      {
+        "type": "range",
+        "id": "ptop",
+        "label": "Top spacing desktop",
+        "min": 0,
+        "unit": "px",
+        "max": 500,
+        "step": 5,
+        "default": 15
+      },
+      {
+        "type": "range",
+        "id": "pbottom",
+        "label": "Bottom spacing desktop",
+        "min": 0,
+        "unit": "px",
+        "max": 500,
+        "step": 5,
+        "default": 15
+      },
+      {
+        "type": "range",
+        "id": "ptop_mob",
+        "label": "Top spacing mobile",
+        "min": 0,
+        "unit": "px",
+        "max": 500,
+        "step": 5,
+        "default": 5
+      },
+      {
+        "type": "range",
+        "id": "pbottom_mob",
+        "label": "Bottom spacing mobile",
+        "min": 0,
+        "unit": "px",
+        "max": 500,
+        "step": 5,
+        "default": 5
+      }, 
+      {
+        "type": "radio",
+        "id": "contained",
+        "label": "Form should:",
+        "options": [
+          { "value": "container", "label": "Constrain to container" },
+          { "value": "container-fluid", "label": "Flow to the width of screen" }
+        ],
+        "default": "container"
+      },
+      {
+        "type": "color",
+        "id": "background_color",
+        "label": "Background Color",
+        "default": "#F1F1F1"
+      },
+      {
+        "type": "text",
+        "id": "pretitle",
+        "label": "PreTitle"
+      },
+      {
+        "type": "color",
+        "id": "pretitle_color",
+        "label": "Color"
+      },
+      {
+        "type": "checkbox",
+        "id": "pretitle_bold",
+        "label": "Enable bold"
+      },
+
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Logo list"
+        },
+        {
+          "type": "color",
+          "id": "title_color",
+          "label": "Color"
+        },
+        {
+          "type": "checkbox",
+          "id": "title_bold",
+          "label": "Enable bold"
+        }
+      ],
+      "blocks": [
+        {
+          "type": "logo_image",
+          "name": "Logo",
+          "settings": [
+            {
+              "type": "text",
+              "id": "image_svg",
+              "label": "Svg"
+            },
+            {
+              "type": "image_picker",
+              "id": "image",
+              "label": "Image"
+            },
+            {
+              "type": "text",
+              "id": "title",
+              "label": "Title",
+              "default": "title"
+            },
+            {
+              "type": "select",
+              "id": "title_layout",
+              "label": "Title Position",
+              "default": "bottom",
+              "options": [
+                {
+                  "value": "right",
+                  "label": "Title on Left"
+                },
+                {
+                  "value": "bottom",
+                  "label": "Title on Bottom"
+                }
+              ]
+            },
+            {
+              "type": "color",
+              "id": "title_color",
+              "label": "Color",
+              "default": "#000"
+            },
+            {
+              "type": "url",
+              "id": "link",
+              "label": "Link",
+              "info": "Optional"
+            }
+          ]
+        }
+      ]
+    }
+{% endschema %}
+  

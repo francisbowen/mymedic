@@ -1,144 +1,270 @@
+{% capture section_style_desktop %}
+  {% if section.settings.ptop != blank %}
+    padding-top: {{ section.settings.ptop }}px;
+  {% endif %}
+
+  {% if section.settings.pbottom != blank %}        
+    padding-bottom : {{ section.settings.pbottom }}px;
+  {% endif %}
+
+  {% if section.settings.background_color != blank %}
+    background-color: {{ section.settings.background_color }};
+  {% endif %}
+{% endcapture %}
+
+{% capture section_style_mobile %}
+  {% if section.settings.ptop_mob != blank %}
+  padding-top: {{ section.settings.ptop_mob }}px; 
+  {% endif %}
+
+  {% if section.settings.pbottom_mob != blank %}
+  padding-bottom: {{ section.settings.pbottom_mob }}px;
+  {% endif %}
+{% endcapture %}
+
+<style>
+  #shopify-section-{{ section.id }} {
+    {{ section_style_desktop }}
+  }
+  #shopify-section-{{ section.id }} .section-header .title {
+    {% if section.settings.page_header_text_size != blank %}
+    font-size: {{ section.settings.page_header_text_size }}px;
+    {% endif %}
+    {% if section.settings.page_header_text_color != blank %}
+    color: {{ section.settings.page_header_text_color }};
+    {% endif %}
+  }
+  @media (max-width: 767px) {	
+    #shopify-section-{{ section.id }} {
+      {{ section_style_mobile }}
+    }
+    #shopify-section-{{ section.id }} .section-header .title {
+      {% if section.settings.page_header_text_size_mobile != blank %}
+      font-size: {{ section.settings.page_header_text_size_mobile }}px;
+      {% endif %}
+    }
+  }
+</style>
+
 <div class="container" data-section-id="{{ section.id }}" data-section-type="cart-template">
 
   {% if cart.item_count > 0 %}
-    <div class="section-header text-center">
-      <h1>{{ 'cart.general.title' | t }}</h1>
+    <div class="section-header d-flex align-items-center">
+      <h1 class="title">{% if section.settings.page_header_text != blank %}{{ section.settings.page_header_text }}{% else %}{{ 'cart.general.title' | t }}{% endif %}</h1>
+      <span class="h6 item_count">{{ cart.items.size }} ITEM{% if cart.items.size > 1 %}S{% endif %}</span>
     </div>
 
     <form action="/cart" method="post" novalidate class="cart">
-      <table>
-        <thead class="cart__row cart__header">
-          <th colspan="2">{{ 'cart.label.product' | t }}</th>
-          <th>{{ 'cart.label.price' | t }}</th>
-          <th class="text-center">{{ 'cart.label.quantity' | t }}</th>
-          <th class="text-right">{{ 'cart.label.total' | t }}</th>
-        </thead>
-        <tbody>
-          {% for item in cart.items %}
-            <tr class="cart__row border-bottom line{{ forloop.index }} cart-flex{% if forloop.first %} border-top{% endif %}">
-              <td class="cart__image-wrapper">
-                <a href="{{ item.url | within: collections.all }}">
-                  {% include 'image', class:'cart__image', file: item, default_size: '100x', alt: item.title | escape %}
-                </a>
-              </td>
-              <td class="cart__meta small--text-left">
-                <div class="list-view-item__title">
-                  <a href="{{ item.url }}">
-                    {{ item.product.title }}
-                    {% if item.quantity > 1 %}
-                      <span class="hidden-md-up"><span class="visually-hidden">{{ 'cart.label.quantity' | t }}</span>(x{{ item.quantity }})</span>
-                    {% endif %}
-                  </a>
-                </div>
-                {% unless item.variant.title contains 'Default' %}
-                  <div class="cart__meta-text">
-                    {% for option in item.product.options %}
-                      {{ option }}: {{ item.variant.options[forloop.index0] }}</br>
-                    {% endfor %}
-                  </div>
-                {% endunless %}
+      <div class="row">
+        <div class="col-md-40">
+          <div class="cart__shipping-label">{% if section.settings.shipping_label_text != blank %}{{ section.settings.shipping_label_text }}{% else %}* Get free shipping when you spend $250 or more{% endif %}</div>
+          <table>
+            {% comment %}
+            <thead class="cart__row cart__header">
+              <th colspan="2">{{ 'cart.label.product' | t }}</th>
+              <th>{{ 'cart.label.price' | t }}</th>
+              <th class="text-center">{{ 'cart.label.quantity' | t }}</th>
+              <th class="text-right">{{ 'cart.label.total' | t }}</th>
+            </thead>
+            {% endcomment %}
 
-                {% comment %}
-                  Optional, loop through custom product line items if available
-
-                  Line item properties come in as having two parts. The first part will be passed with the default form,
-                  but p.last is the actual custom property and may be blank. If it is, don't show it.
-
-                  For more info on line item properties, visit:
-                    - http://docs.shopify.com/support/your-store/products/how-do-I-collect-additional-information-on-the-product-page-Like-for-a-monogram-engraving-or-customization
-                {% endcomment %}
-                {%- assign property_size = item.properties | size -%}
-                {% if property_size > 0 %}
-                  <div class="cart__meta-text">
-                    {% for p in item.properties %}
-                      {% unless p.last == blank %}
-                        {{ p.first }}:
-
+            <tbody>
+              {% for item in cart.items %}
+                <tr class="cart__row line{{ forloop.index }} cart-flex">
+                  <td class="cart__image-wrapper">
+                    <a href="{{ item.url | within: collections.all }}">
+                      {% include 'image', class:'cart__image', file: item, default_size: '100x', alt: item.title | escape %}
+                    </a>
+                  </td>
+                  <td class="cart__meta small--text-left">
+                    <div class="list-view-item__title">
+                      <a class="h4" href="{{ item.url }}">
+                        {{ item.product.title }}
                         {% comment %}
-                          Check if there was an uploaded file associated
-                        {% endcomment %}
-                        {% if p.last contains '/uploads/' %}
-                          <a href="{{ p.last }}">{{ p.last | split: '/' | last }}</a>
-                        {% else %}
-                          {{ p.last }}
+                        {% if item.quantity > 1 %}
+                          <span class="hidden-md-up"><span class="visually-hidden">{{ 'cart.label.quantity' | t }}</span>(x{{ item.quantity }})</span>
                         {% endif %}
-                      {% endunless %}
+                        {% endcomment %}
+                      </a>
+                    </div>
+                    {% unless item.variant.title contains 'Default' %}
+                      <div class="cart__meta-text">
+                        QTY: {{ item.quantity  }} <br>
+                        {% for option in item.product.options %}
+                          {{ option }}: {{ item.variant.options[forloop.index0] }}</br>
+                        {% endfor %}
+                      </div>
+                    {% endunless %}
+
+                    {% comment %}
+                      Optional, loop through custom product line items if available
+
+                      Line item properties come in as having two parts. The first part will be passed with the default form,
+                      but p.last is the actual custom property and may be blank. If it is, don't show it.
+
+                      For more info on line item properties, visit:
+                        - http://docs.shopify.com/support/your-store/products/how-do-I-collect-additional-information-on-the-product-page-Like-for-a-monogram-engraving-or-customization
+                    {% endcomment %}
+                    {%- assign property_size = item.properties | size -%}
+                    {% if property_size > 0 %}
+                      <div class="cart__meta-text">
+                        {% for p in item.properties %}
+                          {% unless p.last == blank %}
+                            {{ p.first }}:
+
+                            {% comment %}
+                              Check if there was an uploaded file associated
+                            {% endcomment %}
+                            {% if p.last contains '/uploads/' %}
+                              <a href="{{ p.last }}">{{ p.last | split: '/' | last }}</a>
+                            {% else %}
+                              {{ p.last }}
+                            {% endif %}
+                          {% endunless %}
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+
+                    {% comment %}
+                    <p class="hidden-sm-down">
+                      <a href="/cart/change?line={{ forloop.index }}&amp;quantity=0" class="btn btn--small btn--secondary cart__remove">{{ 'cart.general.remove' | t }}</a>
+                    </p>
+                    {% endcomment %}
+                  </td>
+
+                  {% comment %}
+                  <td class="cart__price-wrapper">
+                    {{ item.price | money }}
+
+                    {% for discount in item.discounts %}
+                      <div class="cart-item__discount hidden-md-up">{{ discount.title }}</div>
                     {% endfor %}
-                  </div>
-                {% endif %}
 
-                <p class="hidden-sm-down">
-                  <a href="/cart/change?line={{ forloop.index }}&amp;quantity=0" class="btn btn--small btn--secondary cart__remove">{{ 'cart.general.remove' | t }}</a>
-                </p>
-              </td>
-              <td class="cart__price-wrapper">
-                {{ item.price | money }}
+                    <div class="cart__edit hidden-md-up">
+                      <button type="button" class="btn btn--secondary btn--small js-edit-toggle cart__edit--active" data-target="line{{ forloop.index }}">
+                        <span class="cart__edit-text--edit">{{ 'cart.general.edit' | t }}</span>
+                        <span class="cart__edit-text--cancel">{{ 'cart.general.cancel' | t }}</span>
+                      </button>
+                    </div>
+                  </td>
+                  {% endcomment %}
 
-                {% for discount in item.discounts %}
-                  <div class="cart-item__discount hidden-md-up">{{ discount.title }}</div>
-                {% endfor %}
+                  <td class="cart__update-wrapper text-right">
+                    {% if item.original_line_price != item.line_price %}
+                      <div class="cart-item__original-price"><s>{{ item.original_line_price | money }}</s></div>
+                    {% endif %}
 
-                <div class="cart__edit hidden-md-up">
-                  <button type="button" class="btn btn--secondary btn--small js-edit-toggle cart__edit--active" data-target="line{{ forloop.index }}">
-                    <span class="cart__edit-text--edit">{{ 'cart.general.edit' | t }}</span>
-                    <span class="cart__edit-text--cancel">{{ 'cart.general.cancel' | t }}</span>
-                  </button>
-                </div>
-              </td>
-              <td class="cart__update-wrapper text-right">
-                <a href="/cart/change?line={{ forloop.index }}&amp;quantity=0" class="btn btn--small btn--secondary cart__remove hidden-md-up">{{ 'cart.general.remove' | t }}</a>
-                <div class="cart__qty">
-                  <label for="updates_{{ item.key }}" class="cart__qty-label">{{ 'cart.label.quantity' | t }}</label>
-                  <input class="cart__qty-input" type="number" name="updates[]" id="updates_{{ item.key }}" value="{{ item.quantity }}" min="0" pattern="[0-9]*">
-                </div>
-                <input type="submit" name="update" class="btn btn--small cart__update hidden-md-up" value="{{ 'cart.general.update' | t }}">
-              </td>
-              <td class="text-right hidden-sm-down">
-                {% if item.original_line_price != item.line_price %}
-                  <div class="cart-item__original-price"><s>{{ item.original_line_price | money }}</s></div>
-                {% endif %}
+                    <div class="h4 price">{{ item.line_price | money }}</div>
 
-                <div>
-                  {{ item.line_price | money }}
-                </div>
+                    {% for discount in item.discounts %}
+                      <div class="cart-item__discount">{{ discount.title }}</div>
+                    {% endfor %}
 
-                {% for discount in item.discounts %}
-                  <div class="cart-item__discount">{{ discount.title }}</div>
-                {% endfor %}
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+                    
+                    <div class="cart-item--qty product-form__item--quantity"  data-item="{{ item.variant_id }}">
+                      <div class="quantitiy-button quantity-down quantity-down-{{item.id}}">-</div>
 
-      <footer class="container cart__footer">
-        <div class="row">
+                     <label for="quantitycart" style="max-height:0px;max-width:0px;">Quantity</label>
+                      <input type="number" id="quantitycart" name="quantitycart" value="{{ item.quantity }}" min="0" 
+                        class="product-form__input quantity-{{item.id}}" pattern="[0-9]*">
+
+                        <div class="quantitiy-button quantity-up quantity-up-{{item.id}}">+</div>
+                    </div>
+                    <script>
+                        $( ".quantity-down-{{item.id}}" ).click(function() {
+                          var qval = $('.quantity-{{item.id}}').val(),
+                          	qhref = $('.cart__update-{{item.id}}').attr('href').slice(0,-1);
+                      		console.log('removing one');
+                          	$( ".quantity-{{item.id}}" ).val(qval - 1);
+                          	$('.cart__update-{{item.id}}').attr('href',qhref+(qval - 1))
+                        });
+                      
+                        $( ".quantity-up-{{item.id}}" ).click(function() {
+                          var qval = $('.quantity-{{item.id}}').val(),
+                          	qhref = $('.cart__update-{{item.id}}').attr('href').slice(0,-1);
+                      		console.log('adding one');
+                          	$( ".quantity-{{item.id}}" ).val(parseInt(qval) + 1);
+                          	$('.cart__update-{{item.id}}').attr('href',qhref+(parseInt(qval) + 1))
+                        });
+                      
+                    </script>
+                    
+                    {% comment %}
+                    <div class="cart__qty">
+                      <label for="updates_{{ item.key }}" class="cart__qty-label">{{ 'cart.label.quantity' | t }}</label>
+                      <input class="cart__qty-input" type="number" name="updates[]" id="updates_{{ item.key }}" value="{{ item.quantity }}" min="0" pattern="[0-9]*">
+                    </div>
+                    {% endcomment %}
+
+                    <div class="qty-buttons">
+                      
+                      <a href="/cart/change?line={{ forloop.index }}&amp;quantity=0" 
+                        class="cart__update-{{item.id}} hidden-md-up">Update</a>
+                      
+                      <span>|</span>
+
+                      <a href="/cart/change?line={{ forloop.index }}&amp;quantity=0" 
+                        class="cart__remove hidden-md-up">{{ 'cart.general.remove' | t }}</a>
+                      
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          <div class="accordion-container">
+            <p class="title">need to add special instructions to your order?</p>
+            <p class="content">content</p>
+          </div>
+        </div>
+
+        <footer class="offset-md-3 col-md-17 cart__footer">
+
+          <div class="h4">Order Summary</div>
           {% if section.settings.cart_notes_enable %}
             <div class="col-md-30 cart-note">
               <label for="CartSpecialInstructions" class="cart-note__label small--text-center">{{ 'cart.general.note' | t }}</label>
               <textarea name="note" id="CartSpecialInstructions" class="cart-note__input">{{ cart.note }}</textarea>
             </div>
           {% endif %}
-          <div class="text-right small--text-center{% if section.settings.cart_notes_enable %} col-md-30{% else %} col{% endif %}">
-            <div>
-              <span class="cart__subtotal-title">{{ 'cart.general.subtotal' | t }}</span>
-              <span class="cart__subtotal">{{ cart.total_price | money }}</span>
+
+          <div class="small--text-center contents">
+            <div class="item d-flex justify-content-between">
+              <span class="cart__subtotal-title h5">{{ 'cart.general.subtotal' | t }}</span>
+              <span class="cart__subtotal value">{{ cart.original_total_price | money }}</span>
             </div>
+
+            <div class="item shipping d-flex justify-content-between">
+              <span class="h5">SHIPPING</span>
+              <span class="value">FREE</span>
+            </div>
+
             {% if cart.total_discounts > 0 %}
               <div class="cart__savings">
                 {{ 'cart.general.savings' | t }}
                 <span class="cart__savings-amount">{{ cart.total_discounts | money }}</span>
               </div>
             {% endif %}
+
+            <div class="item d-flex justify-content-between">
+              <span class="h5">TOTAL</span>
+              <span class="value">{{ cart.total_price | money }}</span>
+            </div>
+
+            {% comment %}
             <div class="cart__shipping">{{ 'cart.general.shipping_at_checkout' | t }}</div>
             <input type="submit" name="update" class="btn btn--secondary cart__update cart__update--large hidden-sm-down" value="{{ 'cart.general.update' | t }}">
+            {% endcomment %}
+            
             <input type="submit" name="checkout" class="btn btn--small-wide" value="{{ 'cart.general.checkout' | t }}">
             {% if additional_checkout_buttons %}
               <div class="additional-checkout-buttons">{{ content_for_additional_checkout_buttons }}</div>
             {% endif %}
           </div>
-        </div>
-      </footer>
+
+        </footer>
+      </div>
     </form>
   {% else %}
     <div class="empty-page-content text-center">
@@ -149,16 +275,338 @@
   {% endif %}
 </div>
 
+<script>
+  $('.accordion-container .title').click(function() {
+    $(this).toggleClass( "show" );
+  });
+</script>
+
 {% schema %}
   {
     "name": "Cart page",
+    "class": "cart-template-container",
     "settings": [
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "ptop",
+      "label": "Top spacing desktop",
+      "min": 0,
+      "unit": "px",
+      "max": 500,
+      "step": 5,
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "pbottom",
+      "label": "Bottom spacing desktop",
+      "min": 0,
+      "unit": "px",
+      "max": 500,
+      "step": 5,
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "ptop_mob",
+      "label": "Top spacing mobile",
+      "min": 0,
+      "unit": "px",
+      "max": 500,
+      "step": 5,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "pbottom_mob",
+      "label": "Bottom spacing mobile",
+      "min": 0,
+      "unit": "px",
+      "max": 500,
+      "step": 5,
+      "default": 5
+    }, 
+    
+    
       {
-        "type": "checkbox",
-        "id": "cart_notes_enable",
-        "label": "Enable cart notes",
-        "default": false
+        "type": "header",
+        "content": "Header"
+      },
+      {
+        "type": "text",
+        "id": "page_header_text",
+        "label": "Header text",
+        "default": "YOUR CART"
+      },
+      {
+        "type": "range",
+        "id": "page_header_text_size",
+        "label": "Font size",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "default": 43
+      },
+      {
+        "type": "range",
+        "id": "page_header_text_size_mobile",
+        "label": "Font size (mobile)",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "default": 32
+      },
+      {
+        "type": "color",
+        "id": "page_header_text_color",
+        "label": "Color",
+        "default": "#999"
+      },
+      {
+        "type": "header",
+        "content": "Shipping label"
+      },
+      {
+        "type": "text",
+        "id": "shipping_label_text",
+        "label": "Text",
+        "default": "* GET FREE SHIPPING WHEN YOU SPEND $250 OR MORE"
+      },
+      {
+        "type": "range",
+        "id": "shipping_label_text_size",
+        "label": "Font size",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "default": 16
+      },
+      {
+        "type": "range",
+        "id": "shipping_label_text_size_mobile",
+        "label": "Font size (mobile)",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "default": 14
+      },
+      {
+        "type": "color",
+        "id": "shipping_label_text_color",
+        "label": "Color",
+        "default": "#231f20"
+      },
+      {
+        "type": "color",
+        "id": "shipping_label_text_background_color",
+        "label": "Background color",
+        "default": "#efefef"
+      },
+      {
+        "type": "header",
+        "content": "Product grid Item"
+      },
+      {
+        "type": "header",
+        "content": "Product title"
+      },
+      {
+        "type": "range",
+        "id": "product_title_size",
+        "label": "Title font size",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "default": 21
+      },
+      {
+        "type": "range",
+        "id": "product_title_size_mobile",
+        "label": "Title font size (mobile)",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "default": 12
+      },
+      {
+        "type": "color",
+        "id": "product_title_color",
+        "label": "Color",
+        "default": "#231f20"
+      },
+      {
+        "type": "header",
+        "content": "Product price"
+      },
+      {
+        "type": "range",
+        "id": "product_price_size",
+        "label": "Price font size",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "default": 21
+      },
+      {
+        "type": "range",
+        "id": "product_price_size_mobile",
+        "label": "Price font size (mobile)",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "default": 12
+      },
+      {
+        "type": "color",
+        "id": "product_price_color",
+        "label": "Color",
+        "default": "#231f20"
+      },
+      {
+        "type": "header",
+        "content": "product properties"
+      },
+      {
+        "type": "range",
+        "id": "product_properties_size",
+        "label": "Properties font size",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "default": 16
+      },
+      {
+        "type": "range",
+        "id": "product_properties_size_mobile",
+        "label": "Properties font size (mobile)",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "default": 10
+      },
+      {
+        "type": "color",
+        "id": "product_properties_color",
+        "label": "Color",
+        "default": "#231f20"
+      },
+      {
+        "type": "header",
+        "content": "QTY buttons"
+      },
+      {
+        "type": "range",
+        "id": "product_qty_btn_size",
+        "label": "Properties font size",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "default": 16
+      },
+      {
+        "type": "range",
+        "id": "product_qty_btn_size_mobile",
+        "label": "Properties font size (mobile)",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "default": 10
+      },
+      {
+        "type": "color",
+        "id": "product_qty_btn_color",
+        "label": "Color",
+        "default": "#231f20"
       }
     ]
   }
 {% endschema %}
+
+<style>
+  #shopify-section-{{ section.id }} .cart__shipping-label {
+    {% if section.settings.shipping_label_text_size != blank %}
+      font-size: {{ section.settings.shipping_label_text_size }}px;
+    {% endif %}
+    {% if section.settings.shipping_label_text_color != blank %}
+      color: {{ section.settings.shipping_label_text_color }};
+    {% endif %}
+    {% if section.settings.shipping_label_text_background_color != blank %}
+      background-color: {{ section.settings.shipping_label_text_background_color }};
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .list-view-item__title a {
+    {% if section.settings.product_title_size != blank %}
+      font-size: {{ section.settings.product_title_size }}px;
+    {% endif %}
+    {% if section.settings.product_title_color != blank %}
+      color: {{ section.settings.product_title_color }};
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .cart__meta-text {
+    {% if section.settings.product_properties_size != blank %}
+      font-size: {{ section.settings.product_properties_size }}px;
+    {% endif %}
+    {% if section.settings.product_properties_color != blank %}
+      color: {{ section.settings.product_properties_color }};
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .qty-buttons .cart__update,
+  #shopify-section-{{ section.id }} .qty-buttons .cart__remove {
+    {% if section.settings.product_qty_btn_size != blank %}
+      font-size: {{ section.settings.product_qty_btn_size }}px;
+    {% endif %}
+    {% if section.settings.product_qty_btn_color != blank %}
+      color: {{ section.settings.product_qty_btn_color }};
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .cart__update-wrapper .price {
+    {% if section.settings.product_price_size != blank %}
+      font-size: {{ section.settings.product_price_size }}px;
+    {% endif %}
+    {% if section.settings.product_price_color != blank %}
+      color: {{ section.settings.product_price_color }};
+    {% endif %}
+  }
+
+  @media (max-width: 767px) {	
+    #shopify-section-{{ section.id }} .cart__shipping-label {
+      {% if section.settings.shipping_label_text_size_mobile != blank %}
+        font-size: {{ section.settings.shipping_label_text_size_mobile }}px;
+      {% endif %}
+    }
+
+    #shopify-section-{{ section.id }} .cart__meta-text {
+      {% if section.settings.product_properties_size_mobile != blank %}
+        font-size: {{ section.settings.product_properties_size_mobile }}px;
+      {% endif %}
+    }
+
+    #shopify-section-{{ section.id }} .qty-buttons .cart__update,
+    #shopify-section-{{ section.id }} .qty-buttons .cart__remove {
+      {% if section.settings.product_qty_btn_size_mobile != blank %}
+        font-size: {{ section.settings.product_qty_btn_size_mobile }}px;
+      {% endif %}
+    }
+
+    #shopify-section-{{ section.id }} .list-view-item__title a {
+      {% if section.settings.product_title_size_mobile != blank %}
+        font-size: {{ section.settings.product_title_size_mobile }}px;
+      {% endif %}
+    }
+
+    #shopify-section-{{ section.id }} .cart__update-wrapper .price {
+      {% if section.settings.product_price_size_mobile != blank %}
+        font-size: {{ section.settings.product_price_size_mobile }}px;
+      {% endif %}
+    }
+
+  }
+</style>

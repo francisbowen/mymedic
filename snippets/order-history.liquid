@@ -1,0 +1,33 @@
+<table class="responsive-table">
+    <thead>
+      <tr>
+        <th style="width:100%">{{ 'customer.orders.order_number' | t }}</th>
+        {% comment %}
+        <th>{{ 'customer.orders.date' | t }}</th>
+        <th>{{ 'customer.orders.payment_status' | t }}</th>
+        <th>{{ 'customer.orders.fulfillment_status' | t }}</th>
+        <th>{{ 'customer.orders.total' | t }}</th>        
+        {% if section.settings.reorder %}<th>Reorder</th>{% endif %}
+        {% endcomment %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in customer.orders %}
+        <tr>
+          <td data-label="{{ 'customer.orders.order_number' | t }}">
+            <a href="{{ order.customer_url }}" class="btn btn--secondary btn--small">{{ order.name }}</a>
+          </td>
+          <td data-label="{{ 'customer.orders.date' | t }}">{{ order.created_at | date: format: 'month_day_year' }}</td>
+          <td data-label="{{ 'customer.orders.payment_status' | t }}">{{ order.financial_status_label }}</td>
+          <td data-label="{{ 'customer.orders.fulfillment_status' | t }}">{{ order.fulfillment_status_label }}</td>
+          <td data-label="{{ 'customer.orders.total' | t }}">{{ order.total_price | money | remove: ".00" }}</td>
+          {% if section.settings.reorder %}
+            <td>
+              <a href="/cart/{% for line_item in order.line_items %}{% unless forloop.first %},{% endunless %}{{ line_item.variant_id }}:{{ line_item.quantity }}{% endfor %}">Reorder</a>
+            </td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+    </tbody>
+</table>
+<em>{{ section.settings.reordernote }}</em>

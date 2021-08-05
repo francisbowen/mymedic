@@ -1,12 +1,12 @@
 {% if shop.customer_accounts_enabled %}
   {% if customer %}
     <a href="/account" class="site-header__account animsition-link">
-      {% include 'icon-login' %}
+      {% include 'icon-new_account' %}
       <span class="icon__fallback-text">{{ 'layout.customer.account' | t }}</span>
     </a>
   {% else %}
     <a href="/account/login" class="site-header__account animsition-link">
-      {% include 'icon-login' %}
+      {% include 'icon-new_account' %}
       <span class="icon__fallback-text">{{ 'layout.customer.log_in' | t }}</span>
     </a>
   {% endif %}

@@ -1,10 +1,18 @@
 {% capture newsletter_title %}
-  <label for="Email" class="h4">{{ 'general.newsletter_form.newsletter_email' | t }}</label>
-  {% if settings.newsletter_popup_content %}<p>{{ settings.newsletter_popup_content }}</p>{% endif %}
+  <label for="Email" class="h4 label_1">
+    {% if section.settings.newsletter_label_1_text != blank %}
+      {{ section.settings.newsletter_label_1_text }}
+    {% else %}
+      {{ 'general.newsletter_form.newsletter_email' | t }}
+    {% endif %}
+  </label>
+  {% if section.settings.newsletter_label_2_text != blank %}
+    <p class="label_2">{{ section.settings.newsletter_label_2_text }}</p>
+  {% endif %}
 {% endcapture %}
 
 {% if settings.newsletter_action_url != blank %}
-  <form class="mailing-list-signup-form row align-items-center" action="{{ settings.newsletter_action_url }}" method="post" name="mc-embedded-subscribe-form" target="_blank">
+  <form class="mailing-list-signup-form align-items-center" action="{{ settings.newsletter_action_url }}" method="post" name="mc-embedded-subscribe-form" target="_blank">
 
     {% if newsletter_alone %}
       <div class="col-md-30">
@@ -27,7 +35,7 @@
         aria-label="{{ 'general.newsletter_form.email_placeholder' | t }}" />
       <span class="input-group__btn">
         <button type="submit" class="btn btn--secondary newsletter__submit" name="commit" id="Subscribe">
-          <span class="newsletter__submit-text--large">{{ 'general.newsletter_form.submit' | t }}</span>
+          <span>></span>
         </button>
       </span>
     </div>
@@ -38,7 +46,7 @@
 
   </form>
 {% else %}
-  {% form 'customer', class:'contact-form row align-items-center' %}
+  {% form 'customer', class:'contact-form align-items-center' %}
     {{ form.errors | default_errors }}
     {% if form.posted_successfully? %}
       <p class="form--success">{{ 'general.newsletter_form.confirmation' | t }}</p>
@@ -67,7 +75,7 @@
             autocapitalize="off">
           <span class="input-group__btn">
             <button type="submit" class="btn btn--secondary newsletter__submit" name="commit" id="Subscribe">
-              <span class="newsletter__submit-text--large">{{ 'general.newsletter_form.submit' | t }}</span>
+              <span>></span>
             </button>
           </span>
         </div>

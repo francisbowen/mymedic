@@ -1,0 +1,257 @@
+<style>
+  #shopify-section-{{ section.id }} .image-bar__text .image-bar__caption {
+    {% if section.settings.caption_size != blank %}
+      font-size: {{ section.settings.caption_size }}px;
+    {% endif %}
+    {% if section.settings.caption_color != blank %}
+      color: {{ section.settings.caption_color }};
+    {% endif %}
+    {% if section.settings.caption_layout != blank %}
+      text-align: {{ section.settings.caption_layout }};
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .image-bar__text .btn {
+    {% if section.settings.button_width != blank %}
+        width: {{ section.settings.button_width }}px;
+    {% endif %}
+
+    {% if section.settings.btn_text_font_size != blank %}
+        font-size: {{ section.settings.btn_text_font_size }}px;
+    {% endif %}
+
+    {% if section.settings.button_text_color != blank %}
+        color: {{ section.settings.button_text_color }};
+    {% endif %}
+    {% if section.settings.button_background_color != blank %}
+        background-color: {{ section.settings.button_background_color }};
+    {% endif %}
+    {% if section.settings.button_border_color != blank %}
+        border-color: {{ section.settings.button_border_color }};
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .image-bar__text .btn:hover {
+    {% if section.settings.button_text_hover_color != blank %}
+        color: {{ section.settings.button_text_hover_color }};
+    {% endif %}
+    {% if section.settings.button_background_hover_color != blank %}
+        background-color: {{ section.settings.button_background_hover_color }};
+    {% endif %}
+    {% if section.settings.button_border_hover_color != blank %}
+        border-color: {{ section.settings.button_border_hover_color }};
+    {% endif %}
+  }
+
+  @media screen and (max-width: 767px) {
+    #shopify-section-{{ section.id }} .image-bar__text .image-bar__caption {
+      {% if section.settings.caption_mobile_size != blank %}
+        font-size: {{ section.settings.caption_mobile_size }}px;
+      {% endif %}
+    }
+    #shopify-section-{{ section.id }} .image-bar__text .btn {
+      {% if section.settings.button_width_mobile != blank %}
+        width: {{ section.settings.button_width_mobile }}px;
+      {% endif %}
+      {% if section.settings.btn_text_mobile_font_size != blank %}
+        font-size: {{ section.settings.btn_text_mobile_font_size }}px;
+      {% endif %}
+    }
+  }
+</style>
+
+{% include 'product-featured-video-block' %}
+
+{% schema %}
+{
+  "name": "Product Video",
+  "class": "index-section",
+  "settings": [
+    {
+      "type": "radio",
+      "id": "contained",
+      "label": "Form should:",
+      "options": [
+          { "value": "container", "label": "Constrain to container" },
+          { "value": "container-fluid to-edges", "label": "Flow to the width of screen" }
+      ],
+      "default": "container"
+    },
+    {
+      "type": "select",
+      "id": "section_height",
+      "label": "Section height",
+      "default": "medium",
+      "options": [
+        {
+          "label": "Extra Small",
+          "value": "x-small"
+        },
+        {
+          "label": "Small",
+          "value": "small"
+        },
+        {
+          "label": "Medium",
+          "value": "medium"
+        },
+        {
+          "label": "Large",
+          "value": "large"
+        },
+        {
+          "label": "Extra Large",
+          "value": "x-large"
+        },
+        {
+          "label": "Maintain Ratio based on First Slide",
+          "value": "maintain_ratio"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Caption"
+    },
+    {
+      "type": "range",
+      "id": "caption_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "default": 32
+    },  
+    {
+      "type": "range",
+      "id": "caption_mobile_size",
+      "label": "Font size (mobile)",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "default": 24
+    },    
+    {
+      "type": "color",
+      "id": "caption_color",
+      "label": "Color"
+    },
+    {
+      "type": "select",
+      "id": "caption_layout",
+      "label": "Text Position",
+      "default": "left",
+      "options": [
+          {
+          "value": "left",
+          "label": "Text on Left"
+          },
+          {
+          "value": "center",
+          "label": "Text on Center"
+          },
+          {
+          "value": "right",
+          "label": "Text on right"
+          }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "btn_text",
+      "label": "Button Text",
+      "default": "SHOP KITS >"
+    },
+    {	
+      "type": "range",	
+      "id": "btn_text_font_size",	
+      "label": "Font size",	
+      "min": 10,	
+      "max": 50,	
+      "step": 1,	
+      "default": 14	
+    },
+    {	
+      "type": "range",	
+      "id": "btn_text_mobile_font_size",	
+      "label": "Font size (mobile)",	
+      "min": 5,	
+      "max": 50,	
+      "step": 1,	
+      "default": 10	
+    },
+    {
+      "type": "select",
+      "id": "btn_layout",
+      "label": "Button Position",
+      "default": "left",
+      "options": [
+          {
+          "value": "left",
+          "label": "Button on Left"
+          },
+          {
+          "value": "center",
+          "label": "Button on center"
+          },
+          {
+          "value": "right",
+          "label": "Button on right"
+          }
+      ]
+    },
+    {	
+      "type": "range",	
+      "id": "button_width",	
+      "label": "Button Width",	
+      "min": 50,	
+      "max": 300,	
+      "step": 5,	
+      "default": 170	
+    },	
+    {	
+        "type": "range",	
+        "id": "button_width_mobile",	
+        "label": "Button Width (Mobile)",	
+        "min": 50,	
+        "max": 300,	
+        "step": 5,	
+        "default": 170	
+    },	
+    {	
+        "type": "color",	
+        "id": "button_text_color",	
+        "label": "Text Color"	
+    },	
+    {	
+        "type": "color",	
+        "id": "button_background_color",	
+        "label": "Background Color"	
+    },	
+    {	
+        "type": "color",	
+        "id": "button_border_color",	
+        "label": "Border Color"	
+    },	
+    {	
+        "type": "color",	
+        "id": "button_text_hover_color",	
+        "label": "Text Hover Color"	
+    },	
+    {	
+        "type": "color",	
+        "id": "button_background_hover_color",	
+        "label": "Background Hover Color"	
+    },	
+    {	
+        "type": "color",	
+        "id": "button_border_hover_color",	
+        "label": "Border Hover Color"	
+    }
+  ]
+}
+{% endschema %}

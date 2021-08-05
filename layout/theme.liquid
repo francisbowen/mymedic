@@ -67,7 +67,7 @@
   {% endif %}
 
   <script src="{{ 'vendor.js' | asset_url }}"></script>
-  <script src="{{ 'theme.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'theme.js' | asset_url }}"></script>
 
   <script src="{{ 'api.jquery.js' | shopify_asset_url }}" defer="defer"></script>
 
@@ -119,45 +119,39 @@
 
   {% include 'WAM--body' %}
 
-  <div id="SearchDrawer" class="search-bar drawer drawer--top">
-    <div class="search-bar__table">
-      <div class="search-bar__table-cell search-bar__form-wrapper">
-        <form class="search search-bar__form" action="/search" method="get" role="search">
-          <button class="search-bar__submit search__submit btn--link" type="submit">
-            {% include 'icon-search' %}
-            <span class="icon__fallback-text">{{ 'general.search.submit' | t }}</span>
-          </button>
-          <input class="search__input search-bar__input" type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'general.search.placeholder' | t }}" aria-label="{{ 'general.search.placeholder' | t }}">
-        </form>
-      </div>
-      <div class="search-bar__table-cell text-right">
-        <button type="button" class="btn--link search-bar__close js-drawer-close">
-          {% include 'icon-close' %}
-          <span class="icon__fallback-text">{{ 'general.search.close' | t }}</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  {% if settings.cartdropdown == 'flyout' %}
-    {% include 'cart-flyout' %}
-  {% endif %}
-
   <div id="container-header">
 
     {% section 'notification' %}
 
-    {% section 'mobile-nav' %}
+    {% section 'navigation' %}
     <div id="shopify-section-header">
       {% include 'header' %}
     </div>
 
+    {% section 'mobile-nav' %}
+
     {% include 'pro-message' %}
   </div>
 
-  {% unless request.page_type == 'index' or request.page_type == 'product' or request.page_type == 'collection' or request.page_type contains 'customers/' %}
+  {% section 'search-input' %}
+
+  {% if settings.cartdropdown == 'flyout' %}
+    {% section 'slide-cart' %}
+  {% endif %}
+
+  {% unless request.page_type == 'index' 
+    or request.page_type == 'product' 
+    or request.page_type == 'collection' 
+    or request.page_type contains 'customers/' 
+    or request.page_type == 'blog' 
+    or request.page_type == 'article' 
+    or template == 'page.ambassadors'
+    or template == 'page.team'
+    or template == 'page.about' %}
+
       {% section 'header-bg' %}
   {% endunless %}
+  
 
   <div id="sticky-anchor"></div>
 

@@ -1,0 +1,76 @@
+<style>
+    #shopify-section-{{ section.id }} .search-bar{
+        background-color: {{ section.settings.background_color }};
+    }
+    #shopify-section-{{ section.id }} .search__input.search-bar__input {
+        background-color: {{ section.settings.input_background_color }};
+        border-color: {{ section.settings.input_border_color }};
+        color: {{ section.settings.input_text_color }};
+        opacity: {{ section.settings.input_opacity }};
+    }
+</style>
+<div id="SearchDrawer" class="search-bar drawer drawer--top">
+    <div class="container search-bar__table">
+    <div class="search-bar__table-cell search-bar__form-wrapper">
+        <form class="search search-bar__form" action="/search" method="get" role="search">
+        <button class="search-bar__submit search__submit btn--link" type="submit">
+            {% include 'icon-search' %}
+            <span class="icon__fallback-text">{{ 'general.search.submit' | t }}</span>
+        </button>
+        <input class="search__input search-bar__input" type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'general.search.placeholder' | t }}" aria-label="{{ 'general.search.placeholder' | t }}">
+        </form>
+    </div>
+    <div class="search-bar__table-cell text-right">
+        <button type="button" class="btn--link search-bar__close js-drawer-close">
+        {% include 'icon-close' %}
+        <span class="icon__fallback-text">{{ 'general.search.close' | t }}</span>
+        </button>
+    </div>
+    </div>
+</div>
+
+{% schema %}
+{
+  "name": "Search input",
+  "settings": [
+    {
+        "type": "color",
+        "id": "background_color",
+        "label": "Background color",
+        "default": "#fff"
+    },
+    {
+        "type": "header",
+        "content": "Input"
+    },
+    {
+        "type": "color",
+        "id": "input_background_color",
+        "label": "Background color",
+        "default": "#fff"
+    },
+    {
+        "type": "color",
+        "id": "input_border_color",
+        "label": "Border color",
+        "default": "#000"
+    },
+    {
+        "type": "color",
+        "id": "input_text_color",
+        "label": "Text color",
+        "default": "#000"
+    },
+    {
+        "type": "range",
+        "id": "input_opacity",
+        "label": "Opacity",
+        "min": 0,
+        "max": 1,
+        "step": 0.1,
+        "default": 1
+    }
+      
+  ]
+}
+{% endschema %}

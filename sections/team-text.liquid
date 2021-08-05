@@ -1,0 +1,153 @@
+{% capture section_style_desktop %}
+{% if section.settings.ptop != blank %}
+  padding-top: {{ section.settings.ptop }}px;
+{% endif %}
+
+{% if section.settings.pbottom != blank %}        
+  padding-bottom : {{ section.settings.pbottom }}px;
+{% endif %}
+
+{% if section.settings.background_color != blank %}
+  background-color: {{ section.settings.background_color }};
+{% endif %}
+{% endcapture %}
+
+{% capture section_style_mobile %}
+{% if section.settings.ptop_mob != blank %}
+padding-top: {{ section.settings.ptop_mob }}px; 
+{% endif %}
+
+{% if section.settings.pbottom_mob != blank %}
+padding-bottom: {{ section.settings.pbottom_mob }}px;
+{% endif %}
+{% endcapture %}
+
+<style>
+{% if section_style_desktop != blank %}
+  {% if section.settings.background_color_type == 'full_width' %}
+  #shopify-section-{{ section.id }} {
+    {{ section_style_desktop }}
+  }
+  {% elsif section.settings.background_color_type == 'container' %}
+  #shopify-section-{{ section.id }} .contents {
+      {{ section_style_desktop }}
+    }
+  {% endif %}
+{% endif %}
+
+@media (max-width: 767px) {
+  {% if section_style_mobile != blank %}
+    {% if section.settings.background_color_type == 'full_width' %}
+    #shopify-section-{{ section.id }} {
+      {{ section_style_mobile }}
+    }
+    {% elsif section.settings.background_color_type == 'container' %}
+    #shopify-section-{{ section.id }} .contents {
+      {{ section_style_mobile }}
+    }
+    {% endif %}
+  {% endif %}
+}
+</style>
+
+<div class="container contents">
+    <div class="row">
+        <div class="col-md-50 offset-md-5 text-center">
+            {% if section.settings.title != blank %}
+            <h1>{{ section.settings.title }}</h1>
+            {% endif %}
+            {% if section.settings.content != blank %}
+            {{ section.settings.content }}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% schema %}
+{
+    "name": "Text",
+    "settings": [
+        {
+            "type": "header",
+            "content": "Spacing"
+        },
+        {
+            "type": "range",
+            "id": "ptop",
+            "label": "Top spacing desktop",
+            "min": 0,
+            "unit": "px",
+            "max": 500,
+            "step": 5,
+            "default": 15
+        },
+        {
+            "type": "range",
+            "id": "pbottom",
+            "label": "Bottom spacing desktop",
+            "min": 0,
+            "unit": "px",
+            "max": 500,
+            "step": 5,
+            "default": 15
+        },
+        {
+            "type": "range",
+            "id": "ptop_mob",
+            "label": "Top spacing mobile",
+            "min": 0,
+            "unit": "px",
+            "max": 500,
+            "step": 5,
+            "default": 5
+        },
+        {
+            "type": "range",
+            "id": "pbottom_mob",
+            "label": "Bottom spacing mobile",
+            "min": 0,
+            "unit": "px",
+            "max": 500,
+            "step": 5,
+            "default": 5
+        }, 
+        {
+            "type": "color",
+            "id": "background_color",
+            "label": "Background Color"
+        },
+        {
+            "type": "select",
+            "id": "background_color_type",
+            "label": "Background Color Wide",
+            "default": "full_width",
+            "options": [
+              {
+                "value": "full_width",
+                "label": "Full Width"
+              },
+              {
+                "value": "container",
+                "label": "Container"
+              }
+            ]
+        },
+
+        {
+            "type": "header",
+            "content": "Contents"
+        },
+        {
+            "type": "text",
+            "id": "title",
+            "label": "Title"
+        },
+        {
+            "type": "richtext",
+            "id": "content",
+            "label": "Content"
+        }
+    ]
+}
+{% endschema %}
+  

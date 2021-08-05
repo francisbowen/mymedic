@@ -1,13 +1,16 @@
 {% comment %}
   The contents of the product.liquid template can be found in /sections/product-template.liquid
 {% endcomment %}
+
+{% section 'swatch-colors' %}
+
 {%- assign current_variant = product.selected_or_first_available_variant -%}
 {% include 'richcards' %}
 <div class="product-template__container" id="ProductSection-{{ product.id }}" data-section-id="{{ product.id }}" data-section-type="product" data-enable-history-state="true" data-crossclick="{% if settings.enable_crossclick %}allow{% endif %}" data-comingsoon="{% if product.tags contains 'coming soon' %}true{% else %}false{% endif %}">
   <div class="container">
     <div class="row product-single">
 
-      {% section 'product-images' %}
+      {% include 'product-images' %}
 
       {% section 'product-template' %}
 
@@ -15,16 +18,23 @@
   </div>
 </div>
 
+{% section 'product-frequently-bought' %}
+{% section 'product-video' %}
+
+<div class="product-special-container index-section">
+  {% section 'product-special-infos' %}
+  {% section 'product-whats-inside-item' %}
+  
+  {% section 'product-special-tab' %}
+  {% section 'product-special-explore-kit' %}
+  {% section 'product-special-specs' %}
+  {% section 'product-special-video' %}
+  {% section 'product-special-faq' %}
+</div>
+
 {% section 'product-related' %}
 
-{% if collection %}
-  <div class="text-center return-link-wrapper">
-    <a href="{{ collection.url }}" class="btn btn--secondary btn--has-icon-before return-link">
-      {% include 'icon-arrow-left' %}
-      {{ 'products.product.back_to_collection' | t: title: collection.title }}
-    </a>
-  </div>
-{% endif %}
+{% section 'product-return-collection-button' %}
 
 {% unless product.empty? %}
   <script type="application/json" id="ProductJson-{{ product.id }}">
@@ -32,4 +42,6 @@
   </script>
 {% endunless %}
 
+{% comment %}
 {% section 'product-sizing' %}
+{% endcomment %}

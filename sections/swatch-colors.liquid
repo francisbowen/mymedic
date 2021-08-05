@@ -1,41 +1,182 @@
 <style type="text/css">
   {% for block in section.blocks %}
-    {% if block.settings.image != blank %}
-      {% capture swatch_background %}url({{ block.settings.image | img_url: '100x' }}) no-repeat center{% endcapture %}
-    {% else %}
-    {%- assign swatch_color_num = 1 -%}
-      {% for i in (2..3) %}
-        {% capture curr_color_loop %}color{{ i }}{% endcapture %}
-        {% if block.settings[curr_color_loop] != blank %}
-          {%- assign swatch_color_num = swatch_color_num | plus: 1 -%}
-        {% endif %}
-      {% endfor %}
-      {%- assign swatch_background = block.settings.color1 -%}
-      {% case swatch_color_num %}
-        {% when 2 %}
-          {% capture swatch_background %}linear-gradient(to right bottom, {{ block.settings.color1 }} 0%, {{ block.settings.color1 }} 50%, {{ block.settings.color2 }} 50%, {{ block.settings.color2 }} 100%){% endcapture %}
-        {% when 3 %}
-          {% capture swatch_background %}linear-gradient(to right bottom, {{ block.settings.color1 }} 0%, {{ block.settings.color1 }} 33.33%, {{ block.settings.color2 }} 33.33%, {{ block.settings.color2 }} 66.66%, {{ block.settings.color3 }} 66.66%, {{ block.settings.color3 }} 100%){% endcapture %}
-      {% endcase %}
+    {% if block.settings.enable == true %}
+      {% if block.settings.image != blank %}
+        {% capture swatch_background %}url({{ block.settings.image | img_url: '100x' }}) no-repeat center{% endcapture %}
+      {% else %}
+      {%- assign swatch_color_num = 1 -%}
+        {% for i in (2..3) %}
+          {% capture curr_color_loop %}color{{ i }}{% endcapture %}
+          {% if block.settings[curr_color_loop] != blank %}
+            {%- assign swatch_color_num = swatch_color_num | plus: 1 -%}
+          {% endif %}
+        {% endfor %}
+        {%- assign swatch_background = block.settings.color1 -%}
+        {% case swatch_color_num %}
+          {% when 2 %}
+            {% capture swatch_background %}linear-gradient(to right bottom, {{ block.settings.color1 }} 0%, {{ block.settings.color1 }} 50%, {{ block.settings.color2 }} 50%, {{ block.settings.color2 }} 100%){% endcapture %}
+          {% when 3 %}
+            {% capture swatch_background %}linear-gradient(to right bottom, {{ block.settings.color1 }} 0%, {{ block.settings.color1 }} 33.33%, {{ block.settings.color2 }} 33.33%, {{ block.settings.color2 }} 66.66%, {{ block.settings.color3 }} 66.66%, {{ block.settings.color3 }} 100%){% endcapture %}
+        {% endcase %}
+      {% endif %}
+      .swatch-element.color.{{ block.settings.title | handleize }} label,
+      .swatch-element.color.swatch-product.{{ block.settings.title | handleize }},
+      #SortTags_color + .custom-select .custom-option[data-value="{{ block.settings.title | handleize }}"]:before {
+        background: {{ swatch_background }};
+      }
+
+      .filters-toolbar .full.sidebar-filter.color_swatch .filter-element label#{{ block.settings.title | handleize }} {
+        background: {{ swatch_background }};
+      }
+
+      .filters-toolbar .full.sidebar-filter.color_swatch .filter-element .colorfilter_{{ settings.product_color_tag | downcase }}{{ block.settings.title | handleize }} label {
+        background: {{ swatch_background }};
+      }      
     {% endif %}
-    .swatch-element.color.{{ block.settings.title | handleize }} label,
-    .swatch-element.color.swatch-product.{{ block.settings.title | handleize }},
-    #SortTags_color + .custom-select .custom-option[data-value="{{ block.settings.title | handleize }}"]:before {
-      background: {{ swatch_background }};
-    }
   {% endfor %}
+
+  {% if section.settings.active_border_color != blank %}
+  .product-template__container #product-form .product-form .swatch .swatch-color input:checked+label {
+    border-color: {{ section.settings.active_border_color }};
+  }
+  {% endif %}
+  {% if section.settings.border_color != blank %}
+  .product-template__container #product-form .product-form .swatch .swatch-color .swatch-element label {
+    border-color: {{ section.settings.border_color }};
+  }
+  {% endif %}
+
+  .product-template__container #product-form .product-form .swatch .swatch-color .swatch-element label {
+    {% if section.settings.shape_type_product_page == 'circle' %}
+      border-radius: 50px;
+    {% elsif section.settings.shape_type_product_page == 'square' %}
+      border-radius: unset;
+    {% endif %}
+  }
+
+  #Collection .swatch .swatch-element.color label {
+    {% if section.settings.shape_type_collection_page == 'circle' %}
+      border-radius: 50px;
+    {% elsif section.settings.shape_type_collection_page == 'square' %}
+      border-radius: unset;
+    {% endif %}
+    
+    padding: {{ section.settings.swatch_width_collection }}px {{ section.settings.swatch_width_collection }}px;
+  }
+
+  .swatch .swatch-element.color label {
+    padding: {{ section.settings.swatch_width }}px {{ section.settings.swatch_width }}px;
+  }
+
+  @media (max-width: 767px) {	
+    #Collection .swatch .swatch-element.color label {
+      padding: {{ section.settings.swatch_width_mobile_collection }}px {{ section.settings.swatch_width_mobile_collection }}px;
+    }
+    .swatch .swatch-element.color label {
+      padding: {{ section.settings.swatch_width_mobile }}px {{ section.settings.swatch_width_mobile }}px;
+    }
+  }
+
 </style>
 
 {% schema %}
   {
     "name": "Product page swatches",
     "settings": [
+      {
+        "type": "select",
+        "id": "shape_type_product_page",
+        "label": "Shape type (Product page)",
+        "default": "circle",
+        "options": [
+            {
+              "value": "circle",
+              "label": "Circle"
+            },
+            {
+              "value": "square",
+              "label": "Square"
+            }
+        ]
+      },
+  
+      {
+        "type": "select",
+        "id": "shape_type_collection_page",
+        "label": "Shape type (Collection page)",
+        "default": "circle",
+        "options": [
+            {
+              "value": "circle",
+              "label": "Circle"
+            },
+            {
+              "value": "square",
+              "label": "Square"
+            }
+        ]
+      },
+
+      {
+        "type": "color",
+        "id": "border_color",
+        "label": "Border color",
+        "default": "#fff"
+      },
+      {
+        "type": "color",
+        "id": "active_border_color",
+        "label": "Active border color",
+        "default": "#454142"
+      },
+      {
+        "type": "range",
+        "id": "swatch_width",
+        "label": "Width (product page)",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "default": 18
+      },
+      {
+        "type": "range",
+        "id": "swatch_width_mobile",
+        "label": "Width (product page) (mobile)",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "default": 14
+      },
+      {
+        "type": "range",
+        "id": "swatch_width_collection",
+        "label": "Width (collection page)",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "default": 14
+      },
+      {
+        "type": "range",
+        "id": "swatch_width_mobile_collection",
+        "label": "Width (collection page) (mobile)",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "default": 14
+      }
     ],
     "blocks": [
       {
         "type": "color_swatches",
         "name": "Color Swatches",
         "settings": [
+          {
+            "type": "checkbox",
+            "id": "enable",
+            "label": "Enable",
+            "default": true
+          },
           {
             "type": "text",
             "id": "title",

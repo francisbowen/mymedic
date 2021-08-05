@@ -1,0 +1,289 @@
+{% include 'feature-row' %}
+  
+{% schema %}
+{
+  "name": "Image with text",
+  "class": "index-section feature-row-container",
+  "settings": [
+  {
+    "type": "header",
+    "content": "Spacing"
+  },
+  {
+    "type": "range",
+    "id": "ptop",
+    "label": "Top spacing desktop",
+    "min": 0,
+    "unit": "px",
+    "max": 500,
+    "step": 5,
+    "default": 0
+  },
+
+{
+    "type": "range",
+    "id": "pbottom",
+    "label": "Bottom spacing desktop",
+    "min": 0,
+    "unit": "px",
+    "max": 500,
+    "step": 5,
+    "default": 0
+  },
+
+{
+    "type": "range",
+    "id": "ptop_mob",
+    "label": "Top spacing mobile",
+    "min": 0,
+    "unit": "px",
+    "max": 500,
+    "step": 5,
+    "default": 0
+  },
+
+{
+    "type": "range",
+    "id": "pbottom_mob",
+    "label": "Bottom spacing mobile",
+    "min": 0,
+    "unit": "px",
+    "max": 500,
+    "step": 5,
+    "default": 0
+  },   
+
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color"
+    },
+    {
+      "type": "select",
+      "id": "background_color_type",
+      "label": "Background Color Wide",
+      "default": "full_width",
+      "options": [
+        {
+          "value": "full_width",
+          "label": "Full Width"
+        },
+        {
+          "value": "container",
+          "label": "Container"
+        }
+      ]
+    },
+    {
+      "type": "radio",
+      "id": "contained",
+      "label": "Form should:",
+      "options": [
+          { "value": "container", "label": "Constrain to container" },
+          { "value": "container-fluid", "label": "Flow to the width of screen" }
+      ],
+      "default": "container"
+    },
+      
+    
+    {
+      "type": "header",
+      "content": "Image Part"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "default": "left",
+      "options": [
+        {
+          "value": "left",
+          "label": "Image on left"
+        },
+        {
+          "value": "right",
+          "label": "Image on right"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Text Part"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Image with text"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "title_margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "default": 15
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Color"
+    },
+
+    
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle"
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "default": 17
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Color"
+    },
+
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Pair large text with an image to give focus to your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>"
+    },
+    {
+      "type": "range",
+      "id": "content_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "content_color",
+      "label": "Color"
+    },
+    
+
+    {
+      "type": "select",
+      "id": "text_layout",
+      "label": "Text Position",
+      "default": "left",
+      "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          }
+      ]
+    },
+   
+    {
+      "type": "select",
+      "id": "height_align",
+      "label": "Height align",
+      "default": "center",
+      "options": [
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "bottom",
+          "label": "bottom"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "link"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Color"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Hover color"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "label": "Font Size",
+      "min": 15,
+      "max": 50,
+      "step": 1,
+      "default": 21
+    },
+    {
+      "type": "range",
+      "id": "button_border_bottom",
+      "label": "Border bottom size",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_icon",
+      "label": "Enable Icon",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "icon_text",
+      "label": "Icon",
+      "default": ">"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Color"
+    }
+  ]
+}
+{% endschema %}

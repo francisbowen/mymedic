@@ -1,0 +1,15 @@
+<div class="block-single-image" 
+    style="background-color: {{ set.single_image_background_color }};">
+
+    <div class="col-md-{{ set.single_image_width }} offset-md-{{ 60 | minus: set.single_image_width | divided_by: 2}}">
+        {{ image }}
+    </div>
+    {% if set.single_image_desc_enable %}
+    <div class="description col-md-{{ set.single_image_width }} offset-md-{{ 60 | minus: set.single_image_width | divided_by: 2 }}"
+        style="text-align: {{ set.single_image_desc_align }};
+            color: {{ set.single_image_desc_color }};
+            font-size: {{ set.single_image_desc_size }}px;">
+        {{ text }}
+    </div>
+    {% endif %}
+</div>

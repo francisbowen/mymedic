@@ -1,75 +1,128 @@
-<div class="container">
-  {% if section.settings.title != blank %}
-    <div class="section-header text-center">
-      <h2>{{ section.settings.title | escape }}</h2>
-    </div>
-  {% endif %}
-
-  {%- assign collection = collections[section.settings.collection] -%}
-
-  {% case section.settings.grid %}
-    {% when '2' %}
-      {%- assign grid_item_width = 'col-md-30' -%}
-      {%- assign image_size = '1000x' -%}
-    {% when '3' %}
-      {%- assign grid_item_width = 'col-md-20 col-sm-30' -%}
-      {%- assign image_size = '750x' -%}
-    {% when '4' %}
-      {%- assign grid_item_width = 'col-md-15 col-sm-30' -%}
-      {%- assign image_size = '500x' -%}
-    {% when '5' %}
-      {%- assign grid_item_width = 'col-md-12 col-sm-30' -%}
-      {%- assign image_size = '250x' -%}
-  {% endcase %}
-
-  {%- assign product_limit = section.settings.grid | times: section.settings.rows -%}
-
-  <div class="grid--view-items row">
-    {% for product in collection.products limit: product_limit %}
-      <div class="grid__item {{ grid_item_width }}">
-        {% include 'product-card-grid', grid_image_width: image_size %}
-      </div>
-    {% else %}
-      {% for i in (1..product_limit) %}
-        <div class="grid__item {{ grid_item_width }}">
-          <div class="grid-view-item">
-            <a href="#" class="grid-view-item__link">
-              <div class="grid-view-item__image">
-                {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
-                {{ 'product-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
-              </div>
-              <div class="h4 grid-view-item__title">{{ 'homepage.onboarding.product_title' | t }}</div>
-              <div class="grid-view-item__meta">
-                {% include 'product-price' %}
-              </div>
-            </a>
-          </div>
-        </div>
-      {% endfor %}
-    {% endfor %}
-  </div>
-
-  {% if section.settings.show_view_all %}
-    <hr class="hr--invisible" />
-    <div class="text-center">
-      <a href="{{ collection.url }}" class="btn">
-        {{ 'collections.general.view_all' | t }}
-      </a>
-    </div>
-  {% endif %}
-
-</div>
+{% include 'related-collection' %}
 
 {% schema %}
   {
     "name": "Featured collection",
-    "class": "index-section",
+    "class": "index-section featured-collection",
     "settings": [
+      {
+        "type": "header",
+        "content": "Heading"
+      },
       {
         "type": "text",
         "id": "title",
-        "label": "Heading",
+        "label": "Title",
         "default": "Featured collection"
+      },
+      {
+        "type": "range",
+        "id": "title_size",
+        "label": "Font size",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 32
+      },
+      {
+        "type": "range",
+        "id": "title_mobile_size",
+        "label": "Font size (mobile)",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 24
+      },
+      {
+        "type": "select",
+        "id": "title_position",
+        "label": "Position",
+        "default": "left",
+        "options": [
+            {
+            "value": "left",
+            "label": "Left"
+            },
+            {
+            "value": "center",
+            "label": "Center"
+            },
+            {
+            "value": "right",
+            "label": "Right"
+            }
+        ]
+      },
+
+    
+      {
+        "type": "select",
+        "id": "title_align",
+        "label": "Align",
+        "default": "left",
+        "options": [
+            {
+            "value": "left",
+            "label": "Left"
+            },
+            {
+            "value": "center",
+            "label": "Center"
+            },
+            {
+            "value": "right",
+            "label": "Right"
+            }
+        ]
+      },
+
+      {
+        "type": "range",
+        "id": "title_margin_top",
+        "label": "Margin top",
+        "min": 0,
+        "unit": "px",
+        "max": 50,
+        "step": 1,
+        "default": 15
+      },
+      {
+        "type": "range",
+        "id": "title_margin_top_mobile",
+        "label": "Margin top mobile",
+        "min": 0,
+        "unit": "px",
+        "max": 50,
+        "step": 1,
+        "default": 10
+      },
+
+      {
+        "type": "range",
+        "id": "title_margin_bottom",
+        "label": "Margin bottom",
+        "min": 0,
+        "unit": "px",
+        "max": 50,
+        "step": 1,
+        "default": 15
+      },
+      {
+        "type": "range",
+        "id": "title_margin_bottom_mobile",
+        "label": "Margin bottom mobile",
+        "min": 0,
+        "unit": "px",
+        "max": 50,
+        "step": 1,
+        "default": 10
+      },
+
+      {
+        "type": "color",
+        "id": "heading_color",
+        "label": "Color",
+        "default": "#ae2941"
       },
       {
         "id": "collection",
@@ -97,6 +150,42 @@
           {
             "value": "5",
             "label": "5"
+          },
+          {
+            "value": "6",
+            "label": "6"
+          },
+          {
+            "value": "7",
+            "label": "7"
+          },
+          {
+            "value": "8",
+            "label": "8"
+          },
+          {
+            "value": "9",
+            "label": "9"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "grid_mobile",
+        "label": "Products per row (mobile)",
+        "default": "2",
+        "options": [
+          {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
           }
         ]
       },
@@ -129,6 +218,79 @@
         ]
       },
       {
+        "type": "select",
+        "id": "rows_mobile",
+        "label": "Rows (mobile)",
+        "default": "2",
+        "options": [
+          {
+            "value": "1",
+            "label": "1"
+          },
+          {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          },
+          {
+            "value": "5",
+            "label": "5"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "show_title",
+        "label": "Show Title",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "product_title_size",
+        "label": "Product title size",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 18
+      },
+      {
+        "type": "range",
+        "id": "product_title_mobile_size",
+        "label": "Product title size (mobile)",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 15
+      },
+      
+      {
+        "type": "color",
+        "id": "title_color",
+        "label": "Title Color"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_price",
+        "label": "Show Price"
+      },
+      {
+        "type": "color",
+        "id": "price_color",
+        "label": "Price Color"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_variant_swatch",
+        "label": "Show Variant Swatch"
+      },
+      {
         "type": "checkbox",
         "id": "show_vendor",
         "label": "Show product vendors",
@@ -139,6 +301,80 @@
         "id": "show_view_all",
         "label": "Show 'View all' button",
         "default": false
+      },
+      {
+        "type": "header",
+        "content": "Buttons"
+      },
+      {
+        "type": "text",
+        "id": "shop_btn",
+        "label": "Button Text",
+        "default": "Shop Now"
+      },
+      {
+        "type": "range",
+        "id": "shop_btn_font_size",
+        "label": "Font size",
+        "min": 1,
+        "max": 59,
+        "step": 1,
+        "default": 14
+      }, 
+
+      {
+        "type": "color",
+        "id": "shop_btn_text_color",
+        "label": "Text color"
+      },
+      {
+        "type": "color",
+        "id": "shop_btn_background_color",
+        "label": "Background color"
+      },
+      {
+        "type": "color",
+        "id": "shop_btn_text_hover_color",
+        "label": "Text hover color"
+      },
+      {
+        "type": "color",
+        "id": "shop_btn_background_hover_color",
+        "label": "Background hover color"
+      },
+
+      {
+        "type": "range",
+        "id": "border_bottom_size",
+        "label": "Border bottom",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "default": 4
+      },
+      {
+        "type": "color",
+        "id": "border_bottom_color",
+        "label": "Border bottom color",
+        "default": "#C6090F"
+      },
+      {
+        "type": "range",
+        "id": "border_bottom_length",
+        "label": "Border bottom length",
+        "min": 1,
+        "max": 100,
+        "step": 1,
+        "default": 100
+      },
+      {
+        "type": "range",
+        "id": "border_bottom_hover_length",
+        "label": "Border bottom length (hover)",
+        "min": 1,
+        "max": 100,
+        "step": 1,
+        "default": 75
       }
     ],
     "presets": [

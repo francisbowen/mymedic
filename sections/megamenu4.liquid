@@ -15,6 +15,7 @@
       {
         "type": "megamenu_image",
         "name": "Image Column",
+        "limit": 1,
         "settings": [
           {
             "type": "text",
@@ -80,6 +81,17 @@
             "label": "Linklist"
           },
           {
+            "type": "checkbox",
+            "id": "enable_linklist_hover_image",
+            "label": "Enable linklist hover image"
+          },
+          {
+            "type": "textarea",
+            "id": "linklist_hover_image_array",
+            "label": "link Hover image",
+            "info": "Split by ','"
+          },
+          {
             "type": "text",
             "id": "title_2",
             "label": "Title"
@@ -94,6 +106,17 @@
             "type": "link_list",
             "id": "linklist_2",
             "label": "Linklist"
+          },
+          {
+            "type": "checkbox",
+            "id": "enable_linklist_hover_image_2",
+            "label": "Enable linklist hover image 2"
+          },
+          {
+            "type": "textarea",
+            "id": "linklist_hover_image_array_2",
+            "label": "link Hover image 2",
+            "info": "Split by ','"
           },
           {
             "type": "select",
@@ -115,6 +138,26 @@
               { "value": "col-50", "label": "5/6 Column"},
               { "value": "col-60", "label": "Full Width"}
             ]
+          },
+
+          {
+            "type": "range",
+            "id": "title_size",
+            "label": "Font size",
+            "min": 10,
+            "max": 100,
+            "step": 1,
+            "default": 16
+          },
+
+          {
+            "type": "range",
+            "id": "link_size",
+            "label": "Font size",
+            "min": 10,
+            "max": 100,
+            "step": 1,
+            "default": 14
           }
         ]
       }

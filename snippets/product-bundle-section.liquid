@@ -1,0 +1,187 @@
+
+{% if product != blank %}
+    {% assign product = product %}
+{% elsif section.settings.main_product != blank %}
+    {% assign product = all_products[section.settings.main_product] %}
+{% endif %}
+
+{% assign bundle_products = blank %}
+
+{% for tag in product.tags %}
+    {% if tag contains 'bundle_' %}
+      {% assign product_handle = tag | remove: 'bundle_' %}
+
+      {% if bundle_products == '' %}
+        {% assign bundle_products = bundle_products | append: product_handle %}
+      {% else %}
+        {% assign bundle_products = bundle_products | append: ',' | append: product_handle %}
+      {% endif %}         
+    {% endif %}
+{% endfor %}
+
+{% if bundle_products != blank %}
+
+<div class="frequently-section">
+    <div class="{{ section.settings.contained }}">
+        <div class="contents d-block d-md-flex justify-content-between align-items-center">
+            <span class="title">
+                {% if section.settings.section_title != blank %}{{ section.settings.section_title }}
+                {% else %}FREQUENTLY BOUGHT WITH:{% endif %}</span>
+
+            {% assign bundle_length = 1 %}
+            {% assign bundle_state = true %}
+
+            {%- assign actual_price = blank -%}
+            {%- assign compare_price = 0 -%}
+            {%- assign actual_price = 0 -%}
+
+            {% if product.selected_variant != blank %}
+                {% assign main_product_variant = product.selected_variant %}
+            {% else %}
+                {% assign main_product_variant = product.first_available_variant %}
+            {% endif %}
+
+            {% assign total_price = main_product_variant.price %}
+
+            <div class="product-bundle d-flex justify-content-center align-items-center">
+
+                <a class="main_product bundle-item"
+                    data-variant-id="{{ main_product_variant.id }}"
+                    data-available="{{ main_product_variant.available }}" 
+                    href="{{ main_product_variant.url }}"> 
+
+                    {% if section.settings.image_width != blank %}
+                        {% assign main_image_url = section.settings.image_width | append: 'x' %}
+                    {% else %}
+                        {% assign main_image_url = '100x' %}
+                    {% endif %}
+
+                    <img id="main_image" class="image" src="{{ main_product_variant.featured_image | img_url: main_image_url }}" alt="" />
+                    {% comment %}
+                    <br>
+                    price: <span class="price">{{ main_product_variant.price | money  }}</span>
+                    <br>
+                    State: <span class="state">{{ main_product_variant.available }}</span>
+                    {% endcomment %}
+                </a>
+
+                {% if main_product_variant.available == false %}
+                    {% assign bundle_state = false %}
+                {% endif %}
+
+                {% assign products = bundle_products | split: ',' %}
+                {% assign bundle_length = bundle_length | plus: products.size %}
+
+                {% for item in products %}
+
+                    {% assign product_info = item | split: '/' %}
+                    {% assign product_handle = product_info[0] %}
+                    {% assign variant_id = product_info[1] | plus: 0 %}
+  
+                    {% assign product_bun = all_products[product_handle] %}
+                    {% assign variant_bun = product_bun.variants | where: 'id', variant_id | first %}
+
+                    <span class="operator pls">+</span>
+
+                    {% if variant_bun.featured_media != blank %}
+                        {% assign item_image = variant_bun.featured_media %}
+                    {% else %}
+                        {% assign item_image = product_bun.featured_image %}
+                    {% endif %}
+
+                    {% assign total_price = total_price | plus: variant_bun.price %}
+
+                    <a class="bundle-item bundle-pair" 
+                        data-variant-id="{{ variant_bun.id }}" 
+                        data-available="{{ variant_bun.available }}" 
+                        data-variant-price="{{ variant_bun.price }}"
+                        href="{{ variant_bun.url }}">
+
+                        {% if section.settings.image_width != blank %}
+                            {% assign image_url = section.settings.image_width | append: 'x' %}
+                        {% else %}
+                            {% assign image_url = '100x' %}
+                        {% endif %}
+
+                        <img class="image" src="{{ item_image | img_url: image_url }}" alt="" />
+                        {% comment %}
+                        <br>
+                        <span id="price">price: {{ variant_bun.price | money  }}</span>
+                        <br>
+                        <span id="state">State: {{ variant_bun.available }}</span>
+                        {% endcomment %}
+                    </a>
+                    
+                    {% if variant_bun.available == false %}
+                        {% assign bundle_state = false %}
+                    {% endif %}
+
+                {% endfor %}
+
+                <span class="operator equal">=</span>
+
+                {% assign save_price = total_price | divided_by: 10 | times: 2 %}
+                {% assign result_price = total_price | divided_by: 10 | times: 8 %}
+                
+                <span class="price text-center desktop-show">
+                    <span class="total_price_container">Total: <span class="total_price">{{ result_price | money }}</span></span>
+                    <span class="saved_price_container">Save: <span class="saved_price">{{ save_price | money }}</span></span> 
+                </span>
+            </div>
+
+            <div class="mobile_button">
+                <span class="price text-center d-md-none">
+                    <span class="total_price_container">Total: <span class="total_price">{{ result_price | money }}</span></span>
+                    <span class="saved_price_container">Save: <span class="saved_price">{{ save_price | money }}</span></span> 
+                </span>
+
+                <a href="#" id="frequently_btn" {% unless bundle_state %}disabled="disabled"{% endunless %}
+                    class="btn">{% if section.settings.button_text != blank %}{{ section.settings.button_text }}{% else %}ADD ALL{% endif %} {{ bundle_length }}</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% comment %}--------------------bundle script------------------------{% endcomment %}
+
+<script>
+    $(document).ready(function(){
+        $( "#frequently_btn").on('click', function(evt) {
+            evt.preventDefault();
+
+            var button_state = $('#frequently_btn').attr('disabled');
+            if (button_state)
+                return;
+
+            console.log('frequently_btn');
+
+            var allItems = {items: []};
+
+            $( ".bundle-item" ).each(function( index ) {
+                var variant_id = $(this).data('variant-id');
+                var item = {id: variant_id, quantity: 1};
+                allItems['items'].push(item);
+            });
+
+            $.ajax({
+                url: '/cart/add.js',
+                data: allItems,
+                dataType: 'json',
+                success: function(cart) {
+                    console.log('add to card success');
+                    //cart_update();
+
+                    window.location.href = window.location.protocol + '//' + window.location.host + '/cart/';
+                }
+            });
+        });
+    });
+</script>
+
+{% else %}
+<style>
+    #shopify-section-{{ section.id }} {
+        display: none;
+    }
+</style>
+{% endif %}

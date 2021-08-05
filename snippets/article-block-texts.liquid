@@ -1,0 +1,51 @@
+<style>
+  #shopify-section-{{ section.id }} .actual_text div {
+    {% if set.actual_text_align != blank %}
+      text-align: {{ set.actual_text_align }};
+    {% endif %}
+    {% if set.actual_text_color != blank %}
+      color: {{ set.actual_text_color }};
+    {% endif %}
+    {% if set.actual_text_size != blank %}
+      font-size: {{ set.actual_text_size }}px;
+    {% endif %}
+  }
+  @media (max-width: 767px) {
+    #shopify-section-{{ section.id }} .actual_text div {
+      {% if set.actual_text_align_mobile != blank %}
+        text-align: {{ set.actual_text_align_mobile }};
+      {% endif %}
+      {% if set.actual_text_size_mobile != blank %}
+        font-size: {{ set.actual_text_size_mobile }}px;
+      {% endif %}
+    }
+  }
+</style>
+
+<div class="block-texts row no-gutter">
+
+  {% assign textClass = 'col-md-33 texts offset-md-15' %}
+
+  {% if rightSidebar != '' %}
+    {% assign featuredProductClass = 'col-md-12 right-sidebar' %}
+  {% endif %}
+
+  {% if rightSidebar != '' and set.featured_product_align == 'left' %}
+    <div class="{{ featuredProductClass }}">
+      {{ rightSidebar }}
+    </div>
+    {% assign textClass = 'col-md-33 texts offset-md-3' %}
+  {% endif %}
+
+  <div class="{{ textClass }} actual_text">
+    <div class="rte col-md-45 no-padding">
+      {{ content }}
+    </div>
+  </div>
+
+  {% if rightSidebar != '' and set.featured_product_align == 'right' %}
+    <div class="{{ featuredProductClass }}">
+      {{ rightSidebar }}
+    </div>
+  {% endif %}
+</div>

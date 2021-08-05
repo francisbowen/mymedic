@@ -1,34 +1,4 @@
-<div class="page-width">
-  {% if section.settings.title != blank %}
-    <div class="section-header text-center">
-      <h2>{{ section.settings.title | escape }}</h2>
-    </div>
-  {% endif %}
-
-  {% if section.blocks.size > 0 %}
-    <div class="logo-bar{% if section.settings.title_enable %} logo-bar--large{% endif %}">
-      {% for block in section.blocks %}
-        <div class="logo-bar__item{% if section.settings.title_enable %} logo-bar__item--large{% endif %}" {{ block.shopify_attributes }}>
-          {% if block.settings.link != blank %}
-            <a href="{{ block.settings.link }}" class="logo-bar__link">
-          {% endif %}
-          {% if block.settings.image != blank %}
-            {% include 'image', class: 'logo-bar__image', file: block.settings.image, default_size: '160x160', alt: section.settings.image.alt | escape %}
-          {% else %}
-            {{ 'logo' | placeholder_svg_tag: 'placeholder-svg' }}
-          {% endif %}
-          {% if block.settings.link != blank %}
-            </a>
-          {% endif %}
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %}
-
-  {% if section.blocks.size == 0 %}
-    {% include 'no-blocks' %}
-  {% endif %}
-</div>
+{% include 'logo-bar-content' %}
 
 {% schema %}
   {
@@ -36,11 +6,49 @@
     "class": "index-section",
     "max_blocks": 20,
     "settings": [
+    {
+      "type": "radio",
+      "id": "contained",
+      "label": "Form should:",
+      "options": [
+        { "value": "container", "label": "Constrain to container" },
+        { "value": "container-fluid", "label": "Flow to the width of screen" },
+        { "value": "container custom", "label": "Constrain to customized container" }
+      ],
+      "default": "container"
+    },
+    {
+      "type": "range",
+      "id": "custom_container",
+      "label": "Custom Container Width",
+      "min": 300,
+      "max": 1420,
+      "step": 20,
+      "default": 1420
+    },
       {
         "type": "text",
         "id": "title",
         "label": "Heading",
         "default": "Logo list"
+      },
+      {
+        "type": "range",
+        "id": "image_width",
+        "label": "Logo width",
+        "min": 30,
+        "max": 100,
+        "step": 1,
+        "default": 70
+      }, 
+      {
+        "type": "range",
+        "id": "image_width_mobile",
+        "label": "Logo width (mobile)",
+        "min": 30,
+        "max": 100,
+        "step": 1,
+        "default": 50
       }
     ],
     "blocks": [
@@ -48,10 +56,43 @@
         "type": "logo_image",
         "name": "Logo",
         "settings": [
+        {
+          "type": "text",
+          "id": "image_svg",
+          "label": "Svg"
+        },
           {
             "type": "image_picker",
             "id": "image",
             "label": "Image"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "title"
+          },
+          {
+            "type": "select",
+            "id": "title_layout",
+            "label": "Title Position",
+            "default": "right",
+            "options": [
+              {
+                "value": "right",
+                "label": "Title on Left"
+              },
+              {
+                "value": "bottom",
+                "label": "Title on Bottom"
+              }
+            ]
+          },
+          {
+            "type": "color",
+            "id": "title_color",
+            "label": "Color",
+            "default": "#888"
           },
           {
             "type": "url",

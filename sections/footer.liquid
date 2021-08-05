@@ -13,54 +13,59 @@
   {%- assign social_icons = true -%}
 {% endif %}
 
-{% if section.settings.footer_newsletter_alone %}
-  <div class="site-newsletter">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-lg-36 offset-lg-12 col-md-40 offset-md-10">
-          <div class="site-footer__newsletter">
-            {% include 'newsletter', newsletter_alone: true %}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <style>
-    .site-newsletter {
-      {% if section.settings.background != blank %}
-        background-color: {{ section.settings.background }};
-      {% endif %}
-      {% if section.settings.newsletter_background != blank %}
-        background-color: {{ section.settings.newsletter_background }};
-      {% endif %}
-      {% if section.settings.newsletter_color != blank %}
-        color: {{ section.settings.newsletter_color }}
-      {% endif %}
-    }
-  </style>
-{% endif %}
-
-<footer class="site-footer" role="contentinfo" {% if section.settings.footer_newsletter_alone %}{% else %}style="margin-top:60px;"{% endif %}>
+<footer class="site-footer" role="contentinfo" 
+  {% comment %}{% if section.settings.footer_newsletter_alone %}{% else %}style="margin-top:60px;"{% endif %}{% endcomment %}>
   <div class="container">
-    <div class="row justify-content-around">
-
-      <div class="col-md-12">
-        {%- assign footer_logo = section.settings.logo -%}
-        {% if footer_logo == blank %}
-          {%- assign footer_logo = settings.logo -%}
-        {% endif %}
-        <a href="/" class="logo--footer"><img src="{{ footer_logo | img_url: '150x' }}"
-           srcset="{{ footer_logo | img_url: '300x' }} 1x, {{ footer_logo | img_url: '150x', scale: 2 }} 2x"
-           alt="{{ settings.logo.alt | default: shop.name }}" /></a>
-      </div>
+    <div class="row footer-contents justify-content-between">
 
       {% for block in section.blocks %}
         {%- assign footer_linklist = block.settings.linklist -%}
         {% if linklists[footer_linklist].links.size > 0 %}
-          <div class="col-md-auto col-60">
-            {% if block.settings.title != blank %}<h4 class="mobile-toggler">{{ block.settings.title }}</h4>{% endif %}
+          <style>
+            #shopify-section-{{ section.id }} #block-{{ block.id }}.footer-col .footer-accordion {
+              {% if block.settings.title_size != blank %}
+                font-size: {{ block.settings.title_size }}px;
+              {% endif %}
+              {% if block.settings.title_color != blank %}
+                color: {{ block.settings.title_color }}
+              {% endif %}
+            }
+            @media screen and (max-width: 767px) {
+              #shopify-section-{{ section.id }} #block-{{ block.id }}.footer-col .footer-accordion {
+                {% if block.settings.title_size_mobile != blank %}
+                  font-size: {{ block.settings.title_size_mobile }}px;
+                {% endif %}
+              }
+            }
+          </style>
+          <div id="block-{{ block.id }}" class="footer-col col-md-auto col-60 item text-left">
+            {% if block.settings.title != blank %}
+
+            <h2 class="h4 footer-accordion text-left">{{ block.settings.title }}
+              {% if block.settings.title_border_bottom > 0 and block.settings.title_border_width > 0 %}
+              <div style="width: {{ block.settings.title_border_width }}%;
+                border-bottom: {{ block.settings.title_border_bottom }}px solid;"></div>
+              {% endif %}
+            </h2>              
+            {% endif %}
             <ul class="site-footer__linklist">
+              <style>
+                #shopify-section-{{ section.id }} #block-{{ block.id }}.footer-col .site-footer__linklist li.site-footer__linklist-item {
+                  {% if block.settings.link_size != blank %}
+                    font-size: {{ block.settings.link_size }}px;
+                  {% endif %}
+                  {% if block.settings.link_color != blank %}
+                    color: {{ block.settings.link_color }}
+                  {% endif %}
+                }
+                @media screen and (max-width: 767px) {
+                  #shopify-section-{{ section.id }} #block-{{ block.id }}.footer-col .site-footer__linklist li.site-footer__linklist-item {
+                    {% if block.settings.link_size_mobile != blank %}
+                      font-size: {{ block.settings.link_size_mobile }}px;
+                    {% endif %}
+                  }
+                }
+              </style>
               {% for link in linklists[footer_linklist].links %}
                 <li class="site-footer__linklist-item">
                   <a href="{{ link.url }}">{{ link.title }}</a>
@@ -71,101 +76,112 @@
         {% endif %}
       {% endfor %}
 
-      {% if section.settings.footer_socials_enable or section.settings.footer_newsletter_enable and section.settings.footer_newsletter_alone == false %}
-        <div class="{% if section.settings.footer_newsletter_alone %}col-md-12{% else %}col-md-20{% endif %}">
-          {% if section.settings.footer_newsletter_enable and section.settings.footer_newsletter_alone == false %}
-            <div class="site-footer__newsletter">
-              {% include 'newsletter' %}
-            </div>
-          {% endif %}
+      <div class="col-md-10 item"></div>
 
-          {% if social_icons %}
-            {% if section.settings.socials_title %}<h4>{{ section.settings.socials_title }}</h4>{% endif %}
-            <ul class="list--inline site-footer__social-icons social-icons">
-              {% if settings.social_facebook_link != blank %}
-                <li>
-                  <a class="social-icons__link" href="{{ settings.social_facebook_link }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Facebook' }}">
-                    {% include 'icon-facebook' %}
-                    <span class="icon__fallback-text">Facebook</span>
-                  </a>
-                </li>
-              {% endif %}
-              {% if settings.social_twitter_link != blank %}
-                <li>
-                  <a class="social-icons__link" href="{{ settings.social_twitter_link }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Twitter' }}">
-                    {% include 'icon-twitter' %}
-                    <span class="icon__fallback-text">Twitter</span>
-                  </a>
-                </li>
-              {% endif %}
-              {% if settings.social_pinterest_link != blank %}
-                <li>
-                  <a class="social-icons__link" href="{{ settings.social_pinterest_link }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Pinterest' }}">
-                    {% include 'icon-pinterest' %}
-                    <span class="icon__fallback-text">Pinterest</span>
-                  </a>
-                </li>
-              {% endif %}
-              {% if settings.social_instagram_link != blank %}
-                <li>
-                  <a class="social-icons__link" href="{{ settings.social_instagram_link }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Instagram' }}">
-                    {% include 'icon-instagram' %}
-                    <span class="icon__fallback-text">Instagram</span>
-                  </a>
-                </li>
-              {% endif %}
-              {% if settings.social_tumblr_link != blank %}
-                <li>
-                  <a class="social-icons__link" href="{{ settings.social_tumblr_link }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Tumblr' }}">
-                    {% include 'icon-tumblr' %}
-                    <span class="icon__fallback-text">Tumblr</span>
-                  </a>
-                </li>
-              {% endif %}
-              {% if settings.social_snapchat_link != blank %}
-                <li>
-                  <a class="social-icons__link" href="{{ settings.social_snapchat_link }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Snapchat' }}">
-                    {% include 'icon-snapchat' %}
-                    <span class="icon__fallback-text">Snapchat</span>
-                  </a>
-                </li>
-              {% endif %}
-              {% if settings.social_youtube_link != blank %}
-                <li>
-                  <a class="social-icons__link" href="{{ settings.social_youtube_link }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'YouTube' }}">
-                    {% include 'icon-youtube' %}
-                    <span class="icon__fallback-text">YouTube</span>
-                  </a>
-                </li>
-              {% endif %}
-              {% if settings.social_vimeo_link != blank %}
-                <li>
-                  <a class="social-icons__link" href="{{ settings.social_vimeo_link }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Vimeo' }}">
-                    {% include 'icon-vimeo' %}
-                    <span class="icon__fallback-text">Vimeo</span>
-                  </a>
-                </li>
-              {% endif %}
-              {% if template contains 'blog' or template contains 'article' %}
-                <li>
-                  <a class="social-icons__link" href="{{ shop.url }}{{ blog.url }}.atom">
-                    {% include 'icon-rss' %}
-                    <span class="icon__fallback-text">RSS</span>
-                  </a>
-                </li>
-              {% endif %}
-            </ul>
-          {% endif %}
+      {% if section.settings.footer_newsletter_enable %}
+        <style>
+      
+          #shopify-section-{{ section.id }} .site-footer__newsletter {
+            margin-top: {{ section.settings.footer_newsletter_margin_top }}px;
+            margin-bottom: {{ section.settings.footer_newsletter_margin_top }}px;
+          }
 
+          @media screen and (max-width: 767px) {
+            #shopify-section-{{ section.id }} .site-footer__newsletter {
+              margin-top: {{ section.settings.footer_newsletter_margin_top_mobile }}px;
+              margin-bottom: {{ section.settings.footer_newsletter_margin_top_mobile }}px;
+            }
+          }
+
+          #shopify-section-{{ section.id }} .site-footer__newsletter .label_1 {
+
+            {% if section.settings.newsletter_label_1_color != blank %}
+            color: {{ section.settings.newsletter_label_1_color }};
+            {% endif %}
+            text-align: {{ section.settings.newsletter_label_1_text_align }};
+          }
+
+          #shopify-section-{{ section.id }} .site-footer__newsletter .label_2 {
+            {% if section.settings.newsletter_label_2_color != blank %}
+            color: {{ section.settings.newsletter_label_2_color }};
+            {% endif %}
+            text-align: {{ section.settings.newsletter_label_2_text_align }};
+          }
+
+          @media screen and (max-width: 767px) {
+            #shopify-section-{{ section.id }} .site-footer__newsletter .label_1 {
+              text-align: {{ section.settings.newsletter_label_1_text_align_mobile }};
+            }
+            #shopify-section-{{ section.id }} .site-footer__newsletter .label_2 {
+              text-align: {{ section.settings.newsletter_label_2_text_align_mobile }};
+            }
+          }
+
+          #shopify-section-{{ section.id }} .site-footer__newsletter .input-group__btn .btn .newsletter__input {
+            text-align: {{ section.settings.newsletter_input_text_align }};
+          }
+
+          #shopify-section-{{ section.id }} .site-footer__newsletter .input-group__btn .btn {
+            {% if section.settings.submit_btn_text_color != blank %}
+              color: {{ section.settings.submit_btn_text_color }};
+            {% endif %}
+            {% if section.settings.submit_btn_background_color != blank %}
+              background-color: {{ section.settings.submit_btn_background_color }};
+            {% endif %}
+          }
+
+          #shopify-section-{{ section.id }} .site-footer__newsletter .input-group__btn .btn:hover {
+            {% if section.settings.submit_btn_text_hover_color != blank %}
+              color: {{ section.settings.submit_btn_text_hover_color }};
+            {% endif %}
+            {% if section.settings.submit_btn_background_hover_color != blank %}
+              background-color: {{ section.settings.submit_btn_background_hover_color }};
+            {% endif %}
+          }          
+        </style>
+
+        <div class="col-md-20 item">
+          <div class="site-footer__newsletter text-right text-mobile-left">
+            {% include 'newsletter' %}
+          </div>
         </div>
       {% endif %}
 
     </div>
 
+    <div class="row site-footer-bottom justify-content-between">
+      {% if section.settings.footer_socials_enable and social_icons %}
+        {% assign class = "site-footer__social-icons d-none d-md-block" %}
+        <div class="{{ class }}">
+        {% if section.settings.socials_title %}<h4>{{ section.settings.socials_title }}</h4>{% endif %}
+          <style>
+            {% if section.settings.social_color != blank %}
+            .site-footer .social-icons__link {
+                color: {{ section.settings.social_color }};
+              }
+            {% endif %}
+          </style>
+          {% include 'social-icons' %}
+        </div>
+      {% endif %}
+
+      {%- assign footer_logo = section.settings.logo -%}
+      {% if footer_logo == blank %}
+        {%- assign footer_logo = settings.logo -%}
+      {% endif %}
+      {% if footer_logo != blank %}
+        <a href="/" class="logo--footer">
+          <img src="{{ footer_logo | img_url: 'x150' }}"
+            alt="{{ settings.logo.alt | default: shop.name }}" /></a>
+      {% endif %}
+    </div>
+
+    {% if section.settings.show_copyright %}
     <div class="site-footer__copyright--bottom">
       <small class="site-footer__copyright-content">&copy; {{ 'now' | date: "%Y" }}, {{ shop.name | link_to: '/' }}</small>
       <small class="site-footer__copyright-content">Built on Inferno Framework by <a href="http://wickcreative.com" target="_blank">Wick Creative</a></small>
     </div>
+    {% endif %}
 
   </div>
 </footer>
@@ -217,6 +233,211 @@
       },
       {
         "type": "header",
+        "content": "Newsletter"
+      },
+      {
+        "type": "checkbox",
+        "id": "footer_newsletter_enable",
+        "label": "Show newsletter signup",
+        "default": false,
+        "info": "Form action set in General Settings"
+      },
+
+      {
+        "type": "range",
+        "id": "footer_newsletter_margin_top",
+        "label": "Margin top",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "default": 0
+      },
+
+      {
+        "type": "range",
+        "id": "footer_newsletter_margin_bottom",
+        "label": "Margin bottom",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "default": 0
+      },
+
+      
+      {
+        "type": "range",
+        "id": "footer_newsletter_margin_top_mobile",
+        "label": "Margin top (mobile)",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "default": 5
+      },
+
+      {
+        "type": "range",
+        "id": "footer_newsletter_margin_bottom_mobile",
+        "label": "Margin bottom (mobile)",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "default": 5
+      },
+      {
+        "type": "header",
+        "content": "Label Text 1"
+      },
+      {
+        "type": "text",
+        "id": "newsletter_label_1_text",
+        "label": "Text",
+        "default": "EXPERIENCE ELEVATED FIRST AID"
+      },
+      {
+        "type": "select",
+        "id": "newsletter_label_1_text_align",
+        "label": "Text align",
+        "default": "right",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "newsletter_label_1_text_align_mobile",
+        "label": "Text align (mobile)",
+        "default": "left",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          }
+        ]
+      },
+      {
+        "type": "color",
+        "id": "newsletter_label_1_color",
+        "label": "Color"
+      },
+      {
+        "type": "header",
+        "content": "Label Text 2"
+      },
+      {
+        "type": "text",
+        "id": "newsletter_label_2_text",
+        "label": "Text",
+        "default": "Be the first to know the latest My Medic products and news"
+      },
+      {
+        "type": "select",
+        "id": "newsletter_label_2_text_align",
+        "label": "Text align",
+        "default": "right",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          }
+        ]
+      },
+      
+      {
+        "type": "select",
+        "id": "newsletter_label_2_text_align_mobile",
+        "label": "Text align (mobile)",
+        "default": "left",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          }
+        ]
+      },
+
+      {
+        "type": "color",
+        "id": "newsletter_label_2_color",
+        "label": "Color"
+      },
+      {
+        "type": "select",
+        "id": "newsletter_input_text_align",
+        "label": "Email Placeholder - Text align",
+        "default": "right",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          }
+        ]
+      },
+      {
+        "type": "color",
+        "id": "submit_btn_text_color",
+        "label": "Submit Button Text color"
+      },
+      {
+        "type": "color",
+        "id": "submit_btn_background_color",
+        "label": "Submit Button Background color"
+      },
+      {
+        "type": "color",
+        "id": "submit_btn_text_hover_color",
+        "label": "Submit Button Text Hover color"
+      },
+      {
+        "type": "color",
+        "id": "submit_btn_background_hover_color",
+        "label": "Submit Button Background Hover color"
+      },
+
+      {
+        "type": "header",
         "content": "Socials"
       },
       {
@@ -227,38 +448,20 @@
         "info": "Links are set in General Settings"
       },
       {
+        "type": "color",
+        "id": "social_color",
+        "label": "Icon Color",
+        "default": "#8d9091"
+      },
+      {
         "type": "text",
         "id": "socials_title",
         "label": "Socials Title"
       },
       {
-        "type": "header",
-        "content": "Newsletter"
-      },
-      {
         "type": "checkbox",
-        "id": "footer_newsletter_enable",
-        "label": "Show newsletter signup",
-        "default": false,
-        "info": "Form action set in General Settings"
-      },
-      {
-        "type": "checkbox",
-        "id": "footer_newsletter_alone",
-        "label": "Display newsletter before footer",
-        "info": "Use this to have the newsletter stand on it's own"
-      },
-      {
-        "type": "color",
-        "id": "newsletter_background",
-        "label": "Newsletter background color",
-        "info": "Only applicable if 'Display newsletter before footer' is checked"
-      },
-      {
-        "type": "color",
-        "id": "newsletter_color",
-        "label": "Newsletter text color",
-        "info": "Only applicable if 'Display newsletter before footer' is checked"
+        "id": "show_copyright",
+        "label": "Show CopyRight"
       }
     ],
     "blocks": [
@@ -267,15 +470,90 @@
         "name": "Menu",
         "settings": [
           {
+            "type": "header",
+            "content": "Heading"
+          },
+          {
             "type": "text",
             "id": "title",
             "label": "Title"
+          },
+          {
+            "type": "range",
+            "id": "title_size",
+            "label": "Font size",
+            "min": 10,
+            "max": 100,
+            "step": 1,
+            "default": 21
+          },
+          {
+            "type": "range",
+            "id": "title_size_mobile",
+            "label": "Font size (mobile)",
+            "min": 10,
+            "max": 100,
+            "step": 1,
+            "default": 18
+          },
+          {
+            "type": "range",
+            "id": "title_border_bottom",
+            "label": "Border bottom",
+            "min": 0,
+            "max": 10,
+            "step": 1,
+            "default": 5
+          },
+          {
+            "type": "range",
+            "id": "title_border_width",
+            "label": "Border Width",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "default": 100
+          },
+
+          {
+            "type": "color",
+            "id": "title_color",
+            "label": "Title Color",
+            "default": "#8d9091"
+          },
+          {
+            "type": "header",
+            "content": "Menu lists"
           },
           {
             "type": "link_list",
             "id": "linklist",
             "label": "Linklist",
             "default": "footer"
+          },
+          {
+            "type": "range",
+            "id": "link_size",
+            "label": "Font size",
+            "min": 10,
+            "max": 100,
+            "step": 1,
+            "default": 16
+          },
+          {
+            "type": "range",
+            "id": "link_size_mobile",
+            "label": "Font size (mobile)",
+            "min": 10,
+            "max": 100,
+            "step": 1,
+            "default": 14
+          },
+          {
+            "type": "color",
+            "id": "link_color",
+            "label": "Link Color",
+            "default": "#8d9091"
           }
         ]
       }

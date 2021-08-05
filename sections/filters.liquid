@@ -1,118 +1,213 @@
-{% for block in section.blocks %}
-  {%- assign filter_tags_simple = block.settings.filter_tags | replace: ', ', ',' -%}
-  {%- assign filter_tags_simple = filter_tags_simple | replace: ' ,', ',' -%}
-  {%- assign fitler_tags = filter_tags_simple | split: ',' -%}
-  {%- assign curr_tags = '' -%}
-  {% for tag in current_tags %}
-    {% capture curr_tags %}{{ curr_tags }},{{ tag | handleize }}{% if forloop.last %},{% endif %}{% endcapture %}
-  {% endfor %}
-  <div class="filter_holder hide">
-    <label for="SortTags_{{ block.settings.title | handleize }}" class="label--hidden">{{ block.settings.title }}</label>
-    <select class="filters-toolbar__input filters-toolbar__input--filter custom-select" name="SortTags" id="SortTags_{{ block.settings.title | handleize }}" data-template="{% if template contains 'collection-of-collections' %}multiproduct{% else %}{{ collection.url }}{% endif %}" placeholder="{%- assign placeholder = block.settings.title -%}{% for filter_tag in fitler_tags %}{% capture filter_tag_handleized %},{{ filter_tag | handleize }},{% endcapture %}{% if curr_tags contains filter_tag_handleized %}{%- assign placeholder = filter_tag -%}{% endif %}{% endfor %}{{ placeholder }}" data-filtertype="{{ block.settings.title }}">
-      <option value="">{{ block.settings.title }}</option>
-      {% for filter_tag in fitler_tags %}
-        <option value="{{ filter_tag | handleize }}"{% capture filter_tag_handleized %},{{ filter_tag | handleize }},{% endcapture %}{% if curr_tags contains filter_tag_handleized %} selected="selected"{% endif %}>{{ filter_tag }}</option>
-      {% endfor %}
-    </select>
+<style>
+	#Collection .filters-toolbar .full.sidebar-filter {
+		border-color: {{ section.settings.border_color }};	
+	}
+	#Collection .filters-toolbar .full.sidebar-filter h5 {
+		color: {{ section.settings.title_color }};
+	}
+	#Collection .filters-toolbar .full.sidebar-filter h5:after{
+		color: {{ section.settings.icon_color }};
+	}
+	#Collection .filters-toolbar .full.sidebar-filter.checkbox label,
+	#Collection .filters-toolbar .full.sidebar-filter.radiobutton label {
+		color: {{ section.settings.option_color }};
+	}
+
+	#Collection .filters-toolbar .full.sidebar-filter.button input[type="checkbox"]+label {
+		color: {{ section.settings.button_text_color }};
+		background-color: {{ section.settings.button_background_color }};
+		border-color: {{ section.settings.button_text_color }};
+	}
+
+	#Collection .filters-toolbar .full.sidebar-filter.button input[type="checkbox"]:checked+label {
+		color: {{ section.settings.button_active_text_color }};
+		background-color: {{ section.settings.button_active_background_color }};
+		border-color: {{ section.settings.button_active_background_color }}
+	}
+</style>
+
+<div id="filters-content">
+
+  <div class="full sidebar-filter show current_filter button">
+    <h5>Current filters</h5>
+    <div class="option_buttons"></div>
   </div>
-{% endfor %}
+
+  {% for block in section.blocks %}
+
+    {% if block.settings.enable %}
+      {%- assign fitler_tags = block.settings.filter_tags | strip_newlines | replace: ', ', ',' | replace: ' ,', ',' | split: ',' -%}
+      {%- assign filter_used = 0 -%}
+      {%- assign filter_content = '' -%}
+
+      {% for filter_tag in fitler_tags %}
+        {% if collection.all_tags contains filter_tag %}
+          {%- assign filter_used = filter_used | plus: 1 -%}
+          {% capture filter_content %}
+            {{ filter_content }}
+            <div class="filter-element">
+              <input name="SortTags_{{ block.settings.title | handleize }}_{{ forloop.index }}" 
+                type="checkbox" value="{{ filter_tag }}" 
+                id="{{ filter_tag | handleize }}" 
+                data-title="{{ block.settings.title | handleize }}" />
+              <label 
+                {% if block.settings.filter_type == 'color_swatch' %}
+                id="{{ filter_tag | remove: block.settings.filter_tags_removal }}"
+                {% endif %}
+                for="{{ filter_tag | handleize }}">
+                {{ filter_tag | remove: block.settings.filter_tags_removal }}
+              </label>
+            </div>
+          {% endcapture %}
+        {% endif %}
+      {% endfor %}
+
+      {% if filter_used > 1 %}
+        <div class="full sidebar-filter {{ block.settings.filter_type }} show">
+          <h5>{{ block.settings.title }}</h5>
+          <div class="option_buttons">
+            {{ filter_content }}
+          </div>
+        </div>
+      {% endif %}
+
+    {% endif %}
+  {% endfor %}
+
+</div>
 
 <script>
-	$(document).ready(function(){
-		var arr = [],
-				count_select = $('#shopify-section-filters select').length;
-		$('#SortTags').hide();
-		$('#SortTags option').each(function () {
-			arr.push($(this).val());
-		});
+  function getUrlParameter(sParam) {
+    var sPageURL = window.location.search.substring(1),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
 
-		$('#shopify-section-filters select').each(function(){
-			var originalElems = $(this),
-					filterName = originalElems.find('option:first').text(),
-					elems = originalElems.find('option'),
-					count = elems.length,
-					currSelect;
-
-			elems.each(function(){
-				if ($.inArray($(this).val(), arr) == -1 && $(this).val() != '') {
-					$(this).remove();
-				};
-				if (!--count) {
-					if(originalElems.find('option').length > 2) {
-						$('.filters-toolbar-placeholder').append('<div class="full sidebar-filter" data-name="'+ originalElems.attr('id') +'">' + originalElems.parent('.filter_holder').html() + '</div>');
-						$('div[data-name="'+ originalElems.attr('id') +'"] .custom-select').each(function(i, select){
-						    var $select = $(select);
-						    $select.find('option').each(function(j, option){
-									var $option = $(option);
-									if($option.val() != '') {
-										// Create a radio:
-						        var $swatchbox = $('<div class="filter-element" />'),
-												$radio = $('<input type="radio" />'),
-												$label = $('<label />');
-						        // Set name and value:
-						        $radio.attr('name', $select.attr('id')).attr('value', $option.val()).attr('id',$option.val() +'_'+ $select.attr('id'));
-						        // Set checked if the option was selected
-						        if ($option.attr('selected')) {
-											$swatchbox.addClass('selected');
-											$radio.attr('checked', 'checked');
-										}
-						        // Insert a label:
-										$label.attr('for',$option.val() +'_'+ $select.attr('id')).append($option.text());
-										$swatchbox.addClass($option.val()).append($label).prepend($radio);
-						        $select.after($swatchbox);
-									} else {
-										var check_check = '';
-										if($select.val() == '') {
-											check_check = ' checked="checked"';
-										}
-										$select.before($('<h5 />').text($option.text())).before($('<div class="filter-element"><input id="all_'+ $select.attr('id') +'" type="radio" name="'+ $select.attr('id') +'" value=""'+ check_check +' /><label for="all_'+ $select.attr('id') +'">All</label></div>'));
-									}
-						    });
-						    $select.removeClass('custom-select').addClass('hide');
-						});
-					}
-				}
-			});
-
-		});
-
-    $('body').on('change', '.sidebar-filter input',function(){
-      console.log('fired');
-			$(this).closest('.sidebar-filter').find('select#'+$(this).attr('name')).val($(this).val()).trigger('change');
-		});
-
-		$('body').on('change', '.sidebar-filter select',function(e){
-			e.preventDefault();
-			var params = [],
-					str = '';
-			$('.sidebar-filter select').each(function(){
-				if($(this).val() != '') {
-					params.push($(this).val());
-				}
-			});
-			$.each( params, function(i,v){
-				if (i != 0) {
-					str += '+';
-				}
-				str += v;
-			});
-			window.location.href = window.location.protocol + '//' + window.location.host + '{{ collection.url }}/' + str;
-		});
-
-	});
+    for (i = 0; i < sURLVariables.length; i++) {
+      sParameterName = sURLVariables[i].split('=');
+      if (sParameterName[0] === sParam) {
+        return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+      }
+    }
+  };
+  
+  var price_range = getUrlParameter('prices'),
+      sorted = getUrlParameter('sort_by');
+  $(document).ready(function(){
+    $('.full.sidebar-filter h5').click(function() {
+      $(this).closest( ".sidebar-filter" ).toggleClass( "show" );
+    });
+    
+    $('#filters-content').contents().appendTo('.filters-toolbar-placeholder');
+    
+    $('body').on('change', '.sidebar-filter input',function(e){
+      e.preventDefault();
+      var params = [],
+          titles = [],
+          str = '';
+      $('.sidebar-filter input:checked').each(function(){
+        if($(this).val() != '') {
+          params.push($(this).val());
+          titles.push($(this).data('title'));
+        }
+      });
+      $.each( params, function(i,v){
+        if (params.length > 1) {
+          var j = i - 1;
+          if (i != 0 && titles[j] !== titles[i]) {
+            str += '&';
+          }
+          if (titles[j] !== titles[i]){
+            str += titles[i] +'=';
+          } else {
+            str += '+';
+          }
+        } else {
+          str += titles[i] +'=';
+        }
+        str += v;
+      });
+      if (typeof price_range !== 'undefined') {
+        str += '&prices='+ price_range;
+      }
+      if (typeof sorted !== 'undefined') {
+        str += '&sort_by='+ sorted;
+      }
+      update_result_product_range(str)
+    });
+  });
 </script>
+
 
 {% schema %}
   {
     "name": "Collection page filters",
+    "class": "hide",
     "settings": [
+		{
+			"type": "header",
+			"content": "Colors"
+		},
+		{
+			"type": "color",
+			"id": "title_color",
+			"label": "Title color",
+			"default": "#000"
+		},
+		{
+			"type": "color",
+			"id": "option_color",
+			"label": "Option color",
+			"default": "#000"
+		},
+		{
+			"type": "color",
+			"id": "border_color",
+			"label": "Border color",
+			"default": "#808080"
+		},
+		{
+			"type": "color",
+			"id": "icon_color",
+			"label": "Icon color",
+			"default": "#808080"
+		},
+		{
+			"type": "color",
+			"id": "button_text_color",
+			"label": "Button text color",
+			"default": "#000"
+		},
+		{
+			"type": "color",
+			"id": "button_background_color",
+			"label": "Button background color",
+			"default": "#fff"
+		},
+		{
+			"type": "color",
+			"id": "button_active_text_color",
+			"label": "Button active - text color",
+			"default": "#fff"
+		},
+		{
+			"type": "color",
+			"id": "button_active_background_color",
+			"label": "Button active - background color",
+			"default": "#454142"
+		}
     ],
     "blocks": [
       {
         "type": "collection_filters",
         "name": "Collection Filters",
-        "limit": 3,
         "settings": [
+        {
+          "type": "checkbox",
+          "id": "enable",
+          "label": "Enable",
+          "default": true
+        },
           {
             "type": "text",
             "id": "title",
@@ -123,7 +218,37 @@
             "id": "filter_tags",
             "label": "Tags",
             "info": "Separate with a comma"
-          }
+          },
+          {
+            "type": "text",
+            "id": "filter_tags_removal",
+            "label": "Part of tag to remove for display"
+          },
+		  {
+			"type": "select",
+			"id": "filter_type",
+			"label": "Filter type",
+			"default": "radiobutton",
+			"options": [
+				{
+					"value": "radiobutton",
+					"label": "Radio Button"
+				},
+				{
+					"value": "checkbox",
+					"label": "Checkbox"
+				},
+				{
+					"value": "color_swatch",
+					"label": "Color swatch"
+				},
+				{
+					"value": "button",
+					"label": "Button"
+				}
+			]
+		  }
+		
         ]
       }
     ]

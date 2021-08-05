@@ -1,36 +1,41 @@
 {% if settings.header_sticky %}
-  <script>
-    var lastScrollTop = 0,
-        delta = 5,
-        navbarHeight = $('#header-container').outerHeight()*1 + 70;
-    function sticky_relocate() {
-      var window_top = $(window).scrollTop();
-      if(Math.abs(lastScrollTop - window_top) <= delta)
-        return;
-      if (window_top > lastScrollTop && window_top > navbarHeight){
-        $('#header-container').removeClass('nav-down').addClass('nav-up');
-      } else {
-        if(window_top + $(window).height() < $(document).height()) {
-          $('#header-container').removeClass('nav-up').addClass('nav-down');
-        }
-      }
-      lastScrollTop = window_top;
+<script>
+  
+
+  function sticky_relocate() {
+    var window_top = $(window).scrollTop();
+    var div_top = $('#sticky-anchor').offset().top;
+    
+    var notification_bar_height = 0;
+    if ( $('#sticky-notification-anchor').length > 0 ) {
+      notification_bar_height = $('.notification-bar').outerHeight();
     }
-    $(window).scroll( $.throttle( 250, sticky_relocate ) );
-    $(document).ready(function(){
-      var headerHeight = $('#shopify-section-header').outerHeight(),
-          top_style = headerHeight + 70,
-          style = $('<style>#header-container.sticky-header.nav-up { top: -'+ top_style +'px; }</style>');
-      $('html > head').append(style);
-      $('#shopify-section-header').height(headerHeight).find('#header-container').addClass('sticky-header');
-    });
-  </script>
+
+    var height = $('#shopify-section-header').outerHeight() + $('.notification-bar').outerHeight();
+    $('.mobile-nav-wrapper').css("min-height", `calc(100vh - ${height}px)`);
+
+    if (window_top > div_top) {
+      $('#header-container').addClass('sticky-header');
+      $("#header-container").css({top: notification_bar_height});
+    } else {
+      $('#header-container').removeClass('sticky-header');
+      $("#header-container").css({top: 0});
+    }
+  }
+  $(document).ready(function(){
+    // $('#shopify-section-header').height($('#shopify-section-header').outerHeight());
+  });
+  $(window).load(function() {
+    sticky_relocate();
+    $(window).scroll(sticky_relocate);
+  });
+</script>
 {% endif %}
 
 <header data-section-type="header-section" id="header-container">
   <div class="container site-header" role="banner">
-    <div class="row align-items-center">
-      <div class="col-auto order-{% if settings.align_logo == 'center' %}3{% else %}1{% endif %}">
+    <div class="row align-items-center justify-content-between">
+      <div class="col-md-auto col-30 order-{% if settings.align_logo == 'center' %}3{% else %}1{% endif %}">
         {% include 'header-logo' %}
       </div>
 
@@ -43,11 +48,11 @@
       <div class="col{% unless settings.align_logo == 'center' %}-auto{% endunless %} order-5 text-right site-header__icons">
         <div class="site-header__icons-wrapper">
 
-          {% include 'search-toggle' %}
-
           {% include 'header-account' %}
 
           {% include 'header-cart_icon' %}
+
+          {% include 'search-toggle' %}
 
           {% include 'header-menu_icon' %}
 

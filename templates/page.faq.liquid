@@ -1,4 +1,4 @@
-<div class="container">
+<!-- <div class="container">
   <div class="row justify-content-center">
     <article class="col-lg-40">
       <div class="rte">
@@ -8,4 +8,48 @@
       </div>
     </article>
   </div>
+</div> -->
+
+{% assign page_split = page.content | split: '<h6>' %}
+  
+{% assign page_content = '' %}
+{% for page_item in page_split %}
+  {% assign page_pairs = page_item | split: '</h6>' %}
+  {% if page_pairs[0].size > 2 %}
+    {% capture page_content %}
+      {{ page_content }}
+  <div class="faq-item">
+    <h4>{{ page_pairs[0] }}<i class="fa fa-plus"></i></h4>
+    <div class="faq-content">
+      {{ page_pairs[1] }}
+    </div>
+  </div>
+    {% endcapture %}
+  {% endif %}
+{% endfor %}
+
+<div class="container faq-container">
+  <div class="row">
+    <div class="col-xl-40 offset-xl-10 col-lg-50 offset-lg-5">
+      {%- assign start_title = page.content | slice: 0, 3 -%}
+      {% unless start_title contains 'h1' %}
+        <div class="section-header">
+          <h1>{{ page.title }}</h1>
+        </div>
+      {% endunless %}
+
+        <div class="rte">
+          {{ page_content }}
+        </div>
+    </div>
+  </div>
 </div>
+
+<script>
+  $(document).ready(function() {
+    $('.faq-item h4').on('click',function() {
+      $(this).find('i').toggleClass('rotate');
+      $(this).siblings('.faq-content').toggleClass('open');
+    });
+  });
+</script>

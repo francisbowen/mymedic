@@ -1,0 +1,111 @@
+<div class="row align-items-center background-container" 
+{% if specs_background_image != blank %}
+    style="background-image: url({{ specs_background_image | img_url: 'master' }});"
+{% endif %}>
+
+{% if specs_height != blank or specs_width != blank or specs_depth != blank or specs_weight != blank %}
+
+<div class="col-md-18 left-container">
+
+    {% if specs_height != blank  %}
+    <div class="spec">
+        <p class="title">Height</p>
+        <p class="info">{{ specs_height }}</p>
+    </div>
+    {% endif %}
+
+    {% if specs_width %}
+    <div class="spec">
+        <p class="title">width</p>
+        <p class="info">{{ specs_width }}</p>
+    </div>
+    {% endif %}
+
+    {% if specs_depth != blank %}
+    <div class="spec">
+        <p class="title">depth</p>
+        <p class="info">{{ specs_depth }}</p>
+    </div>
+    {% endif %}
+
+    {% if specs_weight != blank %}
+    <div class="spec">
+        <p class="title">weight</p>
+        <p class="info">{{ specs_weight }}</p>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="col-md-42 right-container">
+    {% if specs_level != blank %}
+    <div class="skill-level infos">
+        <p class="title">Skill Level</p>
+        <p class="info">
+            <span class="{% if specs_level == 'basic' %}active{% endif %}">Basic</span>
+            <span class="{% if specs_level == 'advanced' %}active{% endif %}">Advanced</span>
+            <span class="{% if specs_level == 'pro' %}active{% endif %}">Pro</span>
+        </p>
+    </div>
+    {% endif %}
+
+    {% if specs_type != blank %}
+    <div class="type infos">
+        <p class="title">Type</p>
+        <p class="info">
+            <span class="{% if specs_type == 'universal' %}active{% endif %}">universal</span>
+            <span class="{% if specs_type == 'specialty' %}active{% endif %}">specialty</span>
+        </p>
+    </div>
+    {% endif %}
+
+    {% if specs_group_size != blank %}
+    <div class="group-size infos">
+        <p class="title">Group Size</p>
+        <p class="info">
+            {% if specs_group_size contains '8+' %}
+                <span class="active">
+                    <span>1</span>
+                    <span>2+</span>
+                    <span>5+</span>
+                    <span>8+</span>
+                </span>
+            {% elsif specs_group_size contains '5-7' %}
+                <span class="active">
+                    <span>1</span>
+                    <span>2+</span>
+                    <span>5+</span>
+                </span>                                
+                <span>8+</span>
+            {% elsif specs_group_size contains '2-4' %}
+                <span class="active">
+                    <span>1</span>
+                    <span>2+</span>
+                </span>    
+                <span>5+</span>                            
+                <span>8+</span>
+            {% elsif specs_group_size contains '1' %}
+                <span class="active">
+                    <span>1</span>
+                </span>    
+                <span>2+</span>
+                <span>5+</span>                            
+                <span>8+</span>
+            {% endif %}
+        </p>
+    </div>
+    {% endif %}
+
+    {% if environment != blank %}
+    <div class="environment infos">
+        <p class="title">Environment</p>
+        <p class="info">
+            <span class="{% if environment contains 'dry' %}active{% endif %}">dry</span>
+            <span class="{% if environment contains 'dirty' %}active{% endif %}">dirty</span>
+            <span class="{% if environment contains 'muddy' %}active{% endif %}">muddy</span>
+            <span class="{% if environment contains 'light rain' %}active{% endif %}">light rain</span>
+        </p>
+    </div>
+    {% endif %}
+</div>
+</div>

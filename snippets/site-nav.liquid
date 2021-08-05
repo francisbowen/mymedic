@@ -4,7 +4,12 @@
 
     {% if settings.megamenu1 == link.title %}
       <li class="site-nav--has-megamenu{% if link.active %} site-nav--active active{% endif %}">
-        <a href="{{ link.url }}" class="site-nav__link site-nav__link--main" aria-has-popup="true" aria-expanded="false" aria-controls="SiteNavLabel-{{ child_list_handle }}">
+        {% assign link_title = link.title | downcase %}
+        <a  
+          href="{{ link.url }}" 
+          class="site-nav__link site-nav__link--main
+            {% if link_title == 'clearance' or link_title == 'sale' %}active_color{% endif %}" 
+          aria-has-popup="true" aria-expanded="false" aria-controls="SiteNavLabel-{{ child_list_handle }}">
           {{ link.title }}
           <span class="visually-hidden">{{ 'layout.navigation.expand' | t }}</span>
         </a>
@@ -13,7 +18,11 @@
 
     {% elsif settings.megamenu2 == link.title %}
       <li class="site-nav--has-megamenu{% if link.active %} site-nav--active active{% endif %}">
-        <a href="{{ link.url }}" class="site-nav__link site-nav__link--main" aria-has-popup="true" aria-expanded="false" aria-controls="SiteNavLabel-{{ child_list_handle }}">
+        {% assign link_title = link.title | downcase %}
+        <a href="{{ link.url }}" 
+          class="site-nav__link site-nav__link--main
+            {% if link_title == 'clearance' or link_title == 'sale' %} active_color{% endif %}" 
+          aria-has-popup="true" aria-expanded="false" aria-controls="SiteNavLabel-{{ child_list_handle }}">
           {{ link.title }}
           <span class="visually-hidden">{{ 'layout.navigation.expand' | t }}</span>
         </a>
@@ -22,7 +31,11 @@
 
     {% elsif settings.megamenu3 == link.title %}
       <li class="site-nav--has-megamenu{% if link.active %} site-nav--active active{% endif %}">
-        <a href="{{ link.url }}" class="site-nav__link site-nav__link--main" aria-has-popup="true" aria-expanded="false" aria-controls="SiteNavLabel-{{ child_list_handle }}">
+        {% assign link_title = link.title | downcase %}
+        <a href="{{ link.url }}" 
+          class="site-nav__link site-nav__link--main
+            {% if link_title == 'clearance' or link_title == 'sale' %}active_color{% endif %}" 
+          aria-has-popup="true" aria-expanded="false" aria-controls="SiteNavLabel-{{ child_list_handle }}">
           {{ link.title }}
           <span class="visually-hidden">{{ 'layout.navigation.expand' | t }}</span>
         </a>
@@ -31,7 +44,12 @@
 
     {% elsif settings.megamenu4 == link.title %}
       <li class="site-nav--has-megamenu{% if link.active %} site-nav--active active{% endif %}">
-        <a href="{{ link.url }}" class="site-nav__link site-nav__link--main" aria-has-popup="true" aria-expanded="false" aria-controls="SiteNavLabel-{{ child_list_handle }}">
+        {% assign link_title = link.title | downcase %}
+        <a  
+          href="{{ link.url }}" 
+          class="site-nav__link site-nav__link--main 
+            {% if link_title == 'clearance' or link_title == 'sale' %}active_color{% endif %} " 
+          aria-has-popup="true" aria-expanded="false" aria-controls="SiteNavLabel-{{ child_list_handle }}">
           {{ link.title }}
           <span class="visually-hidden">{{ 'layout.navigation.expand' | t }}</span>
         </a>
@@ -40,7 +58,11 @@
 
     {% elsif settings.megamenu5 == link.title %}
       <li class="site-nav--has-megamenu{% if link.active %} site-nav--active active{% endif %}">
-        <a href="{{ link.url }}" class="site-nav__link site-nav__link--main" aria-has-popup="true" aria-expanded="false" aria-controls="SiteNavLabel-{{ child_list_handle }}">
+        {% assign link_title = link.title | downcase %}
+        <a href="{{ link.url }}" 
+          class="site-nav__link site-nav__link--main
+            {% if link_title == 'clearance' or link_title == 'sale' %}active_color{% endif %}" 
+          aria-has-popup="true" aria-expanded="false" aria-controls="SiteNavLabel-{{ child_list_handle }}">
           {{ link.title }}
           <span class="visually-hidden">{{ 'layout.navigation.expand' | t }}</span>
         </a>
@@ -49,7 +71,11 @@
 
     {% elsif settings.megamenu6 == link.title %}
       <li class="site-nav--has-megamenu{% if link.active %} site-nav--active active{% endif %}">
-        <a href="{{ link.url }}" class="site-nav__link site-nav__link--main" aria-has-popup="true" aria-expanded="false" aria-controls="SiteNavLabel-{{ child_list_handle }}">
+        {% assign link_title = link.title | downcase %}
+        <a  href="{{ link.url }}" 
+          class="site-nav__link site-nav__link--main
+            {% if link_title == 'clearance' or link_title == 'sale' %} active_color{% endif %}" 
+          aria-has-popup="true" aria-expanded="false" aria-controls="SiteNavLabel-{{ child_list_handle }}">
           {{ link.title }}
           <span class="visually-hidden">{{ 'layout.navigation.expand' | t }}</span>
         </a>
@@ -58,7 +84,11 @@
 
     {% elsif linklists[child_list_handle].links != blank %}
       <li class="site-nav--has-dropdown{% if link.active %} site-nav--active active{% endif %}">
-        <a href="{{ link.url }}" class="site-nav__link site-nav__link--main" aria-has-popup="true" aria-expanded="false" aria-controls="SiteNavLabel-{{ child_list_handle }}">
+        {% assign link_title = link.title | downcase %}
+        <a href="{{ link.url }}" 
+          class="site-nav__link site-nav__link--main 
+            {% if link_title == 'clearance' or link_title == 'sale' %} active_color{% endif %} " 
+          aria-has-popup="true" aria-expanded="false" aria-controls="SiteNavLabel-{{ child_list_handle }}">
           {{ link.title }}
           <span class="visually-hidden">{{ 'layout.navigation.expand' | t }}</span>
         </a>
@@ -79,3 +109,20 @@
     {% endif %}
   {% endfor %}
 </ul>
+
+<script>
+  $(document).ready(function(){
+    $( ".megamenu .submenu_links li a" ).hover(
+      function() {
+        var product_image_url = $(this).attr('data-product-image');
+        console.log('product_image_url = ', product_image_url);
+        if (product_image_url != undefined && product_image_url != '' ) {
+          if ($(this).closest('.megamenu').find('.megamenu_image img').length > 0) {
+            $(this).closest('.megamenu').find('.megamenu_image img').attr("src",product_image_url);
+          }
+        }
+      }, function() {
+      }
+    );
+  });
+</script>

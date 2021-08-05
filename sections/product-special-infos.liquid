@@ -1,0 +1,729 @@
+
+{% for image in product.images %}
+    {% assign image_alt = image.alt | downcase %}
+    {% if image_alt contains "what's inside" %}
+        {% assign whatinside_featured_image = image %}
+    {% elsif image_alt contains 'featured_image_specs' %}
+        {% assign specs_background_image = image %}
+    {% elsif image_alt contains 'featured_video' %}
+        {% capture featured_video %}{{ featured_video }}
+            {% include 'featured_video_block', image_alt: image_alt %}
+        {% endcapture %}
+    {% elsif image_alt contains 'product_youtube_' %}
+        {% capture featured_video %}{{ featured_video }}
+            {% include 'featured_video_block', image_alt: image_alt %}
+        {% endcapture %}
+    {% elsif image_alt contains 'product_vimeo' %}
+        {% capture featured_video %}{{ featured_video }}
+            {% include 'featured_video_block', image_alt: image_alt %}
+        {% endcapture %}
+    {% endif %}
+{% endfor %}
+
+{% if featured_video != blank %}
+				
+<script>
+$(document).ready(function(){
+    $('#product-videos .image-bar__item .button').click(function () {
+        var videotype = $(this).attr('data-video-type');
+        console.log('videotype = ', videotype);
+
+        var item = $(this).closest('.image-bar__item');
+        var videoContent = $(item).find('.video_content');
+
+        videoContent.toggle('hide');
+
+        // $('.special-collection-text').hide();
+        // $('.collection-video').addClass('show-video')
+        // playVideo();
+    });
+})
+</script>
+{% endif %}
+
+{% assign product_catagogies_all = '' %}
+{% assign all_categories_index = '' %}
+
+{% assign advanced_item_count = 0 %}
+
+{% capture contents_whatsInside %}
+    {% for block in section.blocks %}
+        {% if block.settings.block_type == 'what_inside_item' %}
+            {% assign advanced_tag_name = block.settings.tag_name | append: '--advanced' %}
+            {% assign advanced_only_tag_name = block.settings.tag_name | append: '--advanced-only' %}
+            {% assign basic_only_tag_name = block.settings.tag_name | append: '--basic-only' %}
+
+            {% if block.settings.catagory != blank %}
+                {% assign catagory_str = block.settings.catagory | downcase | replace: ' ', '_' | replace: '&','_' %}
+            {% endif %}
+            
+            {% if product.tags contains block.settings.tag_name 
+                or product.tags contains basic_only_tag_name 
+                or product.tags contains advanced_tag_name 
+                or product.tags contains advanced_only_tag_name %}
+                <div class="what-inside-item 
+                    {% if product.tags contains basic_only_tag_name %} basic_only
+                    {% else %}
+                        {% if product.tags contains advanced_only_tag_name %} advanced_only
+                            {% assign advanced_item_count = advanced_item_count | plus: 1 %}
+                        {% elsif product.tags contains advanced_tag_name %} advanced_only
+                            {% assign advanced_item_count = advanced_item_count | plus: 1 %}
+                        {% endif %}
+                    {% endif %}
+                    
+                    {% if catagory_str != blank %}{{ catagory_str }}{% endif %}">
+
+                    {% if block.settings.image != blank %}
+                    <img src="{{ block.settings.image | img_url: 'master' }}" alt="" >
+                    {% endif %}
+                    <span class="tooltip-icon"></span>
+                    <div class="tooltip-contents">
+                        <h4 class="title">{{ block.settings.tooltip_icon }}{{ block.settings.tooltip_title }}</h4>
+                        <p class="description">{{ block.settings.tooltip_descrtipion }}</p>
+                    </div>
+                    {% if block.settings.catagory != blank %}
+                        {% assign block_catagory_name = block.settings.catagory | downcase %}
+                        {% if product_catagogies_all contains block_catagory_name %}
+                        {% else %}
+                            {% if product_catagogies_all == '' %}
+                                {% assign product_catagogies_all = product_catagogies_all | append: block_catagory_name %}
+                            {% else %}
+                                {% assign product_catagogies_all = product_catagogies_all | append: ',' | append: block_catagory_name %}
+                            {% endif %}
+                        {% endif %}                        
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% elsif block.settings.block_type == 'catagory_item' %}
+            {% if all_categories_index == '' %}
+                {% assign all_categories_index = all_categories_index | append: forloop.index0 %}
+            {% else %}
+                {% assign all_categories_index = all_categories_index | append: ',' | append: forloop.index0 %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+{% endcapture %}
+
+{%- assign product_descriptions = product.description | split: '<h6>' -%}
+
+{% for product_desc in product_descriptions %}
+    {% assign product_headline_split = product_desc | split: '</h6>' %}
+    {%- assign product_headline = product_headline_split[0] | downcase -%}
+
+    {% if product_headline contains '50/50' %}
+        {% capture contents_exploreProduct %} {{ contents_exploreProduct }}
+        {% assign image_blocks =  product_headline_split[1] | split: '<img' %}
+        <div class="half-half-container row">
+        {% for image_block in image_blocks %}
+            {% if image_block contains 'src=' %}
+                {%- assign image_parts = image_block | split: '<p>' -%}
+                <div class="image-item col-md-30">
+                {% assign titleIndex = 0 %}
+                {% for image_part in image_parts %}
+                    {% if image_part contains 'src=' %}
+                        {% assign image_rebuild = '<img' | append: image_part %}
+                        {{ image_rebuild }}
+                    {% else %}
+                        {% if titleIndex == 0 %}
+                            {% assign new_text = '<p class="h6 title">' | append: image_part %}
+                            {% assign titleIndex = titleIndex | plus: 1 %}
+                        {% else %}
+                            {% assign new_text = '<p class="description">' | append: image_part %}
+                        {% endif %}
+                        {{ new_text }}
+                    {% endif %}
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endfor %}
+        </div>
+        {% endcapture %}
+    {% elsif product_headline contains 'left image' %}
+        {% assign titleIndex = 0 %}
+        {% assign new_text = blank %}
+        {% assign image_rebuild = blank %}
+        {% assign image_blocks =  product_headline_split[1] | split: '<p>' %}
+        {% assign text = blank %}
+
+        {% capture contents_exploreProduct %} {{ contents_exploreProduct }}
+        <div class="left-image-container row">
+            {% for image_block in image_blocks %}
+                {% if image_block contains 'src=' %}
+                    {% assign image_rebuild = image_block %}
+                {% else %}
+                    {% capture text %}
+                        {{ text }}
+                        {% if titleIndex == 0 %}                        
+                            {% assign new_text = '<p class="h6 title">' | append: image_block %}
+                            {% assign titleIndex = titleIndex | plus: 1 %}
+                        {% else %}
+                            {% assign new_text = '<p class="description">' | append: image_block %}
+                        {% endif %}
+                    {{ new_text }}
+                    {% endcapture %}
+                {% endif %}
+            {% endfor %}
+            <div class="col-md-{{ section.settings.left_image_text_ratio }} no-padding">
+                {{ image_rebuild }}
+            </div>
+
+            <div class="texts col-md-{{ 60 | minus: section.settings.left_image_text_ratio }} no-padding">
+                <div class="contents">
+                    {{ text }}
+                </div>
+            </div>
+        </div>
+        {% endcapture %}
+    {% elsif product_headline contains 'right image' %}
+        {% assign titleIndex = 0 %}
+        {% assign image_blocks =  product_headline_split[1] | split: '<p>' %}
+        {% assign image_rebuild = blank %}
+        {% assign text_right = blank %}
+        {% assign new_text = blank %}
+
+        {% capture contents_exploreProduct %} {{ contents_exploreProduct }}
+        <div class="right-image-container row">
+            {% for image_block in image_blocks %}
+                {% if image_block contains 'src=' %}
+                    {% assign image_rebuild = image_block %}
+                {% else %}
+                    {% capture text_right %}
+                        {{ text_right }}
+                        {% if titleIndex == 0 %}
+                            {% assign new_text = '<p class="h6 title">' | append: image_block %}
+                            {% assign titleIndex = titleIndex | plus: 1 %}
+                        {% else %}
+                            {% assign new_text = '<p class="description">' | append: image_block %}
+                        {% endif %}
+                    {{ new_text }}
+                    {% endcapture %}
+                {% endif %}
+            {% endfor %}
+
+            <div class="texts col-md-{{ section.settings.right_image_text_ratio }} d-md-flex align-items-center no-padding">
+                <div class="contents">
+                    {{ text_right }}
+                </div>
+            </div>
+            <div class="col-md-{{ 60 | minus: section.settings.right_image_text_ratio }} no-padding">
+                {{ image_rebuild }}
+            </div>
+        </div>
+        {% endcapture %}
+    {% endif %}
+{% endfor %}
+
+{% assign isSpecs = false %}
+
+{% for tag in product.tags %}
+    {% assign tag_ = tag | downcase %}
+    {% if tag_ contains 'specsheight_' %}
+        {%- assign specs_height = tag_ | remove: 'specsheight_' -%}
+        {% assign isSpecs = true %}
+    {% elsif tag_ contains 'specswidth_' %}
+        {% assign specs_width = tag_ | remove: 'specswidth_' %}
+        {% assign isSpecs = true %}
+    {% elsif tag_ contains 'specsdepth_' %}
+        {%- assign specs_depth = tag_ | remove: 'specsdepth_' -%}
+        {% assign isSpecs = true %}
+    {% elsif tag_ contains 'specsweight_' %}
+        {%- assign specs_weight = tag_ | remove: 'specsweight_' -%}
+        {% assign isSpecs = true %}
+    {% elsif tag_ contains 'specslevel_' %}
+        {% if tag_ contains 'specslevel_advanced' %}
+            {% assign specs_level = 'advanced' %}
+        {% elsif tag_ contains 'specsLevel_basic' %}
+            {% if specs_level == blank %}
+                {% assign specs_level = 'basic' %}
+            {% endif %}
+        {% endif %}
+        {% assign isSpecs = true %}
+    {% elsif tag_ contains 'specs_kittype_universal' %}
+        {% assign specs_type = 'universal' %}
+        {% assign isSpecs = true %}
+    {% elsif tag_ contains 'specs_kittype_specialty' %}
+        {% assign specs_type = 'specialty' %}
+        {% assign isSpecs = true %}
+    {% elsif tag_ contains 'specs_groupsize_' %}
+        {%- assign specs_group_size = tag_ | remove: 'specs_groupsize_' -%}
+        {% assign isSpecs = true %}
+    {% elsif tag_ contains 'specsenviornment_' %}
+        {% assign value = tag_ | remove: 'specsenviornment_' %}
+        {% assign environment = environment | append: value | append: ',' %}
+        {% assign isSpecs = true %}
+    {% elsif tag_ contains 'faq_' %}
+        {% assign faq_page_handle = tag_ | remove: 'faq_' %}
+
+        {% assign faq_content = pages[faq_page_handle].content | split: '<h6>' %}
+
+        {% capture faqContents %}
+            {% for faq_chunk in faq_content %}
+                {% if faq_chunk.size > 5 %}
+                    {% assign faq_parts = faq_chunk | split: '</h6>' %}
+                    <div class="product-specs-faq-item">
+                        <span class="faq-question">Q: {{ faq_parts[0] }}<i class="fa fa-plus"></i><i class="fa fa-minus"></i></span>
+                        <div class="faq-answer">
+                            {{ faq_parts[1] }}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endcapture %}
+
+    {% endif %}
+{% endfor %}
+
+<style>
+    #product-what-inside .grid {
+        display: grid;
+        text-align: center;
+        grid-gap: 10px;
+        grid-template-columns: repeat(auto-fill, minmax( {{ 1100 | divided_by: section.settings.column_count }}px,1fr));
+    }
+</style>
+
+<div class="product-custom-navigation mobile-hide container" id="product-custom-navigation">
+    <ul class="nav nav-tabs text-left row" id="myTab">
+        
+        <li class="col-md whats_inside_thing">
+            <a class="nav-link h6 active show" 
+                data-toggle="tab" data-pane="#product-what-inside" href="#">What's Inside</a>
+        </li>
+
+        {% if contents_exploreProduct != blank %}
+            <li class="col-md">
+                <a class="nav-link h6" 
+                    data-toggle="tab" data-pane="#product-explore" href="#">EXPLORE THE KIT</a>
+            </li>
+        {% endif %}
+
+        {% if isSpecs == true %}
+            <li class="col-md">
+                <a class="nav-link h6" 
+                    data-toggle="tab" data-pane="#product-specs" href="#">Specs</a>
+            </li>
+        {% endif %}
+
+        {% if featured_video != blank %}
+            <li class="col-md">
+                <a class="nav-link h6" 
+                    data-toggle="tab" data-pane="#product-videos" href="#">Videos</a>
+            </li>
+        {% endif %}
+
+        {% if faqContents != blank %}
+            <li class="col-md">
+                <a class="nav-link h6"
+                    data-toggle="tab" data-pane="#product-faqs" href="#">Faqs</a>
+            </li>
+        {% endif %}
+    </ul>
+</div>
+
+<div class="tab-content product-special-tab-content" id="myTabContent">
+
+    <li class="col-md whats_inside_thing">
+        <a class="nav-link h6 desktop-hide active show" 
+            id="hero-tab" 
+            data-toggle="tab" 
+            data-pane="#product-what-inside" 
+            href="#">What's Inside</a>
+    </li>
+
+    <div class="tab-pane fade active show container whats_inside_thing" id="product-what-inside">
+        {% include 'product-infos_whats_inside' %}
+    </div>
+    
+    {% if contents_exploreProduct != blank %}
+        <li class="col-md">
+            <a class="nav-link h6 desktop-hide" 
+                id="shots-tab" 
+                data-toggle="tab" 
+                data-pane="#product-explore" 
+                href="#">EXPLORE THE KIT</a>
+        </li>
+        <div class="tab-pane fade container" id="product-explore">
+            {{ contents_exploreProduct }}
+        </div>
+    {% endif %}
+
+    {% if isSpecs == true %}
+        <li class="col-md">
+            <a class="nav-link h6 desktop-hide" 
+                id="hero-tab" 
+                data-toggle="tab" 
+                data-pane="#product-specs" 
+                href="#">Specs</a>
+        </li>
+        <div class="tab-pane fade container" id="product-specs">
+            {% include 'product-infos_specs' %}
+        </div>
+    {% endif %}
+
+    {% if featured_video != blank %}
+        <li class="col-md">
+            <a class="nav-link h6 desktop-hide" 
+                id="shots-tab" 
+                data-toggle="tab" 
+                data-pane="#product-videos" 
+                href="#">Videos</a>
+        </li>
+        <div class="tab-pane fade container" id="product-videos">
+            <div class="row">                
+                {{ featured_video }}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if faqContents != blank %}
+        <li class="col-md">
+            <a class="nav-link h6 desktop-hide" 
+                id="hero-tab" 
+                data-toggle="tab" 
+                data-pane="#product-faqs" 
+                href="#">Faqs</a>
+        </li>
+        <div class="tab-pane fade {{ section.settings.faq_contained }}"
+            id="product-faqs"> 
+            {{ faqContents }}
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#product-custom-navigation .nav-link').on('click', function (e) {
+            e.preventDefault();
+            var id = $(this).attr('data-pane');
+            $(this).removeClass('active show');            
+            $('.tab-content .tab-pane').removeClass('active show');
+            $(id).addClass('active show');            
+        })
+
+        $('#myTabContent .nav-link.desktop-hide').on('click', function (e) {
+            e.preventDefault();
+            var id = $(this).attr('data-pane');
+
+            if ($(this).hasClass('active')) {
+                $('#myTabContent .nav-link.desktop-hide').removeClass('active show');
+                $('.tab-content .tab-pane').removeClass('active show');
+            } else {
+                $('#myTabContent .nav-link.desktop-hide').removeClass('active show');
+                $(this).addClass('active show');
+                $('.tab-content .tab-pane').removeClass('active show');
+                $(id).addClass('active show');
+            }
+        })
+
+        $('#product-what-inside .inside-grid-overlay').on('click', function (e) {
+            e.preventDefault();
+            console.log('inside-grid-overlay clicked');
+            $('.category_item_active').removeClass('category_item_active');
+            $('.what-inside-item').removeClass('active');
+        })
+
+    });
+</script>
+
+{% if contents_whatsInside != blank 
+    or contents_exploreProduct != blank
+    or isSpecs == true
+    or featured_video != blank 
+    or faqContents != blank %}
+{% else %}
+<style>
+    /* #shopify-section-{{ section.id }} {
+        display: none;
+    } */
+</style>
+{% endif %}
+
+<script>
+    function hide_this_section () {
+        $('.product-special-container').hide();
+    }
+    function show_kittype_buttons() {    
+        $('.kit-type-buttons').show();
+    }
+
+    function check_whats_inside_items() {
+        var length = $('.what-inside-item').length;
+        console.log("what's inside length = ", length);
+        if (length == 0) {
+            $('.whats_inside_thing').addClass('disable');
+
+            {% if contents_exploreProduct != blank
+                or isSpecs == true
+                or featured_video != blank 
+                or faqContents != blank %}
+            {% else %}
+                hide_this_section();
+            {% endif %}
+        }
+    }
+
+</script>
+
+{% schema %}
+{
+  "name": "Product Special Infos",
+  "class": "index-section product-special-info-contents",
+  "settings": [ 
+    {
+        "type": "header",
+        "content": "What's Inside"
+    },
+    {
+        "type": "range",
+        "id": "column_count",
+        "label": "Column - Desktop",
+        "min": 3,
+        "max": 10,
+        "step": 1,
+        "default": 5
+    },
+    {
+        "type": "range",
+        "id": "column_count_mobile",
+        "label": "Column - Mobile",
+        "min": 1,
+        "max": 3,
+        "step": 1,
+        "default": 3
+    },
+
+
+
+
+
+
+
+    {
+        "type": "header",
+        "content": "Explore the bag"
+      },
+    {
+        "type": "header",
+        "content": "Left Image"
+    },
+    {
+        "type": "range",
+        "id": "left_image_text_ratio",
+        "label": "Image : Texts (Ratio)",
+        "min": 1,
+        "max": 59,
+        "step": 1,
+        "default": 50
+      }, 
+
+    {
+        "type": "header",
+        "content": "Right Image"
+    },
+    {
+        "type": "range",
+        "id": "right_image_text_ratio",
+        "label": "Text : Image (Ratio)",
+        "min": 1,
+        "max": 59,
+        "step": 1,
+        "default": 30
+      }, 
+
+    {
+        "type": "header",
+        "content": "Videos"
+    },
+    {
+        "type": "select",
+        "id": "featured_video_play_mode",
+        "label": "Video play mode",
+        "default": "popup",
+        "options": [
+            {
+                "value": "popup",
+                "label": "Popup"
+            },
+            {
+                "value": "classic",
+                "label": "Classic"
+            }
+        ]
+    },
+    {
+        "type": "header",
+        "content": "Faq"
+    },
+    {
+        "type": "radio",
+        "id": "faq_contained",
+        "label": "Slideshow should:",
+        "options": [
+          { "value": "container", "label": "Contstrain to container" },
+          { "value": "container-fluid", "label": "Flow to the width of screen" }
+        ],
+        "default": "container"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "what-inside-item",
+      "name": "What's inside - Item",
+      "settings": [
+      {
+        "type": "select",
+        "id": "block_type",
+        "label": "Block type",
+        "default": "what_inside_item",
+        "options": [
+          {
+            "value": "what_inside_item",
+            "label": "Inside item"
+          },
+          {
+            "value": "catagory_item",
+            "label": "Catagory item"
+          }
+        ]
+      },
+      
+    {
+        "type": "header",
+        "content": "What Inside item - options"
+    },
+        {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Item name"
+        },
+        {
+            "type": "text",
+            "id": "tag_name",
+            "label": "Tag Name"
+        },
+        {
+            "type": "text",
+            "id": "catagory",
+            "label": "Catagory"
+        },
+        {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+        },
+        {
+            "type": "textarea",
+            "id": "tooltip_icon",
+            "label": "Tooptip Icon"
+        },
+        {
+            "type": "text",
+            "id": "tooltip_title",
+            "label": "Tooltip Title"
+        },
+        {
+            "type": "textarea",
+            "id": "tooltip_descrtipion",
+            "label": "Tooltip Description"
+        },
+
+        {
+            "type": "header",
+            "content": "Catagory item - options"
+        },
+        {
+            "type": "text",
+            "id": "catagory_title",
+            "label": "Title"
+        },
+        {
+            "type": "color",
+            "id": "color",
+            "label": "Color"
+        },
+        {
+            "type": "color",
+            "id": "background_color",
+            "label": "Background color"
+        },
+        {
+            "type": "color",
+            "id": "color_hover",
+            "label": "Color (hover)"
+        },
+        {
+            "type": "color",
+            "id": "background_color_hover",
+            "label": "Background color (hover)"
+        },
+        {
+            "type": "select",
+            "id": "button_status",
+            "label": "Enable status",
+            "default": "enable_all",
+            "options": [
+              {
+                "value": "enable_all",
+                "label": "Enable on all"
+              },
+              {
+                  "value": "disable_mobile",
+                  "label": "Disable on mobile"
+              },
+              {
+                  "value": "disable_desktop",
+                  "label": "Disable on desktop"
+              },
+              {
+                  "value": "disable_all",
+                  "label": "Disable on all"
+              }
+            ]
+        },
+        {
+            "type": "checkbox",
+            "id": "enable_manual_width",
+            "label": "Manual width"
+        },
+        {
+            "type": "range",
+            "id": "manual_width",
+            "label": "Width",
+            "min": 10,
+            "max": 300,
+            "step": 5,
+            "default": 70
+        },
+        {
+            "type": "range",
+            "id": "manual_width_mobile",
+            "label": "Width (mobile)",
+            "min": 10,
+            "max": 300,
+            "step": 5,
+            "default": 70
+        },
+        {
+            "type": "range",
+            "id": "label_size",
+            "label": "Font size",
+            "min": 1,
+            "max": 50,
+            "step": 1,
+            "default": 14
+        },
+        {
+            "type": "range",
+            "id": "label_size_mobile",
+            "label": "Font size (mobile)",
+            "min": 1,
+            "max": 50,
+            "step": 1,
+            "default": 12
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

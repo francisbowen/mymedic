@@ -1,0 +1,432 @@
+{% include 'feature-columns' %}
+  
+{% schema %}
+{
+  "name": "Influencer Page",
+  "class": "index-section feature-columns-container influencer-container",
+  "settings": [
+  {
+    "type": "header",
+    "content": "Spacing"
+  },
+  {
+    "type": "range",
+    "id": "ptop",
+    "label": "Top spacing desktop",
+    "min": 0,
+    "unit": "px",
+    "max": 500,
+    "step": 5,
+    "default": 15
+  },
+  {
+    "type": "range",
+    "id": "pbottom",
+    "label": "Bottom spacing desktop",
+    "min": 0,
+    "unit": "px",
+    "max": 500,
+    "step": 5,
+    "default": 15
+  },
+  {
+    "type": "range",
+    "id": "ptop_mob",
+    "label": "Top spacing mobile",
+    "min": 0,
+    "unit": "px",
+    "max": 500,
+    "step": 5,
+    "default": 5
+  },
+  {
+    "type": "range",
+    "id": "pbottom_mob",
+    "label": "Bottom spacing mobile",
+    "min": 0,
+    "unit": "px",
+    "max": 500,
+    "step": 5,
+    "default": 5
+  }, 
+  {
+    "type": "color",
+    "id": "background_color",
+    "label": "Background Color"
+  },
+  {
+    "type": "select",
+    "id": "background_color_type",
+    "label": "Background Color Wide",
+    "default": "full_width",
+    "options": [
+      {
+        "value": "full_width",
+        "label": "Full Width"
+      },
+      {
+        "value": "container",
+        "label": "Container"
+      }
+    ]
+  },
+  
+    {
+      "type": "radio",
+      "id": "contained",
+      "label": "Width should:",
+      "options": [
+        { "value": "container", "label": "Contstrain to container" },
+        { "value": "container-fluid to-edges", "label": "Flow to the width of screen" }
+      ],
+      "default": "container"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Text columns with images"
+    },
+    {
+      "type": "checkbox",
+      "id": "title_bold",
+      "label": "Bold"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "title_size_mobile",
+      "label": "Font size (mobile)",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "title_padding_left",
+      "label": "Padding left",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "title_padding_right",
+      "label": "Padding right",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "title_margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "default": 15
+    },
+{
+  "type": "range",
+  "id": "title_border_bottom",
+  "label": "Border bottom Size",
+  "min": 0,
+  "max": 10,
+  "step": 1,
+  "default": 5
+},
+    {
+      "type": "select",
+      "id": "align_text",
+      "label": "Text alignment",
+      "default": "left",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Centered"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Image colums"
+    },
+    {
+      "type": "range",
+      "id": "column",
+      "label": "Column",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "text_position",
+      "label": "Text positon",
+      "default": "below",
+      "options": [
+        {
+          "value": "above",
+          "label": "Above image"
+        },
+        {
+          "value": "below",
+          "label": "Below image"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_position_mobile",
+      "label": "Text positon (mobile)",
+      "default": "below",
+      "options": [
+        {
+          "value": "above",
+          "label": "Above image"
+        },
+        {
+          "value": "below",
+          "label": "Below image"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Bio content"
+    },
+    {
+      "type": "select",
+      "id": "bio_content_space",
+      "label": "Center Space",
+      "default": "space",
+      "options": [
+        {
+          "value": "space",
+          "label": "Space"
+        },
+        {
+          "value": "no_space",
+          "label": "No space"
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "type": "Ambassador",
+      "name": "Ambassador",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "enable_image",
+          "label": "Show image",
+          "default": true
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Add a title or tagline"
+        },
+        {
+          "type": "select",
+          "id": "text_align",
+          "label": "Text align",
+          "default": "left",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "right",
+              "label": "Right"
+            }
+          ]
+        },
+        {
+          "type": "range",
+          "id": "title_size",
+          "label": "Font size",
+          "min": 10,
+          "max": 100,
+          "step": 1,
+          "default": 21
+        },
+        {
+          "type": "range",
+          "id": "title_size_mobile",
+          "label": "Font size (mobile)",
+          "min": 10,
+          "max": 100,
+          "step": 1,
+          "default": 18
+        },
+
+        
+        {
+          "type": "range",
+          "id": "title_margin_bottom",
+          "label": "Margin bottom",
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "default": 0
+        },
+        {
+          "type": "color",
+          "id": "title_color",
+          "label": "Color"
+        },
+        
+        
+        {
+          "type": "checkbox",
+          "id": "enable_icon",
+          "label": "Enable Icon",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "icon_text",
+          "label": "Icon",
+          "default": ">"
+        },
+        {
+          "type": "color",
+          "id": "icon_color",
+          "label": "Color",
+          "default": "#bf0217"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Color"
+        },
+        {
+          "type": "header",
+          "content": "Bio"
+        },
+        {
+          "type": "text",
+          "id": "bio_title1",
+          "label": "Bio Title 1"
+        },
+        {
+          "type": "color",
+          "id": "bio_title1_color",
+          "label": "Color",
+          "default": "#818284"
+        },
+        {
+          "type": "range",
+          "id": "bio_title1_margin_bottom",
+          "label": "Margin bottom",
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "default": 7
+        },
+        {
+          "type": "range",
+          "id": "bio_title1_border_bottom",
+          "label": "Border bottom",
+          "min": 0,
+          "max": 10,
+          "step": 1,
+          "default": 3 
+        },
+
+        {
+          "type": "text",
+          "id": "bio_title2",
+          "label": "Bio Title 2"
+        },
+        {
+          "type": "color",
+          "id": "bio_title2_color",
+          "label": "Color",
+          "default": "#818284"
+        },
+        {
+          "type": "image_picker",
+          "id": "image1",
+          "label": "Slide Image 1"
+        },
+        {
+          "type": "image_picker",
+          "id": "image2",
+          "label": "Slide Image 2"
+        },
+        {
+          "type": "image_picker",
+          "id": "image3",
+          "label": "Slide Image 3"
+        },
+        {
+          "type": "image_picker",
+          "id": "image4",
+          "label": "Slide Image 4"
+        },
+        {
+          "type": "image_picker",
+          "id": "image5",
+          "label": "Slide Image 5"
+        },
+        {
+          "type": "richtext",
+          "id": "bio_description",
+          "label": "Text"
+        },
+        {
+          "type": "text",
+          "id": "facebook",
+          "label": "Facebook"
+        },
+        {
+          "type": "text",
+          "id": "instagram",
+          "label": "Instagram"
+        },
+        {
+          "type": "text",
+          "id": "youtube",
+          "label": "youtube"
+        }
+
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,8 +1,16 @@
+<style>
+  {% if section.settings.background_color %}
+  #shopify-section-{{ section.id }} {
+    background-color: {{ section.settings.background_color }};
+  }
+  {% endif %}
+</style>
+
 <div class="{{ section.settings.contained }}">
   <div class="row" data-section-id="{{ section.id }}" data-section-type="slideshow-section">
 
     {% if section.blocks.size > 0 %}
-      <div class="col-60 slideshow-wrapper">
+      <div class="col-60 slideshow-wrapper no-padding">
         <button type="button" class="visually-hidden slideshow__pause" data-id="{{ section.id }}" aria-live="polite">
           <span class="slideshow__pause-stop">
             {% include 'icon-pause' %}
@@ -23,9 +31,11 @@
               {% endif %}
             {% endif %}
 
-            <div class="slideshow__slide slideshow__slide--{{ block.id }}{% if is_background_video %} slideshow__slide--background-video{% endif %}" {{ block.shopify_attributes }}>
+            <div id="slideshow__slide--{{ block.id }}" class="slideshow__slide slideshow__slide--{{ block.id }}{% if is_background_video %} slideshow__slide--background-video{% endif %}" {{ block.shopify_attributes }}>
               {% if block.settings.link != blank %}
                 <a href="{{ block.settings.link }}" class="slideshow__link">
+              {% else %}
+                <div class="slideshow__link">
               {% endif %}
 
               <style>
@@ -36,17 +46,25 @@
 
                   @media screen and (max-width: 576px) {
                     .slideshow__image--{{ block.id }} {
-                      background-image: url('{{ block.settings.image | img_url: '800x' }}');
+                      {% if block.settings.image_mobile != blank %}
+                        background-image: url('{{ block.settings.image_mobile | img_url: '800x' }}');
+                      {% else %}
+                        background-image: url('{{ block.settings.image | img_url: '800x' }}');
+                      {% endif %}
                     }
                   }
 
                   @media screen and (min-width: 577px) and (max-width: 768px) {
                     .slideshow__image--{{ block.id }} {
+                      {% if block.settings.image_mobile != blank %}
+                      background-image: url('{{ block.settings.image_mobile | img_url: '1000x' }}');
+                      {% else %}
                       background-image: url('{{ block.settings.image | img_url: '1000x' }}');
+                      {% endif %}
                     }
                   }
 
-                  @media screen and (min-width: 769px) and (max-width: 769px) {
+                  @media screen and (min-width: 769px) and (max-width: 992px) {
                     .slideshow__image--{{ block.id }} {
                       background-image: url('{{ block.settings.image | img_url: '1200x' }}');
                     }
@@ -66,20 +84,45 @@
 
                 {% endif %}
 
-                {% if block.settings.heading_color != blank %}
-                  .slideshow__text--{{ block.id }} h2.h1 {
-                    color: {{ block.settings.heading_color }};
-                  }
-                {% endif %}
+                .slideshow__text--{{ block.id }} h2.h1 {
+                  {% if block.settings.title_size != blank %}
+                    font-size: {{ block.settings.title_size }}px;
+                  {% endif %}
+                  {% if block.settings.title_color != blank %}
+                    color: {{ block.settings.title_color }};
+                  {% endif %}
+                  {% if block.settings.title_margin_bottom != blank %}
+                    margin-bottom: {{ block.settings.title_margin_bottom }}px;
+                  {% endif %}
+                  {% if block.settings.title_bold == false  %}
+                  font-weight: 500;
+                  {% endif %}
+                }
 
-                {% if block.settings.subheading_color != blank %}
-                  .slideshow__text--{{ block.id }} span.mega-subtitle {
-                    color: {{ block.settings.subheading_color }};
+                @media screen and (max-width: 992px) {
+                  .slideshow__text--{{ block.id }} h2.h1 {
+                    {% if block.settings.title_size_tablet != blank %}
+                      font-size: {{ block.settings.title_size_tablet }}px;
+                    {% endif %}
                   }
-                  .slideshow__text--{{ block.id }} hr {
-                    border-top-color: {{ block.settings.subheading_color }};
+                }
+
+                @media screen and (max-width: 768px) {
+                  .slideshow__text--{{ block.id }} h2.h1 {
+                    {% if block.settings.title_mobile_size != blank %}
+                      font-size: {{ block.settings.title_mobile_size }}px;
+                    {% endif %}
                   }
-                {% endif %}
+                }
+
+                .slideshow__text--{{ block.id }} span.mega-subtitle {
+                  {% if block.settings.subtitle_color != blank %}
+                    color: {{ block.settings.subtitle_color }};
+                  {% endif %}
+                  {% if block.settings.subtitle_size != blank %}
+                    font-size: {{ block.settings.subtitle_size }}px;
+                  {% endif %}
+                }
               </style>
 
               {% if block.type == 'video' %}
@@ -108,20 +151,61 @@
                   </div>
                 {% endif %}
               </div>
+              
+              {% if block.settings.overlay %}
+              <style>
+                #shopify-section-{{ section.id }} .slideshow__text--{{ block.id }}.slideshow__overlay::before {
+                  {% if block.settings.overlay_color != blank %}
+                  background-color: {{ block.settings.overlay_color }};
+                  {% endif %}
+                  opacity: {{ block.settings.overlay_opacity }};
+                }
+              </style>
+              {% endif %}
+
               <div class="slideshow__text-wrap slideshow__text--{{ block.id }} row{% if block.settings.overlay %} slideshow__overlay{% endif %}">
-                <div class="col-md-30{% if block.settings.text_layout == 'center' %} offset-md-15{% elsif block.settings.text_layout == 'right' %} offset-md-30{% endif %} text-{{ block.settings.text_align }} slideshow__text-content">
+                <div class="
+                  {% if block.settings.text_layout == 'center' %} col-md-40 offset-md-10
+                  {% elsif block.settings.text_layout == 'right' %} col-md-30 offset-md-30
+                  {% else %}
+                    col-md-30
+                  {% endif %}
+                   text-{{ block.settings.text_align }} 
+                   text-height-{{ block.settings.text_layout_height }} 
+                   slideshow__text-content">
+
                   <div class="page-width">
                     {% unless block.settings.title == blank %}
                       <h2 class="h1 mega-title slideshow__title{% if settings.link != blank %} slideshow__title--has-link{% endif %}">
-                        {{ block.settings.title | escape }}
+                        {{ block.settings.title }}
                       </h2>
                     {% endunless %}
-                    {% unless block.settings.subheading == blank %}
+
+                    {% if block.settings.heading_border == true %}
+                      <div style="
+                        {% if block.settings.heading_border_width > 0 and block.settings.heading_border_bottom > 0 %}                          
+                          width: {{ block.settings.heading_border_width }}px;
+                          border-bottom: {{ block.settings.heading_border_bottom }}px solid;
+                          {% if block.settings.heading_border_color != blank %}
+                            border-color: {{ block.settings.heading_border_color }};
+                          {% endif %}
+                        {% endif %}
+                        {% if block.settings.text_align == 'left' %}
+                          margin-right: auto;
+                        {% elsif block.settings.text_align == 'right' %}
+                          margin-left: auto;
+                        {% else %}
+                          margin-left: auto;
+                          margin-right: auto;
+                        {% endif %}"></div>
+                    {% endif %}
+
+                    {% unless block.settings.subtitle == blank %}
                       <span class="mega-subtitle slideshow__subtitle">
-                        {{ block.settings.subheading | escape }}
+                        {{ block.settings.subtitle | escape }}
                       </span>
                     {% endunless %}
-                    <hr />
+                    
                     {% if block.type == 'video' %}
                       {% unless block.settings.video_type == 'background' %}
                         <div class="slideshow__video-control--play-wrapper{% if block.settings.title != blank or block.settings.subheading != blank %} slideshow__video-control--play-wrapper--push{% endif %}">
@@ -133,15 +217,59 @@
                       {% endunless %}
                     {% else %}
                       {% if block.settings.link != blank and block.settings.button != blank %}
+                        {% style %}
+                          #slideshow__slide--{{ block.id }} .btn {
+                            {% if block.settings.button_width != blank %}
+                              width: {{ block.settings.button_width }}px;
+                            {% endif %}
+                            {% if block.settings.button_text_color != blank %}
+                              color: {{ block.settings.button_text_color }};
+                            {% endif %}
+                            {% if block.settings.button_background_color != blank %}
+                              background-color: {{ block.settings.button_background_color }};
+                            {% endif %}
+                            {% if block.settings.button_title_size != blank %}
+                              font-size: {{ block.settings.button_title_size }}px;
+                            {% endif %}
+                          }
+                          #slideshow__slide--{{ block.id }} .btn:hover {
+                            {% if block.settings.button_text_hover_color != blank %}
+                              color: {{ block.settings.button_text_hover_color }};
+                            {% endif %}
+                            {% if block.settings.button_background_hover_color != blank %}
+                              background-color: {{ block.settings.button_background_hover_color }};
+                            {% endif %}
+                          }
+                          {% if block.settings.button_width_mobile != blank %}
+                          @media screen and (max-width: 767px) {
+                            #slideshow__slide--{{ block.id }} .btn {
+                              {% if block.settings.button_width_mobile != blank %}
+                                width: {{ block.settings.button_width_mobile }}px;
+                              {% endif %}
+                              {% if block.settings.button_title_size_mobile != blank %}
+                                font-size: {{ block.settings.button_title_size_mobile }}px;
+                              {% endif %}
+                            }
+                          }
+                          {% endif %}
+
+                        {% endstyle %}
                         <span class="btn">{{ block.settings.button }}</span>
                       {% endif %}
                     {% endif %}
                   </div>
                 </div>
+
+                {% if block.settings.cross_mark != blank %}
+                  <img class="cross-mark {{ block.settings.cross_align }}" 
+                    src="{{ block.settings.cross_mark | img_url: '180x' }}" alt="">
+                {% endif %}
               </div>
 
               {% if block.settings.link != blank %}
                 </a>
+              {% else %}
+                </div>
               {% endif %}
             </div>
           {% endfor %}
@@ -174,6 +302,18 @@
       {% capture img_height %}{{ section.blocks[0].settings.image.height | times: 100 }}{% endcapture %}
       {% capture rounddown %}{{ img_height | divided_by: img_width }}{% endcapture %}
       padding-top: {{ rounddown | plus: 1 }}%;
+    }
+    @media screen and (max-width: 768px) {
+      #shopify-section-{{ section.id }} .slideshow.slideshow--maintain_ratio .slideshow__slide:before {
+        {% if section.blocks[0].settings.image_mobile != blank %}
+          {% capture img_mobile_width %}{{ section.blocks[0].settings.image_mobile.width }}{% endcapture %}
+          {% capture img_mobile_height %}{{ section.blocks[0].settings.image_mobile.height | times: 100 }}{% endcapture %}
+          {% capture rounddown_mobile %}{{ img_mobile_height | divided_by: img_mobile_width }}{% endcapture %}
+          padding-top: {{ rounddown_mobile | plus: 1 }}%;
+        {% else %}
+          padding-top: 100%;
+        {% endif %}
+      }
     }
   </style>
 {% endif %}

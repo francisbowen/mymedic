@@ -1,0 +1,327 @@
+{% capture section_style_desktop %}	
+{% if section.settings.ptop != blank %}	
+  padding-top: {{ section.settings.ptop }}px;	
+{% endif %}	
+
+{% if section.settings.pbottom != blank %}        	
+  padding-bottom : {{ section.settings.pbottom }}px;	
+{% endif %}	
+
+{% if section.settings.background_color != blank %}	
+  background-color: {{ section.settings.background_color }};	
+{% endif %}	
+{% endcapture %}	
+
+{% capture section_style_mobile %}	
+{% if section.settings.ptop_mob != blank %}	
+padding-top: {{ section.settings.ptop_mob }}px; 	
+{% endif %}	
+
+{% if section.settings.pbottom_mob != blank %}	
+padding-bottom: {{ section.settings.pbottom_mob }}px;	
+{% endif %}	
+{% endcapture %}	
+
+<style>	
+    {% if section_style_desktop != blank %}	
+        {% if section.settings.background_color_type == 'full_width' %}	
+        #shopify-section-{{ section.id }} {	
+            {{ section_style_desktop }}	
+        }	
+        {% elsif section.settings.background_color_type == 'container' %}	
+        #shopify-section-{{ section.id }} .contents {	
+            {{ section_style_desktop }}	
+            }	
+        {% endif %}	
+    {% endif %}	
+
+    #shopify-section-{{ section.id }} .product-price__price {
+      {% if section.settings.price_color %}
+        color: {{ section.settings.price_color }};
+      {% endif %}
+    }
+  
+    {% if section.settings.show_title %}
+      #shopify-section-{{ section.id }} .grid-view-item__title {
+        {% if section.settings.product_title_size != blank %}
+          font-size: {{ section.settings.product_title_size }}px;
+        {% endif %}
+        {% if section.settings.product_title_color != blank %}
+          color: {{ section.settings.product_title_color }};
+        {% endif %}
+      }
+    {% else %}
+      #shopify-section-{{ section.id }} .grid-view-item__title {
+        display: none;
+      }
+    {% endif %}
+  
+    #shopify-section-{{ section.id }} .show_now.btn {
+      {% if section.settings.shop_btn_text_color != blank %}
+        color: {{ section.settings.shop_btn_text_color }};
+      {% endif %}
+
+      {% if section.settings.shop_btn_font_size != blank %}
+        font-size: {{ section.settings.shop_btn_font_size }}px;
+      {% endif %}
+
+      {% if section.settings.shop_btn_background_color != blank %}
+        background-color: {{ section.settings.shop_btn_background_color }};
+      {% endif %}
+    }
+
+    {% if section.settings.border_bottom_size > 0 %}
+    #shopify-section-{{ section.id }} .show_now.btn:after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -5px;
+      right: 0;
+      margin: auto;
+      width: {{ section.settings.border_bottom_length }}%;
+      height: {{ section.settings.border_bottom_size }}px;
+      background: {{ section.settings.border_bottom_color }};
+      transition: all .66s cubic-bezier(.175,.885,.32,1.275);
+    } 
+    {% endif %}
+
+    #shopify-section-{{ section.id }} .grid__item:hover .show_now.btn:after {
+      width: {{ section.settings.border_bottom_hover_length }}%;
+    }
+
+    #shopify-section-{{ section.id }} .grid__item:hover .show_now.btn {
+      {% if section.settings.shop_btn_text_hover_color != blank %}
+        color: {{ section.settings.shop_btn_text_hover_color }};
+      {% endif %}
+      {% if section.settings.shop_btn_background_hover_color != blank %}
+        background-color: {{ section.settings.shop_btn_background_hover_color }};
+      {% endif %}
+    }
+
+    #shopify-section-{{ section.id }} .section-header {
+      margin-top: {{ section.settings.title_margin_top }}px;
+      margin-bottom: {{ section.settings.title_margin_bottom }}px;
+    }
+
+  #shopify-section-{{ section.id }} .title {
+    {% if section.settings.heading_color != blank %}
+    color:{{ section.settings.heading_color }};
+    {% endif %}
+    {% if section.settings.title_size != blank %}
+    font-size: {{ section.settings.title_size }}px;
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .grid--view-items .grid__item {
+    {% if section.settings.product_item_padding_left %}
+      padding-left: {{ section.settings.product_item_padding_left }}px;
+    {% endif %}
+    {% if section.settings.product_item_padding_right %}
+      padding-right: {{ section.settings.product_item_padding_right }}px;
+    {% endif %}
+    {% if section.settings.product_item_padding_top %}
+      padding-top: {{ section.settings.product_item_padding_top }}px;
+    {% endif %}
+    {% if section.settings.product_item_padding_bottom %}
+      padding-bottom: {{ section.settings.product_item_padding_bottom }}px;
+    {% endif %}
+  }
+
+  @media (max-width: 767px) {	
+    {% if section_style_mobile != blank %}	
+      {% if section.settings.background_color_type == 'full_width' %}	
+        #shopify-section-{{ section.id }} {	
+          {{ section_style_mobile }}	
+        }	
+      {% elsif section.settings.background_color_type == 'container' %}	
+        #shopify-section-{{ section.id }} .contents {	
+          {{ section_style_mobile }}	
+        }	
+      {% endif %}	
+    {% endif %}	
+
+    #shopify-section-{{ section.id }} .section-header {
+      margin-top: {{ section.settings.title_margin_top_mobile }}px;
+      margin-bottom: {{ section.settings.title_margin_bottom_mobile }}px;
+    }
+    #shopify-section-{{ section.id }} .title {
+      {% if section.settings.title_mobile_size != blank %}
+      font-size: {{ section.settings.title_mobile_size }}px;
+      {% endif %}
+    }
+    {% if section.settings.show_title %}
+    #shopify-section-{{ section.id }} .grid-view-item__title {
+      {% if section.settings.product_title_mobile_size != blank %}
+        font-size: {{ section.settings.product_title_mobile_size }}px;
+      {% endif %}
+    }
+    {% endif %}
+
+    #shopify-section-{{ section.id }} .grid--view-items .grid__item {
+      {% if section.settings.product_item_padding_left_mobile %}
+        padding-left: {{ section.settings.product_item_padding_left_mobile }}px;
+      {% endif %}
+      {% if section.settings.product_item_padding_right_mobile %}
+        padding-right: {{ section.settings.product_item_padding_right_mobile }}px;
+      {% endif %}
+      {% if section.settings.product_item_padding_top_mobile %}
+        padding-top: {{ section.settings.product_item_padding_top_mobile }}px;
+      {% endif %}
+      {% if section.settings.product_item_padding_bottom_mobile %}
+        padding-bottom: {{ section.settings.product_item_padding_bottom_mobile }}px;
+      {% endif %}
+    }
+  }	
+
+</style>
+    
+<div class="container contents">
+    <div class="row">
+      {% assign grid-class = 'col-md-60' %}
+  
+      {% if section.settings.title != blank %}
+        {% capture heading %}
+          <h3 class="title text-{{ section.settings.title_align }}" 
+            style="margin-bottom:0;">{{ section.settings.title | escape }}</h2>
+        {% endcapture %}
+      {% endif %}
+  
+      {% if section.settings.title_position == 'left' %}
+        {% if heading != blank %}
+          <div class="col-md-10 section-header">
+            {{ heading }}
+          </div>
+          {% assign grid-class = 'col-md-48 offset-md-2' %}
+        {% endif %}
+      {% elsif section.settings.title_position == 'right' %}
+        {% assign grid-class = 'col-md-48' %}
+      {% endif %}
+  
+      {% if collecton == blank %}
+      {%- assign collection = collections[section.settings.collection] -%}
+      {% endif %}
+
+      {% case section.settings.grid %}
+        {% when '2' %}
+          {%- assign grid_item_width = 'col-md-30' -%}
+          {%- assign image_size = '1000x' -%}
+        {% when '3' %}
+          {%- assign grid_item_width = 'col-md-20' -%}
+          {%- assign image_size = '750x' -%}
+        {% when '4' %}
+          {%- assign grid_item_width = 'col-md-15' -%}
+          {%- assign image_size = '500x' -%}
+        {% when '5' %}
+          {%- assign grid_item_width = 'col-md-12' -%}
+          {%- assign image_size = '250x' -%}
+  
+        {% when '6' %}
+          {%- assign grid_item_width = 'col-md-10' -%}
+          {%- assign image_size = '250x' -%}
+        {% when '7' %}
+          {%- assign grid_item_width = 'col-md-8' -%}
+          {%- assign image_size = '250x' -%}
+        {% when '8' %}
+          {%- assign grid_item_width = 'col-md-7' -%}
+          {%- assign image_size = '250x' -%}
+        {% when '9' %}
+          {%- assign grid_item_width = 'col-md-6' -%}
+          {%- assign image_size = '250x' -%}
+      {% endcase %}
+
+      {% case section.settings.grid_mobile %}
+        {% when '2' %}
+          {%- assign grid_item_width = grid_item_width | append: ' col-30' %}
+        {% when '3' %}
+          {%- assign grid_item_width = grid_item_width | append: ' col-20' %}
+        {% when '4' %}
+          {%- assign grid_item_width = grid_item_width | append: ' col-15' %}
+      {% endcase %}
+  
+      {% if product_limit == blank %}
+      {%- assign product_limit = section.settings.grid | times: section.settings.rows -%}
+      {% endif %}
+
+      {% if section.settings.rows_mobile != blank %}
+        {% assign product_limit_mobile =  section.settings.grid_mobile | times: section.settings.rows_mobile %}
+      {% endif %}
+
+      <div class="{{ grid-class }} grid--view-items">
+  
+        {% if section.settings.title_position == 'top' and heading != blank %}
+        <div class="section-header">
+          {{ heading }}
+        </div>
+        {% endif %}
+  
+        <div class="row">
+          {% for product in collection.products limit: product_limit %}
+            {% if product_limit_mobile != blank %}
+              {% if forloop.index > product_limit_mobile %}
+                {% assign hide_mobile = ' mobile-hide ' %}
+              {% else %}
+                {% assign hide_mobile = blank %}
+              {% endif %}
+            {% else %}
+              {% assign hide_mobile = blank %}
+            {% endif %}
+            <div class="grid__item {{ grid_item_width }} {{ hide_mobile }}">
+              {% include 'product-card-grid-featured_collection', grid_image_width: image_size %}
+            </div>
+          {% else %}
+            {% for i in (1..product_limit) %}
+              <div class="grid__item {{ grid_item_width }}">
+                <div class="grid-view-item">
+                  <a href="#" class="grid-view-item__link">
+                    <div class="grid-view-item__image" style="padding-top: 0">
+                      {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+                      {{ 'product-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+                    </div>
+                    
+                    <div class="h4 grid-view-item__title">{{ 'homepage.onboarding.product_title' | t }}</div>
+                    <div class="grid-view-item__meta">
+                      {% include 'product-price' %}
+                    </div>
+                  </a>
+                </div>
+              </div>
+            {% endfor %}
+          {% endfor %}
+        </div>
+      </div>
+
+      {% if section.settings.title_position == 'right' %}
+        {% if heading != blank %}
+        <div class="col-md-10 offset-md-2 section-header">
+          {{ heading }}
+        </div>
+        {% endif %}
+      {% endif %}
+    </div>
+  
+    {% if section.settings.show_view_all %}
+      <hr class="hr--invisible" />
+      <div class="text-center">
+        <a href="{{ collection.url }}" class="btn">
+          {{ 'collections.general.view_all' | t }}
+        </a>
+      </div>
+    {% endif %}
+</div>
+  
+<script>
+    var title_height = 0;
+    function reloadProductTitle() {
+      $('#shopify-section-{{ section.id }} .grid-view-item__title').each(function( index ) {
+        if (title_height < $(this).outerHeight()) {
+          title_height = $(this).outerHeight();
+        }
+      });
+      console.log('title_height = ', title_height);
+      $('#shopify-section-{{ section.id }} .grid-view-item__title').css("height", title_height);
+    }
+    
+    $(document).ready(function(){
+      reloadProductTitle();
+    });
+</script>

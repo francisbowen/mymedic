@@ -1,9 +1,36 @@
+<style>
+  #shopify-section-{{ section.id }} {
+    {% if section.settings.ptop != blank %}
+      padding-top: {{ section.settings.ptop }}px;
+    {% endif %}
+    {% if section.settings.pbottom != blank %}        
+      padding-bottom : {{ section.settings.pbottom }}px;
+    {% endif %}
+    {% if section.settings.background_color != blank %}
+      background-color: {{ section.settings.background_color }};
+    {% endif %}
+  }
+  @media (max-width: 767px) {
+    #shopify-section-{{ section.id }} {
+      {% if section.settings.ptop_mob != blank %}
+      padding-top: {{ section.settings.ptop_mob }}px; 
+      {% endif %}
+      {% if section.settings.pbottom_mob != blank %}
+      padding-bottom: {{ section.settings.pbottom_mob }}px;
+      {% endif %}
+    }
+  }
+  #shopify-section-{{ section.id }} h1.title{
+    color: {{ section.settings.title_color }};
+  }
+  </style>
+
 <div class="header-image accountheader{% if section.settings.image != blank %} image-bar__overlay{% else %} minimal{% endif %}">
   <div class="header-image--text">
     <div class="container">
       <div class="row align-items-center">
         <div class="col-lg-30">
-          <h1>{{ 'customer.account.title' | t }}</h1>
+          <h1 class="title">{{ 'customer.account.title' | t }}</h1>
         </div>
         <div class="col-lg-30 text-right">
           {{ 'layout.customer.log_out' | t | customer_logout_link }}
@@ -14,44 +41,29 @@
 </div>
 <div class="account">
   <div class="container">
-    <div class="row">
-      <div class="col-md-40 rte">
-        <h2>{{ 'customer.orders.title' | t }}</h2>
+    <div id="customer_info" class="row">
+      <div class="col-md-29 item">
+        <h5 class="item_title">{{ 'customer.account.email' | t }}</h5>
+        <p>{{ customer.email }}</p>
+      </div>
+      <div class="offset-md-2 col-md-29 item">
+        <h5 class="item_title">{{ 'customer.account.shiping_address' | t }}</h5>
+        <p>
+          {{ customer.default_address.address1 }} <br>
+          {{ customer.default_address.address2 }} <br>
+          {{ customer.default_address.city }}, {{ customer.default_address.province_code }} {{ customer.default_address.zip }}
+        </p>
+      </div>
+    </div>
+
+    <div id="order_history" class="row">
+      <div class="col-md-60 rte">
+        <h1 class="title">{{ 'customer.orders.title' | t }}</h1>
 
         {% paginate customer.orders by 20 %}
           {% if customer.orders.size != 0 %}
 
-            <table class="responsive-table">
-              <thead>
-                <tr>
-                  <th>{{ 'customer.orders.order_number' | t }}</th>
-                  <th>{{ 'customer.orders.date' | t }}</th>
-                  <th>{{ 'customer.orders.payment_status' | t }}</th>
-                  <th>{{ 'customer.orders.fulfillment_status' | t }}</th>
-                  <th>{{ 'customer.orders.total' | t }}</th>
-                  {% if section.settings.reorder %}<th>Reorder</th>{% endif %}
-                </tr>
-              </thead>
-              <tbody>
-                {% for order in customer.orders %}
-                  <tr>
-                    <td data-label="{{ 'customer.orders.order_number' | t }}">
-                      <a href="{{ order.customer_url }}" class="btn btn--secondary btn--small">{{ order.name }}</a>
-                    </td>
-                    <td data-label="{{ 'customer.orders.date' | t }}">{{ order.created_at | date: format: 'month_day_year' }}</td>
-                    <td data-label="{{ 'customer.orders.payment_status' | t }}">{{ order.financial_status_label }}</td>
-                    <td data-label="{{ 'customer.orders.fulfillment_status' | t }}">{{ order.fulfillment_status_label }}</td>
-                    <td data-label="{{ 'customer.orders.total' | t }}">{{ order.total_price | money | remove: ".00" }}</td>
-                    {% if section.settings.reorder %}
-                      <td>
-                        <a href="/cart/{% for line_item in order.line_items %}{% unless forloop.first %},{% endunless %}{{ line_item.variant_id }}:{{ line_item.quantity }}{% endfor %}">Reorder</a>
-                      </td>
-                    {% endif %}
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-            <em>{{ section.settings.reordernote }}</em>
+            {% include 'order-history' %}
 
           {% else %}
 
@@ -66,6 +78,8 @@
         {% endpaginate %}
 
       </div>
+
+      {% comment %}
       <div class="col-md-20 rte">
         <h2>{{ 'customer.account.details' | t }}</h2>
 
@@ -73,6 +87,8 @@
 
         <p><a href="/account/addresses" class="btn btn--small">{{ 'customer.account.view_addresses' | t }} ({{ customer.addresses_count }})</a></p>
       </div>
+      {% endcomment %}
+
     </div>
   </div>
 </div>
@@ -107,10 +123,61 @@
 {% schema %}
   {
     "name": "Account Page",
+    "class": "account-page-container",
     "settings": [
       {
         "type": "header",
         "content": "Header"
+      },
+      {
+        "type": "header",
+        "content": "Spacing"
+      },
+      {
+        "type": "range",
+        "id": "ptop",
+        "label": "Top spacing desktop",
+        "min": 0,
+        "unit": "px",
+        "max": 500,
+        "step": 5,
+        "default": 15
+      },
+      {
+        "type": "range",
+        "id": "pbottom",
+        "label": "Bottom spacing desktop",
+        "min": 0,
+        "unit": "px",
+        "max": 500,
+        "step": 5,
+        "default": 15
+      },
+      {
+        "type": "range",
+        "id": "ptop_mob",
+        "label": "Top spacing mobile",
+        "min": 0,
+        "unit": "px",
+        "max": 500,
+        "step": 5,
+        "default": 5
+      },
+      {
+        "type": "range",
+        "id": "pbottom_mob",
+        "label": "Bottom spacing mobile",
+        "min": 0,
+        "unit": "px",
+        "max": 500,
+        "step": 5,
+        "default": 5
+      }, 
+      {
+        "type": "color",
+        "id": "title_color",
+        "label": "Title Color",
+        "default": "#999999"
       },
       {
         "type": "image_picker",

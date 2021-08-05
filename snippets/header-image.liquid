@@ -16,6 +16,7 @@
 {% assign text_class = 'header-image--text' %}
 
 {% assign header_img = false %}
+
 {% if request.page_type == 'collection' %}
   {% if collection.image != blank %}
     {% assign header_img = true %}
@@ -63,9 +64,11 @@
     {% endif %}
     {% if block.settings.title != blank %}
       {% assign header_title = block.settings.title %}
+      {% assign header_title_color = block.settings.title_color %}
     {% endif %}
     {% if block.settings.subtitle != blank %}
       {% assign header_subtitle = block.settings.subtitle %}
+      {% assign header_subtitle_color = block.settings.subtitle_color %}
     {% endif %}
 	{% if block.settings.video != blank %}
       {% assign maintain_ratio = false %}
@@ -106,10 +109,14 @@
         <div class="row">
           <div class="col-lg-30">
             {% if header_title != blank %}
-              <h1>{{ header_title }}</h1>
+              <h1 {% if header_title_color != blank %}
+                style="color: {{ header_title_color }}"
+                {% endif %}>{{ header_title }}</h1>
             {% endif %}
             {% if header_subtitle != blank %}
-              <p>{{ header_subtitle | newline_to_br }}</p>
+              <p {% if header_subtitle_color != blank %}style="color: {{ header_subtitle_color }}"{% endif %}>
+                {{ header_subtitle | newline_to_br }}
+              </p>
             {% endif %}
           </div>
         </div>

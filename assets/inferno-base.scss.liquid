@@ -351,9 +351,9 @@ $color-success-bg: #f8fff9;
 // Forms
 $color-form-text: #333;
 $color-error-input-text: $color-error;
-$input-padding-top-bottom: 10px;
-$input-padding-left-right: 18px;
-$input-padding-top-bottom-small: 8px;
+$input-padding-top-bottom: 7px;
+$input-padding-left-right: 35px;
+$input-padding-top-bottom-small: 7px;
 $input-padding-left-right-small: 15px;
 $input-group-height: 46px;
 $input-group-height-small: 42px;
@@ -781,7 +781,7 @@ html {
   }
 
   @include media-query($min,$md) {
-    height: 300px;
+    height: 250px;
   }
 
   &.header-image--large {
@@ -961,9 +961,12 @@ h6 {
   font-family: $font-stack-header;
   font-style: $font-style-header;
   font-weight: $font-weight-header;
-  line-height: 1.2;
+  line-height: 0.9;
   overflow-wrap: break-word;
   word-wrap: break-word;
+  {% if settings.type_header_upcase %}
+  text-transform: uppercase;
+  {% endif %}
 
   a {
     color: inherit;
@@ -974,7 +977,6 @@ h6 {
 
 h1 {
   font-size: em(floor($font-size-header * 1.35));
-  text-transform: none;
   letter-spacing: 0;
 
   @include media-query($max,$sm) {
@@ -984,7 +986,6 @@ h1 {
 
 h2 {
   font-size: em(floor($font-size-header * 0.78));
-  text-transform: uppercase;
   letter-spacing: 0.1em;
 
   @include media-query($max,$sm) {
@@ -994,7 +995,6 @@ h2 {
 
 h3 {
   font-size: em($font-size-header);
-  text-transform: none;
   letter-spacing: 0;
 
   @include media-query($max,$sm) {
@@ -1181,8 +1181,8 @@ $color-blankstate-background: rgba($color-text, 0.1);
 
 .mega-subtitle {
   @include media-query($min,$md) {
-    font-size: em($font-size-base + 4);
-    margin: 0 auto;
+    // font-size: em($font-size-base + 4);
+    // margin: 0 auto;
 
     .text-center & {
       max-width: 75%;
@@ -1398,21 +1398,17 @@ a[href^="tel"] {
   vertical-align: middle;
   cursor: pointer;
   border: 1px solid transparent;
-  padding: $input-padding-top-bottom-small $input-padding-left-right-small;
+  padding: $input-padding-top-bottom $input-padding-left-right;
   background-color: $color-btn-primary;
   color: $color-btn-primary-text;
   font-family: $font-stack-header;
   font-style: $font-style-header;
-  font-weight: $font-weight-header;
+  font-weight: $font-weight-body--bold;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   white-space: normal;
   font-size: $font-size-base - 2;
   @include transition_default();
-
-  @include media-query($min,$md) {
-    padding: $input-padding-top-bottom $input-padding-left-right;
-  }
 
   &:not([disabled]):hover,
   &:focus {
@@ -1812,9 +1808,9 @@ tfoot th {
       @include transition(top ease-in 0.1s);
     }
 
-    @include media-query($max,$md) {
-      position:relative;
-    }
+    // @include media-query($max,$md) {
+    //   position:relative;
+    // }
   }
 }
 
@@ -1822,7 +1818,7 @@ tfoot th {
   transition: all 0.35s;
 
   @include media-query($max,$sm) {
-    border-bottom: 1px solid $color-border;
+    // border-bottom: 1px solid $color-border;
   }
 
   @include media-query($min,$md) {
@@ -1979,8 +1975,9 @@ tfoot th {
 
   span {
     display: block;
-    padding: 2px 5px;
+    padding: 3px 5px;
     font-size: 11px;
+    text-align: center;
     line-height: 1;
   }
 
@@ -2005,8 +2002,8 @@ tfoot th {
     height: 19px;
 
     span {
-      padding: 4px 6px;
-      font-size: 12px;
+      padding: 6px 4px;
+      font-size: 9px;
     }
   }
 }
@@ -2036,7 +2033,7 @@ tfoot th {
   .site-header__account {
     display: inline-block;
     vertical-align: middle;
-    padding: 18px 8px;
+    padding: 18px 5px;
     margin: 0;
 
     .site-header__icons--plus & {
@@ -2107,7 +2104,7 @@ tfoot th {
     line-height: 45px;
     padding:0 20px;
     background-color: $color-body;
-    border-bottom:1px solid darken($color-body,10);
+    // border-bottom:1px solid darken($color-body,10);
 
     a {
       position: absolute;
@@ -2151,8 +2148,8 @@ tfoot th {
 
     .delete-cart-item {
       position: absolute;
-      right: 30px;
-      top: 30px;
+      top: 0;
+      right: 0;
       z-index: 5;
       cursor: pointer;
     }
@@ -2161,10 +2158,10 @@ tfoot th {
   .cart-sidebar--footer {
     padding:25px 20px;
     background-color: $color-body;
-    position: absolute;
-    bottom:0;
-    left: 0;
-    right: 0;
+    // position: absolute;
+    // bottom:0;
+    // left: 0;
+    // right: 0;
     z-index: 1;
 
     .btn {
@@ -2395,7 +2392,8 @@ tfoot th {
 
     h4 {
       color: $color-menu-subheader;
-
+      margin-bottom: 16px;
+      
       a {
         color: $color-menu-subheader;
 
@@ -2491,7 +2489,7 @@ $mobile-nav-button-padding: 15px;
 }
 
 .mobile-nav__return {
-  border-right: 1px solid $color-border;
+  // border-right: 1px solid $color-border;
 }
 
 .mobile-nav__return-btn {
@@ -2558,6 +2556,7 @@ $mobile-nav-button-padding: 15px;
 .mobile-nav-wrapper {
   @include transform(translate3d(0, -100%, 0));
   position: absolute;
+  top: 0;
   left: 0;
   right: 0;
   background-color: $color-body;
@@ -3489,7 +3488,7 @@ $color-slideshow-close-text: #000;
 }
 
 .hero__btn {
-  margin-top: $section-spacing / 2;
+  margin-top: $section-spacing / 4;
 }
 
 
@@ -3598,7 +3597,7 @@ h1.product-single__title {
   color: $color-text;
   font-size: em($font-size-base + 4);
   font-weight: $font-weight-header;
-  margin-bottom: 30px;
+  // margin-bottom: 30px;
 
   @include media-query($max,$sm) {
     display: block;
@@ -3730,7 +3729,7 @@ h1.product-single__title {
 .product-single__thumbnail {
   display: block;
   margin: 0 0 10px;
-  border: 2px solid transparent;
+  border-bottom: 5px solid transparent;
   padding-bottom: 100%;
   background-size: contain;
   background-repeat: no-repeat;
@@ -3857,7 +3856,7 @@ h1.product-single__title {
   @include media-query($max,$sm) {
     display: inline-block;
     padding-bottom: 10px;
-    width: 72px;
+    // width: 72px;
     float: none;
     vertical-align: middle;
 
@@ -3874,7 +3873,7 @@ h1.product-single__title {
 .product-single__thumbnail {
   @include media-query($max,$sm) {
     margin: 0 auto;
-    width: 50px;
+    // width: 50px;
   }
 }
 
@@ -3999,7 +3998,7 @@ h1.product-single__title {
   .swatch-element {
     -webkit-transform:translateZ(0);
     -webkit-font-smoothing:antialiased;
-    margin:0px 10px 10px 0;
+    margin:0px 10px 0 0;
     position:relative;
 
     &.swatch--color {
@@ -4152,10 +4151,9 @@ h1.product-single__title {
   }
 }
 
-.product-price__price {
-  display: inline-block;
-  color: $color-text;
-}
+// .product-price__price {
+//   display: inline-block;
+// }
 
 .product-price__sale {
   padding-right: 0;

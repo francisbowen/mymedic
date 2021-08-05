@@ -1,46 +1,108 @@
+<style>
+  #shopify-section-{{ section.id }} .mobile-nav-wrapper .active_color,
+  #shopify-section-{{ section.id }} .mobile-nav-wrapper .mobile-nav__sublist-header {
+    color: {{ section.settings.active_color }}!important;
+  }
+</style>
+
 <nav class="mobile-nav-wrapper hidden-lg-up" role="navigation">
   <ul id="MobileNav" class="mobile-nav">
     {% for block in section.blocks %}
       {% case block.type %}
 
         {% when 'row' %}
-          <li class="mobile-nav__item{% unless forloop.last %} border-bottom{% endunless %}">
-            <button type="button" class="btn--link js-toggle-submenu mobile-nav__link" data-target="{{ block.settings.main_title | handleize }}" data-level="1">
+          <li class="mobile-nav__item">
+            <button type="button" class="btn--link js-toggle-submenu mobile-nav__link" 
+              data-target="{{ block.settings.main_title | handleize }}" data-level="1">
               <i class="fa {{block.settings.main_icon}}"></i>{{ block.settings.main_title | escape }}
-              <div class="mobile-nav__icon">
+              <div class="mobile-nav__icon">+
+                {% comment %}
                 {% include 'icon-chevron-right' %}
                 <span class="icon__fallback-text">{{ 'layout.navigation.expand' | t }}</span>
+                {% endcomment %}
               </div>
             </button>
 
             <ul class="mobile-nav__dropdown" data-parent="{{ block.settings.main_title | handleize }}" data-level="2">
-              <li class="mobile-nav__item border-bottom">
+              <li class="mobile-nav__item">
                 <div class="mobile-nav__table">
                   <div class="mobile-nav__table-cell mobile-nav__return">
-                    <button class="btn--link js-toggle-submenu mobile-nav__return-btn" type="button">
+                    <button class="btn--link js-toggle-submenu mobile-nav__return-btn" type="button">>
+                      {% comment %}
                       {% include 'icon-chevron-left' %}
                       <span class="icon__fallback-text">{{ 'layout.navigation.collapse' | t }}</span>
+                      {% endcomment %}
                     </button>
                   </div>
-                  <a href="{{ block.settings.main_link }}" class="mobile-nav__sublist-link mobile-nav__sublist-header">
+                  {% assign main_title = block.settings.main_title  | downcase %} 
+                  <a href="{{ block.settings.main_link }}"               
+                    class="mobile-nav__sublist-link mobile-nav__sublist-header 
+                    {% if main_title == 'clearance' or main_title == 'sale' %} active_color{% endif %}">
                     <i class="fa {{block.settings.main_icon}}"></i>{{ block.settings.main_title | escape }}
                   </a>
                 </div>
               </li>
 
-              {% for link in linklists[block.settings.main_linklist].links %}
-                <li class="mobile-nav__item{% unless forloop.last %} border-bottom{% endunless %}">
-                  <a href="{{ link.url }}" class="mobile-nav__sublist-link animsition-link">
-                    {{ link.title | escape }}
-                  </a>
+              {% for link in linklists[block.settings.main_linklist].links %} 
+                <li class="mobile-nav__item{% comment %}{% unless forloop.last %} border-bottom{% endunless %}{% endcomment %}">
+                  {% if link.links != blank %}
+                    <button type="button" class="btn--link js-toggle-submenu mobile-nav__sublist-link animsition-link" data-target="level_2_{{ link.title | handleize }}" data-level="2">
+                      <i class="fa {{block.settings.main_icon}}"></i>{{ link.title | escape }}
+                      <div class="mobile-nav__icon">
+                        {% include 'icon-chevron-right' %}
+                        <span class="icon__fallback-text">{{ 'layout.navigation.expand' | t }}</span>
+                      </div>
+                    </button>
+
+                    <ul class="mobile-nav__dropdown" data-parent="level_2_{{ link.title | handleize }}" data-level="3">
+                      <li class="mobile-nav__item {% comment %}border-bottom{% endcomment %}">
+                        <div class="mobile-nav__table">
+                          <div class="mobile-nav__table-cell mobile-nav__return">
+                            <button class="btn--link js-toggle-submenu mobile-nav__return-btn" type="button">>
+                              {% comment %}
+                              {% include 'icon-chevron-left' %}
+                              <span class="icon__fallback-text">{{ 'layout.navigation.collapse' | t }}</span>
+                              {% endcomment %}
+                            </button>
+                          </div>
+                          {% assign link_title = link.title  | downcase %} 
+                          <a href="{{ link.url }}" 
+                            class="mobile-nav__sublist-link mobile-nav__sublist-header
+                            {% if link_title == 'clearance' or link_title == 'sale' %} active_color{% endif %}">
+                            <i class="fa {{block.settings.main_icon}}"></i>{{ link.title | escape }}
+                          </a>
+                        </div>
+                      </li>
+                      {% for sublink in link.links %}
+                      {% assign sublink_title = sublink.title  | downcase %} 
+                      <li class="mobile-nav__item{% comment %}{% unless forloop.last %} border-bottom{% endunless %}{% endcomment %}">
+                        <a href="{{ sublink.url }}"
+                          class="mobile-nav__sublist-link animsition-link
+                          {% if sublink_title == 'clearance' or sublink_title == 'sale' %} active_color{% endif %}">
+                          {{ sublink.title | escape }}
+                        </a>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  {% else %}
+                    {% assign link_title = link.title  | downcase %} 
+                    <a href="{{ link.url }}" 
+                      class="mobile-nav__sublist-link animsition-link
+                      {% if link_title == 'clearance' or link_title == 'sale' %} active_color{% endif %}">
+                      {{ link.title | escape }}
+                    </a>
+                  {% endif %}
                 </li>
               {% endfor %}
             </ul>
           </li>
 
         {% when 'simplerow' %}
-          <li class="mobile-nav__item{% unless forloop.last %} border-bottom{% endunless %}">
-             <a href="{{block.settings.main_link}}" class="mobile-nav__link animsition-link">
+          <li class="mobile-nav__item">
+            {% assign block_title = block.settings.main_title | downcase %} 
+            <a href="{{block.settings.main_link}}"
+              class="mobile-nav__link animsition-link
+              {% if block_title == 'clearance' or block_title == 'sale' %} active_color{% endif %}">
               <i class="fa {{block.settings.main_icon}}"></i>{{ block.settings.main_title | escape}}
             </a>
           </li>
@@ -48,12 +110,22 @@
       {% endcase %}
     {% endfor %}
   </ul>
+  {% if settings.enable_socialicons_mobile %}
+    {% assign class = "" %}
+    {% include 'social-icons', class: class %}
+  {% endif %}
 </nav>
 
 {% schema %}
     {
       "name": "Mobile Nav",
       "settings": [
+        {
+          "type": "color",
+          "id": "active_color",
+          "label": "Active color",
+          "default": "#E0222D"
+        }
       ],
       "blocks": [
             {

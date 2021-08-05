@@ -1,0 +1,233 @@
+<style>
+  .product-special-container .product-special-info-contents #product-explore .half-half-container .title {
+    font-size: {{ section.settings.half_half_title_size }}px;
+    color: {{ section.settings.half_half_title_color }};
+    text-align: {{ section.settings.half_half_text_align }};
+  }
+
+  .product-special-container .product-special-info-contents #product-explore .half-half-container .description {
+    font-size: {{ section.settings.half_half_description_size }}px;
+    color: {{ section.settings.half_half_description_color }};
+    text-align: {{ section.settings.half_half_text_align }};
+  }
+
+  .product-special-container .product-special-info-contents #product-explore .left-image-container .title {
+      font-size: {{ section.settings.left_image_title_size }}px;
+      color: {{ section.settings.left_image_title_color }};
+      text-align: {{ section.settings.left_image_text_align }};
+  }
+  .product-special-container .product-special-info-contents #product-explore .left-image-container .description {
+      font-size: {{ section.settings.left_image_description_size }}px;
+      color: {{ section.settings.left_image_description_color }};
+      text-align: {{ section.settings.left_image_text_align }};
+  }
+  .product-special-container .product-special-info-contents #product-explore .left-image-container .texts {
+      background-color: {{ section.settings.left_image_texts_background_color }};
+  }
+
+  .product-special-container .product-special-info-contents  #product-explore .right-image-container .title {
+        font-size: {{ section.settings.right_image_title_size }}px;
+        color: {{ section.settings.right_image_title_color }};
+        text-align: {{ section.settings.right_image_text_align }};
+    }
+    .product-special-container .product-special-info-contents  #product-explore .right-image-container .description {
+        font-size: {{ section.settings.right_image_description_size }}px;
+        color: {{ section.settings.right_image_description_color }};
+        text-align: {{ section.settings.right_image_text_align }};
+    }
+    .product-special-container .product-special-info-contents  #product-explore .right-image-container .texts {
+        background-color: {{ section.settings.right_image_texts_background_color }};
+    }
+</style>
+
+{% schema %}
+{
+  "name": "Explore the kit",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Explore the bag"
+    },
+    {
+      "type": "header",
+      "content": "50/50"
+    },
+    {
+      "type": "range",
+      "id": "half_half_title_size",
+      "label": "Title font size",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "default": 17
+    },
+    {
+      "type": "color",
+      "id": "half_half_title_color",
+      "label": "Color",
+      "default": "#000"
+    },
+    {
+      "type": "select",
+      "id": "half_half_text_align",
+      "label": "Text align",
+      "default": "left",
+      "options": [
+          {
+          "value": "left",
+          "label": "Left"
+          },
+          {
+          "value": "center",
+          "label": "Center"
+          },
+          {
+          "value": "right",
+          "label": "Right"
+          }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "half_half_description_size",
+      "label": "Description font size",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "color",
+      "id": "half_half_description_color",
+      "label": "Color",
+      "default": "#000"
+    },
+
+
+
+
+
+    {
+      "type": "range",
+      "id": "left_image_title_size",
+      "label": "Title font size",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "default": 17
+    },
+    {
+      "type": "color",
+      "id": "left_image_title_color",
+      "label": "Color",
+      "default": "#000"
+    },
+    {
+      "type": "range",
+      "id": "left_image_description_size",
+      "label": "Description font size",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "color",
+      "id": "left_image_description_color",
+      "label": "Color",
+      "default": "#000"
+    },
+    {
+      "type": "select",
+      "id": "left_image_text_align",
+      "label": "Text align",
+      "default": "left",
+      "options": [
+          {
+          "value": "left",
+          "label": "Left"
+          },
+          {
+          "value": "center",
+          "label": "Center"
+          },
+          {
+          "value": "right",
+          "label": "Right"
+          }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "left_image_texts_background_color",
+      "label": "Text background color",
+      "default": "#fff"
+    },
+
+
+
+    {
+      "type": "header",
+      "content": "Right Image"
+    },
+
+    {
+      "type": "range",
+      "id": "right_image_title_size",
+      "label": "Title font size",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "default": 17
+    },
+    {
+      "type": "color",
+      "id": "right_image_title_color",
+      "label": "Color",
+      "default": "#fff"
+    },
+    {
+      "type": "range",
+      "id": "right_image_description_size",
+      "label": "Description font size",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "color",
+      "id": "right_image_description_color",
+      "label": "Color",
+      "default": "#fff"
+    },
+    {
+      "type": "select",
+      "id": "right_image_text_align",
+      "label": "Text align",
+      "default": "left",
+      "options": [
+          {
+          "value": "left",
+          "label": "Left"
+          },
+          {
+          "value": "center",
+          "label": "Center"
+          },
+          {
+          "value": "right",
+          "label": "Right"
+          }
+        ]
+    },
+    {
+      "type": "color",
+      "id": "right_image_texts_background_color",
+      "label": "Text background color",
+      "default": "#000"
+    }
+
+  ]
+}
+{% endschema %}

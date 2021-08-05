@@ -1,5 +1,33 @@
-<div class="container-fluid to-edges">
-  <div class="row no-gutters image-bar image-bar--{{ section.settings.section_height }}">
+
+{% style %}
+  {% if section.settings.section_height == 'maintain_ratio' %}
+  .image-bar--maintain_ratio .image-bar__item {
+    {% capture img_width %}{{ section.blocks[0].settings.image.width }}{% endcapture %}
+    {% capture img_height %}{{ section.blocks[0].settings.image.height | times: 100 }}{% endcapture %}
+    {% capture rounddown %}{{ img_height | divided_by: img_width }}{% endcapture %}
+    padding-top: {{ rounddown | plus: 1 }}%;
+    position: relative;
+    height: 100%;
+  }
+  .image-bar--maintain_ratio .image-bar__item .image-bar__content {
+    height: auto;
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+  }
+  {% endif %}
+
+  {% if section.settings.contained == 'container custom' %}
+    #shopify-section-{{ section.id }} .container.custom {
+      max-width: {{ section.settings.custom_container }}px;
+    }
+  {% endif %}
+{% endstyle %}
+
+<div class="{{ section.settings.contained }} to-edges">
+  <div class="row {% if section.settings.item_gutter %} no-gutters{% endif %} image-bar image-bar--{{ section.settings.section_height }}">
     {% case section.blocks.size %}
       {% when 1 %}
         {%- assign column_size = 'col' -%}
@@ -30,23 +58,65 @@
 
     {% for block in section.blocks %}
       {%- assign img_url = '' -%}
-      <div class="{{ column_size }}" {{ block.shopify_attributes }}>
+      
+      <div id="block--{{ block.id }}" class="{{ column_size }} item" {{ block.shopify_attributes }}>
         <style>
-          .image-bar__item--{{ block.id }} {
-            background-position: {{ block.settings.alignment }};
-          }
+        .image-bar__item--{{ block.id }} {
+          background-position: {{ block.settings.alignment }};
+        }
+
+        #block--{{ block.id }} .btn {
+          {% if block.settings.button_width != blank %}
+              width: {{ block.settings.button_width }}px;
+          {% endif %}
+          {% if block.settings.button_text_color != blank %}
+              color: {{ block.settings.button_text_color }};
+          {% endif %}
+          {% if block.settings.button_background_color != blank %}
+              background-color: {{ block.settings.button_background_color }};
+          {% endif %}
+          {% if block.settings.button_border_color != blank %}
+              border-color: {{ block.settings.button_border_color }};
+          {% endif %}
+        }
+
+        #block--{{ block.id }} .image_link:hover .btn,
+        #block--{{ block.id }} .btn:hover {
+          {% if block.settings.button_text_hover_color != blank %}
+              color: {{ block.settings.button_text_hover_color }};
+          {% endif %}
+          {% if block.settings.button_background_hover_color != blank %}
+              background-color: {{ block.settings.button_background_hover_color }};
+          {% endif %}
+          {% if block.settings.button_border_hover_color != blank %}
+              border-color: {{ block.settings.button_border_hover_color }};
+          {% endif %}
+        }
+
+        {% if block.settings.button_width_mobile != blank %}
+        @media screen and (max-width: 767px) {
+            #block--{{ block.id }} .btn {
+                width: {{ block.settings.button_width_mobile }}px;
+            }
+        }
+        {% endif %}
         </style>
+
         {% if block.settings.image != blank %}
           {%- assign img_url = block.settings.image | img_url: image_size, crop: 'center' -%}
         {% else %}
           {%- assign img_url = '' -%}
         {% endif %}
-        {% if block.settings.link != blank %}
-          <a href="{{ block.settings.link }}" class="image-bar__item image-bar__link" {% unless img_url == blank %}style="background-image: url({{ img_url }});"{% endunless %}>
-        {% elsif img_url != blank %}
-          <div class="image-bar__item image-bar__item--{{ block.id }}" style="background-image: url({{ img_url }});">
+
+        {% if block.settings.btn_url != blank and block.settings.image_link %}
+          <a href="{{ block.settings.btn_url }}" class="image_link">
+            <div class="image-bar__item image-bar__item--{{ block.id }}" style="background-image: url({{ img_url }});">
         {% else %}
-          <div class="image-bar__item">
+          {% if img_url != blank %}
+            <div class="image-bar__item image-bar__item--{{ block.id }}" style="background-image: url({{ img_url }});">
+          {% else %}
+            <div class="image-bar__item">
+          {% endif %}
         {% endif %}
         <div class="image-bar__content{% if block.settings.cta_label != blank %} image-bar__overlay{% endif %}">
           {% if img_url == blank %}
@@ -55,11 +125,25 @@
 
           {% if block.settings.cta_label != blank %}
             <div class="image-bar__text">
-              <h3 class="image-bar__caption">{{ block.settings.cta_label | escape }}</h3>
+              <h3 class="image-bar__caption text-{{ block.settings.text_layout }}">{{ block.settings.cta_label }}</h3>
+
+              {% if block.settings.btn_url != blank and block.settings.image_link %}
+              <div class="button {{ block.settings.button_layout }}">
+              {% else %}              
+              <a class="button {{ block.settings.button_layout }}" href="{{ block.settings.btn_url }}">
+              {% endif %}
+                <span class="btn">{{ block.settings.btn_text }}</span>
+
+              {% if block.settings.btn_url != blank and block.settings.image_link %}
+              </div>
+              {% else %}
+              </a> 
+              {% endif %}            
             </div>
           {% endif %}
         </div>
-        {% if block.settings.link != blank %}
+        {% if block.settings.btn_url != blank and block.settings.image_link %}
+            </div>
           </a>
         {% else %}
           </div>
@@ -76,9 +160,29 @@
 {% schema %}
   {
     "name": "Gallery",
-    "class": "index-section index-section--flush",
+    "class": "index-section index-section--flush image-bar-section",
     "max_blocks": 4,
     "settings": [
+      {
+        "type": "radio",
+        "id": "contained",
+        "label": "Form should:",
+        "options": [
+          { "value": "container", "label": "Constrain to container" },
+          { "value": "container-fluid", "label": "Flow to the width of screen" },
+          { "value": "container custom", "label": "Constrain to customized container" }
+        ],
+        "default": "container"
+      },
+      {
+        "type": "range",
+        "id": "custom_container",
+        "label": "Custom Container Width",
+        "min": 300,
+        "max": 1420,
+        "step": 20,
+        "default": 1420
+      },
       {
         "type": "select",
         "id": "section_height",
@@ -104,8 +208,17 @@
           {
             "label": "Extra Large",
             "value": "x-large"
+          },
+          {
+            "label": "Maintain Ratio based on First Slide",
+            "value": "maintain_ratio"
           }
         ]
+      },
+      {
+        "type": "checkbox",
+        "id": "item_gutter",
+        "label": "Item Gutter"
       }
     ],
     "blocks": [
@@ -139,16 +252,119 @@
             ]
           },
           {
-            "type": "url",
-            "id": "link",
-            "label": "Link",
-            "info": "Optional"
-          },
-          {
             "type": "text",
             "id": "cta_label",
             "label": "Caption"
+          },
+          {
+            "type": "select",
+            "id": "text_layout",
+            "label": "Text Position",
+            "default": "left",
+            "options": [
+                {
+                "value": "left",
+                "label": "Text on Left"
+                },
+                {
+                "value": "center",
+                "label": "Text on Center"
+                },
+                {
+                "value": "right",
+                "label": "Text on right"
+                }
+            ]
+          },
+          {
+            "type": "header",
+            "content": "Button"
+          },
+          {
+            "type": "text",
+            "id": "btn_text",
+            "label": "Button Text",
+            "default": "SHOP KITS >"
+          },
+          {
+            "type": "url",
+            "id": "btn_url",
+            "label": "Button Url"
+          },
+          {
+            "type": "select",
+            "id": "button_layout",
+            "label": "Button Position",
+            "default": "right",
+            "options": [
+                {
+                "value": "left",
+                "label": "Button on Left"
+                },
+                {
+                "value": "center",
+                "label": "Button on Center"
+                },
+                {
+                "value": "right",
+                "label": "Button on right"
+                }
+            ]
+          },
+          {	
+            "type": "range",	
+            "id": "button_width",	
+            "label": "Button Width",	
+            "min": 50,	
+            "max": 300,	
+            "step": 5,	
+            "default": 170	
+          },	
+          {	
+              "type": "range",	
+              "id": "button_width_mobile",	
+              "label": "Button Width (Mobile)",	
+              "min": 50,	
+              "max": 300,	
+              "step": 5,	
+              "default": 170	
+          },	
+          {	
+              "type": "color",	
+              "id": "button_text_color",	
+              "label": "Text Color"	
+          },	
+          {	
+              "type": "color",	
+              "id": "button_background_color",	
+              "label": "Background Color"	
+          },	
+          {	
+              "type": "color",	
+              "id": "button_border_color",	
+              "label": "Border Color"	
+          },	
+          {	
+              "type": "color",	
+              "id": "button_text_hover_color",	
+              "label": "Text Hover Color"	
+          },	
+          {	
+              "type": "color",	
+              "id": "button_background_hover_color",	
+              "label": "Background Hover Color"	
+          },	
+          {	
+              "type": "color",	
+              "id": "button_border_hover_color",	
+              "label": "Border Hover Color"	
+          },
+          {
+            "type": "checkbox",
+            "id": "image_link",
+            "label": "Enable link on image block"
           }
+          
         ]
       }
     ],

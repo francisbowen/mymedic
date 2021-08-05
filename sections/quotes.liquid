@@ -1,9 +1,10 @@
+{% if section.settings.title != blank %}
+<div class="section-header text-center">
+  <h3 class="title">{{ section.settings.title | escape }}</h3>
+</div>
+{% endif %}
+
 <div class="container" data-section-id="{{ section.id }}" data-section-type="quotes">
-  {% if section.settings.title != blank %}
-    <div class="section-header text-center">
-      <h2>{{ section.settings.title | escape }}</h2>
-    </div>
-  {% endif %}
 
   {% if section.blocks.size > 0 %}
     <div class="row quotes-wrapper">
@@ -12,7 +13,9 @@
           {% for block in section.blocks %}
             <div class="quotes-slide--{{ block.id }}" {{ block.shopify_attributes }}>
               <blockquote class="quotes-slider__text text-center">
+                {% comment %}
                 <span class="quote-icon">{% include 'icon-quote' %}</span>
+                {% endcomment %}
                 {% if block.settings.quote != blank %}
                   <div class="rte-setting">{{ block.settings.quote }}</div>
                 {% endif %}
@@ -32,27 +35,60 @@
   {% endif %}
 </div>
 <style>
-  {% if section.settings.background != blank %}
-    #shopify-section-{{ section.id }} {
-      background: {{ section.settings.background }};
+
+    #shopify-section-{{ section.id }} .section-header {
+      {% if section.settings.heading_background != blank %}
+        background: {{ section.settings.heading_background }};
+      {% endif %}
+      {% if section.settings.heading_color != blank %}
+        color: {{ section.settings.heading_color }};
+      {% endif %}
     }
-  {% endif %}
-  {% if section.settings.color-blockquote != blank %}
+    #shopify-section-{{ section.id }} .section-header .title{
+      {% if section.settings.title_size != blank %}
+        font-size: {{ section.settings.title_size }}px;
+      {% endif %}
+    }
     #shopify-section-{{ section.id }} blockquote .rte-setting {
-      color: {{ section.settings.color-blockquote }};
+      {% if section.settings.color-blockquote != blank %}
+        color: {{ section.settings.color-blockquote }};
+      {% endif %}
+      {% if section.settings.quote_size != blank %}
+        font-size: {{ section.settings.quote_size }}px;
+      {% endif %}
     }
-  {% endif %}
-  {% if section.settings.color-author != blank %}
     #shopify-section-{{ section.id }} blockquote cite {
-      color: {{ section.settings.color-author }};
+      {% if section.settings.color-author != blank %}
+        color: {{ section.settings.color-author }};
+      {% endif %}
+      {% if section.settings.author_size != blank %}
+        font-size: {{ section.settings.author_size }}px;
+      {% endif %}
     }
-  {% endif %}
+
+    @media screen and (max-width: 767px) {
+      #shopify-section-{{ section.id }} .section-header .title{
+        {% if section.settings.title_size_mobile != blank %}
+          font-size: {{ section.settings.title_size_mobile }}px;
+        {% endif %}
+      }
+      #shopify-section-{{ section.id }} blockquote .rte-setting {
+        {% if section.settings.quote_size_mobile != blank %}
+          font-size: {{ section.settings.quote_size_mobile }}px;
+        {% endif %}
+      }
+      #shopify-section-{{ section.id }} blockquote cite {
+        {% if section.settings.author_size_mobile != blank %}
+          font-size: {{ section.settings.author_size_mobile }}px;
+        {% endif %}
+      }
+    }
 </style>
 
 {% schema %}
   {
     "name": "Testimonials",
-    "class": "index-section",
+    "class": "index-section quotes-section",
     "max_blocks": 9,
     "settings": [
       {
@@ -62,9 +98,34 @@
         "default": "Testimonials"
       },
       {
+        "type": "range",
+        "id": "title_size",
+        "label": "Font size",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 32
+      },
+      {
+        "type": "range",
+        "id": "title_size_mobile",
+        "label": "Font size (mobile)",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 28
+      },
+
+
+      {
         "type": "color",
-        "id": "background",
-        "label": "Background color"
+        "id": "heading_background",
+        "label": "Heading Background color"
+      },
+      {
+        "type": "color",
+        "id": "heading_color",
+        "label": "Heading Color"
       },
       {
         "type": "color",
@@ -107,6 +168,42 @@
         "id": "arrows",
         "label": "Slider navigational arrows?",
         "default": true
+      },
+      {
+        "type": "range",
+        "id": "quote_size",
+        "label": "Font size",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 18
+      },
+      {
+        "type": "range",
+        "id": "quote_size_mobile",
+        "label": "Font size (mobile)",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 16
+      },
+      {
+        "type": "range",
+        "id": "author_size",
+        "label": "Font size",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 12
+      },
+      {
+        "type": "range",
+        "id": "author_size_mobile",
+        "label": "Font size (mobile)",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 12
       }
     ],
     "blocks": [
@@ -120,12 +217,14 @@
             "label": "Text",
             "default": "<p>Add customer reviews and testimonials to showcase your store’s happy customers.</p>"
           },
+          
           {
             "type": "text",
             "id": "author",
             "label": "Author",
             "default": "Author's name"
           }
+          
         ]
       }
     ],

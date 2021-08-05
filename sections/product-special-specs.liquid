@@ -1,0 +1,241 @@
+<style>
+    .product-special-container .product-special-info-contents #product-specs .left-container {
+        border-right: {{ section.settings.spece_left_right }}px solid;
+    } 
+
+    .product-special-container .product-special-info-contents #product-specs .left-container .spec {
+        text-align: {{ section.settings.spece_left_text_align }};
+        border-bottom: {{ section.settings.spece_left_bottom }}px solid;
+    }
+
+    .product-special-container .product-special-info-contents #product-specs .left-container .spec .title {
+        font-size: {{ section.settings.spece_left_type_size }}px;
+        color: {{ section.settings.spece_left_type_color }};
+    }
+
+    .product-special-container .product-special-info-contents #product-specs .left-container .spec .info {
+        font-size: {{ section.settings.spece_left_value_size }}px;
+        color: {{ section.settings.spece_left_value_color }};
+    }
+
+    .product-special-container .product-special-info-contents #product-specs .right-container {
+        text-align: {{ section.settings.spece_right_text_align }};
+    }
+
+    .product-special-container .product-special-info-contents #product-specs .right-container .title {
+        font-size: {{ section.settings.spece_right_type_size }}px;
+        color: {{ section.settings.spece_right_type_color }};
+    }
+
+    .product-special-container .product-special-info-contents #product-specs .right-container .info {
+        font-size: {{ section.settings.spece_right_value_size }}px;
+        color: {{ section.settings.spece_right_value_color }};
+    }
+
+    .product-special-container .product-special-info-contents #product-specs .right-container .info span.active {
+        color: {{ section.settings.spece_right_value_active_color }};
+    }
+
+    @media screen and (max-width: 767px) {
+        .product-special-container .product-special-info-contents #product-specs .left-container .spec .title {
+            font-size: {{ section.settings.spece_left_type_size_mobile }}px;
+        }
+        .product-special-container .product-special-info-contents #product-specs .left-container .spec .info {
+            font-size: {{ section.settings.spece_left_value_size_mobile }}px;
+        }
+        .product-special-container .product-special-info-contents #product-specs .right-container .title {
+            font-size: {{ section.settings.spece_right_type_size_mobile }}px;
+        }
+        .product-special-container .product-special-info-contents #product-specs .right-container .info {
+            font-size: {{ section.settings.spece_right_value_size_mobile }}px;
+        }
+        .product-special-container .product-special-info-contents #product-specs .left-container {
+            border-right: unset;
+        } 
+    }
+</style>
+
+{% schema %}
+{
+  "name": "Specs",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Specs"
+    },
+    {
+        "type": "header",
+        "content": "Left Block"
+    },
+    {
+        "type": "range",
+        "id": "spece_left_type_size",
+        "label": "Type size",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 16
+    },
+    {
+        "type": "range",
+        "id": "spece_left_type_size_mobile",
+        "label": "Type size (mobile)",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 14
+    },
+    {
+        "type": "color",
+        "id": "spece_left_type_color",
+        "label": "Color",
+        "default": "#fff"
+    },   
+    {
+        "type": "range",
+        "id": "spece_left_value_size",
+        "label": "Value size",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 40
+    },
+    {
+        "type": "range",
+        "id": "spece_left_value_size_mobile",
+        "label": "Value size (mobile)",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 25
+    },
+    {
+        "type": "color",
+        "id": "spece_left_value_color",
+        "label": "Color",
+        "default": "#fff"
+    },
+    {
+        "type": "select",
+        "id": "spece_left_text_align",
+        "label": "Text align",
+        "default": "left",
+        "options": [
+            {
+            "value": "left",
+            "label": "Left"
+            },
+            {
+            "value": "center",
+            "label": "Center"
+            },
+            {
+            "value": "right",
+            "label": "Right"
+            }
+        ]
+    },
+
+    {
+        "type": "range",
+        "id": "spece_left_bottom",
+        "label": "Border bottom",
+        "min": 0,
+        "max": 10,
+        "step": 1,
+        "default": 7
+      },
+
+      {
+        "type": "range",
+        "id": "spece_left_right",
+        "label": "Border right",
+        "min": 0,
+        "max": 10,
+        "step": 1,
+        "default": 5
+      },
+
+      
+    {
+        "type": "header",
+        "content": "Right Block"
+    },
+    {
+        "type": "range",
+        "id": "spece_right_type_size",
+        "label": "Type size",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 16
+    },
+    {
+        "type": "range",
+        "id": "spece_right_type_size_mobile",
+        "label": "Type size (mobile)",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 14
+    },
+    {
+        "type": "color",
+        "id": "spece_right_type_color",
+        "label": "Color",
+        "default": "#fff"
+    },
+    {
+        "type": "range",
+        "id": "spece_right_value_size",
+        "label": "Value size",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 16
+    },
+    {
+        "type": "range",
+        "id": "spece_right_value_size_mobile",
+        "label": "Value size (mobile)",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 14
+    },
+    {
+        "type": "color",
+        "id": "spece_right_value_color",
+        "label": "Color",
+        "default": "#fff"
+    },
+    {
+        "type": "color",
+        "id": "spece_right_value_active_color",
+        "label": "Active Color",
+        "default": "#c10016"
+    },
+    {
+        "type": "select",
+        "id": "spece_right_text_align",
+        "label": "Text align",
+        "default": "left",
+        "options": [
+            {
+            "value": "left",
+            "label": "Left"
+            },
+            {
+            "value": "center",
+            "label": "Center"
+            },
+            {
+            "value": "right",
+            "label": "Right"
+            }
+        ]
+    }
+
+  ]
+}
+{% endschema %}

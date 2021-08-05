@@ -1,5 +1,8 @@
 {% if section.settings.show_product_recommendations %}
-  <div class="product-recommendations" data-product-id="{{ product.id }}" data-limit="4">
+
+  <div class="product-recommendations" data-product-id="{{ product.id }}" data-limit="{{ section.settings.product_limit }}">
+    {% include 'related-collection', collection: recommendations, product_limit: section.settings.product_limit %}
+    {% comment %}
     <div class="container">
       {% if section.settings.title != blank %}
         <div class="row">
@@ -12,12 +15,17 @@
         {% if recommendations.products_count > 0 %}
           {% for product in recommendations.products %}
             <div class="col-lg-15 col-md-30">
-              {% include 'product-card-grid' %}
+              {% include 'product-card-grid-featured_collection', grid_image_width: image_size %}
             </div>
           {% endfor %}
+        {% else %}
+          <style>
+            #shopify-section-{{ section.id }} { display: none; }
+          </style>
         {% endif %}
       </div>
     </div>
+    {% endcomment %}
   </div>
 {% else %}
   <style>
@@ -43,6 +51,7 @@
         if(typeof(element) == 'undefined' || element == null){
           document.getElementById('shopify-section-{{ section.id }}').style.display = 'none';
         }
+        reloadProductTitle();
       }
     };
     request.send();
@@ -58,7 +67,7 @@
 {% schema %}
   {
     "name": "Related Products",
-    "class": "product-related",
+    "class": "product-related index-section featured-collection",
     "settings": [
       {
         "type": "checkbox",
@@ -66,9 +75,510 @@
         "label": "Show Product Recommendations?"
       },
       {
+        "type": "header",
+        "content": "Spacing"
+      },
+      {
+        "type": "range",
+        "id": "ptop",
+        "label": "Top spacing desktop",
+        "min": 0,
+        "unit": "px",
+        "max": 500,
+        "step": 5,
+        "default": 15
+      },
+      {
+        "type": "range",
+        "id": "pbottom",
+        "label": "Bottom spacing desktop",
+        "min": 0,
+        "unit": "px",
+        "max": 500,
+        "step": 5,
+        "default": 15
+      },
+      {
+        "type": "range",
+        "id": "ptop_mob",
+        "label": "Top spacing mobile",
+        "min": 0,
+        "unit": "px",
+        "max": 500,
+        "step": 5,
+        "default": 5
+      },
+      {
+        "type": "range",
+        "id": "pbottom_mob",
+        "label": "Bottom spacing mobile",
+        "min": 0,
+        "unit": "px",
+        "max": 500,
+        "step": 5,
+        "default": 5
+      }, 
+      {
+        "type": "color",
+        "id": "background_color",
+        "label": "Background Color"
+      },
+      {
+        "type": "select",
+        "id": "background_color_type",
+        "label": "Background Color Wide",
+        "default": "full_width",
+        "options": [
+          {
+            "value": "full_width",
+            "label": "Full Width"
+          },
+          {
+            "value": "container",
+            "label": "Container"
+          }
+        ]
+      },
+
+      
+      
+      
+      {
+        "type": "header",
+        "content": "Heading"
+      },
+      {
         "type": "text",
         "id": "title",
-        "label": "Related section title"
+        "label": "Title",
+        "default": "Featured collection"
+      },
+      {
+        "type": "range",
+        "id": "title_size",
+        "label": "Font size",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 32
+      },
+      {
+        "type": "range",
+        "id": "title_mobile_size",
+        "label": "Font size (mobile)",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 24
+      },
+      {
+        "type": "select",
+        "id": "title_position",
+        "label": "Position",
+        "default": "left",
+        "options": [
+            {
+            "value": "left",
+            "label": "Left"
+            },
+            {
+            "value": "center",
+            "label": "Center"
+            },
+            {
+            "value": "right",
+            "label": "Right"
+            }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "title_align",
+        "label": "Align",
+        "default": "left",
+        "options": [
+            {
+            "value": "left",
+            "label": "Left"
+            },
+            {
+            "value": "center",
+            "label": "Center"
+            },
+            {
+            "value": "right",
+            "label": "Right"
+            }
+        ]
+      },
+
+      {
+        "type": "range",
+        "id": "title_margin_bottom",
+        "label": "Margin bottom",
+        "min": 0,
+        "unit": "px",
+        "max": 50,
+        "step": 1,
+        "default": 15
+      },
+      {
+        "type": "range",
+        "id": "title_margin_bottom_mobile",
+        "label": "Margin bottom mobile",
+        "min": 0,
+        "unit": "px",
+        "max": 50,
+        "step": 1,
+        "default": 10
+      }, 
+      
+
+      {
+        "type": "color",
+        "id": "heading_color",
+        "label": "Color",
+        "default": "#ae2941"
+      },
+      {
+        "type": "range",
+        "id": "product_limit",
+        "label": "Product limit",
+        "min": 4,
+        "max": 20,
+        "step": 1,
+        "default": 4
+      },
+
+      {
+        "type": "select",
+        "id": "grid",
+        "label": "Products per row",
+        "default": "3",
+        "options": [
+          {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          },
+          {
+            "value": "5",
+            "label": "5"
+          },
+          {
+            "value": "6",
+            "label": "6"
+          },
+          {
+            "value": "7",
+            "label": "7"
+          },
+          {
+            "value": "8",
+            "label": "8"
+          },
+          {
+            "value": "9",
+            "label": "9"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "grid_mobile",
+        "label": "Products per row (mobile)",
+        "default": "2",
+        "options": [
+          {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "rows",
+        "label": "Rows",
+        "default": "2",
+        "options": [
+          {
+            "value": "1",
+            "label": "1"
+          },
+          {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          },
+          {
+            "value": "5",
+            "label": "5"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "rows_mobile",
+        "label": "Rows (mobile)",
+        "default": "2",
+        "options": [
+          {
+            "value": "1",
+            "label": "1"
+          },
+          {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          },
+          {
+            "value": "5",
+            "label": "5"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "Product"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_title",
+        "label": "Show Title",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "product_title_size",
+        "label": "Product title size",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 18
+      },
+      {
+        "type": "range",
+        "id": "product_title_mobile_size",
+        "label": "Product title size (mobile)",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "default": 15
+      },
+      {
+        "type": "color",
+        "id": "product_title_color",
+        "label": "Title Color"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_price",
+        "label": "Show Price"
+      },
+      {
+        "type": "color",
+        "id": "price_color",
+        "label": "Price Color"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_variant_swatch",
+        "label": "Show Variant Swatch"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_vendor",
+        "label": "Show product vendors",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "show_view_all",
+        "label": "Show 'View all' button",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "Item Padding"
+      },
+      {
+        "type": "range",
+        "id": "product_item_padding_left",
+        "label": "Padding left",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "default": 10
+      },
+      {
+        "type": "range",
+        "id": "product_item_padding_right",
+        "label": "Padding right",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "default": 10
+      },
+      {
+        "type": "range",
+        "id": "product_item_padding_top",
+        "label": "Padding top",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "default": 0
+      },
+      {
+        "type": "range",
+        "id": "product_item_padding_bottom",
+        "label": "Padding bottom",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "default": 15
+      },
+
+      {
+        "type": "range",
+        "id": "product_item_padding_left_mobile",
+        "label": "Padding left",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "default": 5
+      },
+      {
+        "type": "range",
+        "id": "product_item_padding_right_mobile",
+        "label": "Padding right",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "default": 5
+      },
+      {
+        "type": "range",
+        "id": "product_item_padding_top_mobile",
+        "label": "Padding top",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "default": 0
+      },
+      {
+        "type": "range",
+        "id": "product_item_padding_bottom_mobile",
+        "label": "Padding bottom",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "default": 15
+      },
+
+      {
+        "type": "header",
+        "content": "Buttons"
+      },
+      {
+        "type": "text",
+        "id": "shop_btn",
+        "label": "Button Text",
+        "default": "Shop Now"
+      },
+      {
+        "type": "range",
+        "id": "shop_btn_font_size",
+        "label": "Font size",
+        "min": 1,
+        "max": 59,
+        "step": 1,
+        "default": 14
+      }, 
+
+      
+      {
+        "type": "color",
+        "id": "shop_btn_text_color",
+        "label": "Text color"
+      },
+      {
+        "type": "color",
+        "id": "shop_btn_background_color",
+        "label": "Background color"
+      },
+
+      {
+        "type": "color",
+        "id": "shop_btn_text_hover_color",
+        "label": "Text hover color"
+      },
+      {
+        "type": "color",
+        "id": "shop_btn_background_hover_color",
+        "label": "Background hover color"
+      },
+
+      {
+        "type": "range",
+        "id": "border_bottom_size",
+        "label": "Border bottom",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "default": 4
+      },
+      {
+        "type": "color",
+        "id": "border_bottom_color",
+        "label": "Border bottom color",
+        "default": "#C6090F"
+      },
+      {
+        "type": "range",
+        "id": "border_bottom_length",
+        "label": "Border bottom length",
+        "min": 1,
+        "max": 100,
+        "step": 1,
+        "default": 100
+      },
+      {
+        "type": "range",
+        "id": "border_bottom_hover_length",
+        "label": "Border bottom length (hover)",
+        "min": 1,
+        "max": 100,
+        "step": 1,
+        "default": 75
       }
     ]
   }

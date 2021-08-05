@@ -1,0 +1,56 @@
+{% if grid_image_width %}
+  {%- assign grid_image_width_2 = grid_image_width | split:'x' -%}
+  {%- assign grid_image_width_2 = grid_image_width_2[0] | times:  2 | append: 'x' -%}
+{% else %}
+  {%- assign grid_image_width_2 = '600x' -%}
+{% endif %}
+
+<div class="grid-view-item{% unless product.available %} product-price--sold-out grid-view-item--sold-out{% endunless %}">
+  <a class="grid-view-item__link" href="{{ product.url | within: collection }}">
+    <div class="h5 grid-view-item__title">{{ product.title }}</div>
+    <div class="grid-view-item__image" style="background-image:url({{ product.featured_image.src | img_url: grid_image_width_2 }});"></div>
+    <div class="grid-view-item__content">
+      {%- assign color_options = product.options_with_values | where: 'name', 'Color' -%}
+      {%- assign color_option = color_options[0] -%}
+
+      {% if section.settings.show_variant_swatch %}
+        {% if color_option.values.size > 0 %}
+          {% capture option_index %}option{{ color_option.position }}{% endcapture %}
+          <fieldset class="swatch clearfix" data-option-index="{{ option_index }}" data-option-id="{{ product.id }}">
+            <div class="d-flex flex-wrap swatch--color">
+              {% for value in color_option.values %}
+                {% for variant in product.variants %}
+                  {% if variant[option_index] == value %}
+                    <div data-value="{{ value | escape }}" class="swatch-element color {{ value | handle }}">
+                      <div class="tooltip">{{ value }}</div>
+                      <input id="swatch-{{ product.id }}{{ option_index }}-{{ value | handle }}" type="radio" name="option-{{ product.id }}{{ option_index }}" value="{{ value | escape }}"{% if forloop.first %} checked{% endif %} data-image="{{ variant.image | img_url: '600x' }}" />
+                      <label class="color" for="swatch-{{ product.id }}{{ option_index }}-{{ value | handle }}"></label>
+                      {% if variant.compare_at_price > variant.price %}
+                        <p class="variant-tag">Sale</p>
+                      {% endif %}
+                    </div>
+                    {% break %}
+                  {% endif %}
+                {% endfor %}
+              {% endfor %}
+            </div>
+          </fieldset>
+        {% endif %}
+      {% endif %}
+
+      {% if section.settings.show_vendor %}
+        <div class="grid-view-item__vendor">{{ product.vendor }}</div>
+      {% endif %}
+
+      {% if section.settings.show_price %}
+      <div class="grid-view-item__meta">
+        {% include 'product-price' %}
+      </div>
+      {% endif %}
+
+      {% if section.settings.shop_btn != blank %}
+      <span class="show_now btn">{{ section.settings.shop_btn }}</span>
+      {% endif %}
+    </div>
+  </a>
+</div>

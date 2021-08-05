@@ -1,0 +1,22 @@
+
+{% if section.settings.enable and section.settings.main_product != blank %}
+    {% include 'product-bundle-section' %}
+{% endif %}
+
+{% schema %}
+  {
+    "name": "Login Page Frequently",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "enable",
+        "label": "Enable"
+      },
+      {
+          "type": "product",
+          "id": "main_product",
+          "label": "Main Product"
+      }
+    ]
+  }
+{% endschema %}

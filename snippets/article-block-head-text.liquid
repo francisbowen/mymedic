@@ -1,0 +1,41 @@
+<style>
+  #shopify-section-{{ section.id }} .block-head-text {
+    {% if set.highlight_background_color != blank %}
+      background-color: {{ set.highlight_background_color }};
+    {% endif %}
+    {% if set.highlight_text_color != blank %}
+      color: {{ set.highlight_text_color }};
+    {% endif %}
+    {% if set.highlight_text_align != blank %}
+      text-align: {{ set.highlight_text_align }};
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .block-head-text h5 {
+    {% if set.highlight_text_size != blank %}
+      font-size: {{ set.highlight_text_size }}px;
+    {% endif %}
+    {% if set.highlight_text_bold == false %}
+      font-weight: 500;
+    {% endif %}
+  }
+
+  @media (max-width: 767px) {
+    #shopify-section-{{ section.id }} .block-head-text {
+      {% if set.highlight_text_align_mobile != blank %}
+        text-align: {{ set.highlight_text_align_mobile }};
+      {% endif %}
+    }
+    #shopify-section-{{ section.id }} .block-head-text h5 {
+      {% if set.highlight_text_size_mobile != blank %}
+        font-size: {{ set.highlight_text_size_mobile }}px;
+      {% endif %}
+    }
+  }
+</style>
+
+<div class="block-head-text col-md-46 offset-md-7">
+    <div class="col-md-40 offset-md-10 texts">
+      <h5>{{ text }}</h5>
+    </div>
+</div>

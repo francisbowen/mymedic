@@ -1,0 +1,325 @@
+<link rel="stylesheet" type="text/css"
+   href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css"/>
+<link rel="stylesheet" type="text/css"
+   href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+
+{% capture section_style_desktop %}	
+  {% if section.settings.ptop != blank %}	
+    padding-top: {{ section.settings.ptop }}px;	
+  {% endif %}	
+	
+  {% if section.settings.pbottom != blank %}        	
+    padding-bottom : {{ section.settings.pbottom }}px;	
+  {% endif %}	
+	
+  {% if section.settings.background_color != blank %}	
+    background-color: {{ section.settings.background_color }};	
+  {% endif %}	
+{% endcapture %}	
+	
+{% capture section_style_mobile %}	
+  {% if section.settings.ptop_mob != blank %}	
+  padding-top: {{ section.settings.ptop_mob }}px; 	
+  {% endif %}	
+	
+  {% if section.settings.pbottom_mob != blank %}	
+  padding-bottom: {{ section.settings.pbottom_mob }}px;	
+  {% endif %}	
+{% endcapture %}	
+
+<style>
+  {% if section_style_desktop != blank %}
+    {% if section.settings.background_color_type == 'full_width' %}
+    #shopify-section-{{ section.id }} {
+      {{ section_style_desktop }}
+    }
+    {% elsif section.settings.background_color_type == 'container' %}
+      #shopify-section-{{ section.id }} .contents {
+        {{ section_style_desktop }}
+      }
+    {% endif %}
+  {% endif %}
+
+  @media (max-width: 767px) {
+    {% if section_style_mobile != blank %}
+      {% if section.settings.background_color_type == 'full_width' %}
+      #shopify-section-{{ section.id }} {
+        {{ section_style_mobile }}
+      }
+      {% elsif section.settings.background_color_type == 'container' %}
+      #shopify-section-{{ section.id }} .contents {
+        {{ section_style_mobile }}
+      }
+      {% endif %}
+    {% endif %}
+  }
+</style>
+
+<div class="contents {% if section.settings.contained != blank%}{{ section.settings.contained }}{% else %}container{% endif %}">
+
+  {% if section.settings.title != blank %}
+    <div class="section-header text-{{ section.settings.align_text }}">
+      <style>
+        #shopify-section-{{ section.id }} .section-header {
+          {% if section.settings.title_margin_bottom != blank %}
+            margin-bottom: {{ section.settings.title_margin_bottom }}px;
+          {% endif %}
+        }
+
+        #shopify-section-{{ section.id }} .section-header .title {
+          text-transform: uppercase;
+          {% if section.settings.title_size != blank %}
+            font-size: {{ section.settings.title_size }}px;
+          {% endif %}
+
+          {% if section.settings.title_color != blank %}
+            color: {{ section.settings.title_color }};
+          {% endif %}
+
+          {% if section.settings.title_padding_left != blank %}
+            padding-left: {{ section.settings.title_padding_left }}px;
+          {% endif %}
+
+          {% if section.settings.title_bold == true %}
+            font-weight: bold;
+          {% endif %}
+
+          {% if section.settings.title_padding_right != blank %}
+            padding-right: {{ section.settings.title_padding_right }}px;
+          {% endif %}
+
+          {% if section.settings.title_border_bottom > 0 %}
+            border-bottom: {{ section.settings.title_border_bottom }}px solid;
+          {% endif %}
+        }
+
+        @media (max-width: 767px) {
+          #shopify-section-{{ section.id }} .section-header .title {
+            {% if section.settings.title_size_mobile != blank %}
+              font-size: {{ section.settings.title_size_mobile }}px;
+            {% endif %}
+          }
+        }
+        </style>
+      <span class="title">{{ section.settings.title }}</span>
+    </div>
+  {% endif %}
+
+  <div class="row grid--flush-bottom">
+    {%- assign grid_item_width = 'col-md-20' -%}
+    {%- assign image_size = '345x' -%}
+
+    {% if section.settings.column != blank %}
+      {% assign width = 60 | divided_by: section.settings.column %}
+      {% assign grid_item_width = 'col-md-' | append: width %}
+    {% else %}
+      {% case section.blocks.size %}
+        {% when 1 %}
+          {%- assign grid_item_width = 'col-md-30' -%}
+          {%- assign image_size = '530x' -%}
+        {% when 2 %}
+          {%- assign grid_item_width = 'col-md-30' -%}
+          {%- assign image_size = '530x' -%}
+        {% when 4 %}
+          {%- assign grid_item_width = 'col-md-30' -%}
+          {%- assign image_size = '530x' -%}
+      {% endcase %}
+    {% endif %}
+
+    {% for block in section.blocks %}
+      {% if section.settings.column != blank %}
+        {%- assign column_width = grid_item_width -%}
+      {% else %}
+        {% if section.blocks.size == 5 and forloop.index < 3 %}
+            {%- assign column_width = 'col-md-30' -%}
+        {% else %}
+            {%- assign column_width = grid_item_width -%}
+        {% endif %}
+      {% endif %}
+
+      <div id="block--{{ block.id }}"
+        class="{{ column_width }} item {% if block.type == 'Ambassador' %} rider-details-container {% endif %}"
+        {{ block.shopify_attributes }}>
+
+        {% capture image_title %}
+          {% if block.settings.title != blank %}                          
+            <style>
+            #block--{{ block.id }} .title {
+              {% if block.settings.text_align != blank %}
+                text-align: {{ block.settings.text_align }};
+              {% endif %}
+              {% if block.settings.title_size != blank %}
+                font-size: {{ block.settings.title_size }}px;
+              {% endif %}
+              {% if block.settings.title_color != blank %}
+                color: {{ block.settings.title_color }};
+              {% endif %}
+              {% if block.settings.title_margin_bottom != blank %}
+                margin-bottom: {{ block.settings.title_margin_bottom }}px;
+              {% endif %}
+
+              
+              {% if block.settings.enable_border %}
+                padding-bottom: 3px;
+                border-bottom: {{ block.settings.border_bottom_legnth }}px solid;
+                {% if block.settings.border_color != blank %}
+                border-color: {{ block.settings.border_color }};
+                {% endif %}
+              {% endif %}
+            }
+
+            @media (max-width: 767px) {
+              #block--{{ block.id }} .title {
+                {% if block.settings.title_size_mobile != blank %}
+                  font-size: {{ block.settings.title_size_mobile }}px;
+                {% endif %}
+              }
+            }
+            </style>
+
+            <h4 class="h4 title">
+              <a{% if block.settings.button_link != blank %} href="{{ block.settings.button_link }}"{% endif %}>
+                {{ block.settings.title }} 
+                {% if block.settings.enable_icon and block.settings.icon_text != blank %}
+                <span class="title_icon" style="color: {{ block.settings.icon_color }}">{{ block.settings.icon_text }}</span>
+                {% endif %}
+              </a>
+            </h4>
+          {% endif %}
+        {% endcapture %}
+
+        <div class="content">
+          {% if section.settings.text_position == 'above' %}
+            <div style="margin-bottom: 15px" class="d-md-block d-none">
+              {{ image_title }}
+            </div>
+          {% endif %}
+
+          {% if section.settings.text_position_mobile == 'above' %}
+            <div style="margin-bottom: 15px" class="d-block d-md-none">
+              {{ image_title }}
+            </div>
+          {% endif %}
+
+
+          {% if block.settings.enable_image %}
+            {% if block.settings.image != blank %}
+              <div>
+                <a{% if block.settings.button_link != blank %} href="{{ block.settings.button_link }}"{% endif %}>
+                  {{ block.settings.image | img_url: '480x480' | img_tag: 'feature-row__image' }}
+                </a>
+              </div>
+            {% else %}
+              <p>
+                <a{% if block.settings.button_link != blank %} href="{{ block.settings.button_link }}"{% endif %}>
+                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                </a>
+              </p>
+            {% endif %}
+          {% endif %}
+
+          {% if section.settings.text_position == 'below' %}
+            <div style="margin-top: 15px" class="d-md-block d-none">
+              {{ image_title }}
+            </div>
+          {% endif %}
+
+          {% if section.settings.text_position_mobile == 'below' %}
+            <div style="margin-top: 15px" class="d-block d-md-none">
+              {{ image_title }}
+            </div>
+          {% endif %}
+
+          <div class="text-{{ block.settings.text_align }}">
+            {% if block.settings.text != blank %}
+              <span class="rte-setting text" 
+                style="{% if block.settings.text_color != blank %}color: {{ block.settings.text_color }}{% endif %}">
+                {{ block.settings.text }}</span>
+            {% endif %}
+            {% if block.settings.bio_button != blank %}
+              <span class="bio_btn">{{ block.settings.bio_button }}</span>
+            {% endif %}
+            {% if block.settings.button_label != blank and block.settings.button_link != blank %}
+              <a href="{{ block.settings.button_link }}" class="btn btn--secondary btn--small">
+                {{ block.settings.button_label }}
+              </a>
+            {% endif %}
+          </div>
+        </div>
+
+        {% if block.type == 'Ambassador' %}
+          {% include 'ambassador-bio-block', block: block %}
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+  
+  {% if section.blocks.size == 0 %}
+    {% include 'no-blocks' %}
+  {% endif %}
+</div>
+
+<script>
+  $(document).ready(function () {
+
+    function bio_slide (object) {
+      var item = $(object).closest('.rider-details-container');
+      var bio_content = $(item).find('.rider-details');
+
+      var id = $(item).attr('id');
+      var selected_id = $('.active.rider-details-container').attr('id');
+
+      console.log('id = ', id);
+      console.log('selected_id = ', selected_id);
+
+      if (id == selected_id) {
+        $(bio_content).slideUp();
+        $(item).removeClass('active');
+        $(item).removeAttr("style");
+
+      } else {
+        
+        $(".rider-details").not($(bio_content)).fadeOut();
+        $(".rider-details").not($(bio_content)).removeAttr("style");
+
+        $(".rider-details-container").not($(item)).removeClass('active');
+        $(".rider-details-container").not($(item)).removeAttr("style");
+
+        $(bio_content).slideToggle("fast");
+        $(item).toggleClass('active');
+
+        setTimeout( function(){
+          var height = $(bio_content).outerHeight();
+          console.log('height = ', height);
+
+          height = height + 30;
+          $(item).css('padding-bottom', height);
+        },250);
+
+      }    
+    }
+
+    if ($(".rider-details-container .bio_btn").length > 0) {
+        $(".rider-details-container .bio_btn").unbind('click').bind('click', function (e) {
+            console.log('button clicked');
+            bio_slide(this);
+        });
+    } else {
+      $(".rider-details-container h4").unbind('click').bind('click', function (e) {
+          bio_slide(this);       
+      });
+    }
+    
+    $(".rider-details-container .header_btn").unbind('click').bind('click', function (e) {
+        console.log('close button clicked');
+        bio_slide(this);
+    });
+
+    $(".rider-details-container .content img").unbind('click').bind('click', function (e) {
+        console.log('close button clicked');
+        bio_slide(this);
+    });
+
+  });
+</script>

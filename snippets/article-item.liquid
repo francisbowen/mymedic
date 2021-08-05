@@ -1,0 +1,92 @@
+{% capture article_grid_meta %}
+<div class="article__grid-meta
+    {% if article.image %} article__grid-meta--has-image{% endif %} 
+    {% if top_featured %} 
+        {% if top_featured_aritcle_image_text_ratio != blank %}
+            offset-md-1 col-md-{{ 59 | minus: top_featured_aritcle_image_text_ratio }}
+        {% else %}
+            col-md-14 offset-md-1 
+        {% endif %}
+    {% else %}
+        {% if is_center_featured %}
+        {% else %}
+             regular_article
+        {% endif %}
+    {% endif %}">
+
+    {% capture article_date %}
+        <span class="article__date">
+            {{ article.published_at | time_tag: format: 'month_day_year' }}
+        </span>
+    {% endcapture %}
+
+    {% if top_featured or is_center_featured  %}
+        <div class="header_part">
+
+            {% if top_featured and top_featured_article_pretitle != blank %}
+            <p class="tag">{{ top_featured_article_pretitle }}</p>   
+            {% endif %}  
+
+            {% if is_center_featured and bottom_featured_article_pretitle != blank %}
+            <p class="tag">{{ bottom_featured_article_pretitle }}</p>  
+            {% endif %}
+
+            {% if top_featured %}      
+                {{ article_date }}
+            {% endif %}
+        </div>
+    {% else %}
+        {{ article_date }}
+    {% endif %}
+
+    <h2 class="article__title">
+        <a href="{{ article.url }}">{{ article.title }}</a>
+    </h2>
+
+    {% if section.settings.blog_show_author %}
+    <span class="article__author">{{ 'blogs.article.by_author' | t: author: article.author }}</span>
+    {% endif %}
+
+    <div class="rte article__grid-excerpt">
+        {% if article.excerpt.size > 0 %}
+            {{ article.excerpt }}
+        {% else %}
+            {{ article.content | strip_html | truncate: 150 }}
+        {% endif %}
+    </div>
+</div>
+{% endcapture %}
+
+{% if article.image %}
+    {% unless top_featured %}
+    <a href="{{ article.url }}">
+    {% endunless %}
+        <div class="article__list-image 
+            {% if top_featured %} 
+                {% if top_featured_aritcle_image_text_ratio != blank %}
+                    col-md-{{ top_featured_aritcle_image_text_ratio }}
+                {% else %}
+                    col-md-45
+                {% endif %} 
+            {% endif %}" 
+            style="background-image:url({{ article.image.src | img_url: 'master' }});">
+            {% if top_featured %}
+            <a href="{{ article.url }}">
+                <span class="btn readmore_btn">
+                    {% if section.settings.readmore_btn_text != blank %}{{ section.settings.readmore_btn_text }}{% else %}Read More{% endif %}
+                </span>
+            </a>
+            {% endif %}
+            {% if is_center_featured %}
+                {{ article_grid_meta }}
+            {% endif %}
+        </div>
+    {% unless top_featured %}
+    </a>
+    {% endunless %}
+{% endif %}
+
+{% if is_center_featured %}
+{% else %}
+    {{ article_grid_meta }}
+{% endif %}

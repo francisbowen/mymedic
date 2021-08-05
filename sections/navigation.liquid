@@ -1,0 +1,28 @@
+<style>
+#shopify-section-header #header-container {
+    background-color: {{ section.settings.background_color }};
+}
+#shopify-section-header #header-container .active_color {
+  color: {{ section.settings.active_color }}!important;
+}
+</style>
+
+{% schema %}
+  {
+    "name": "Navigation",
+    "settings": [
+       {
+           "type": "color",
+           "id": "background_color",
+           "label": "Background color",
+           "default": "#fff"
+       },
+       {
+         "type": "color",
+         "id": "active_color",
+         "label": "Active color",
+         "default": "#E0222D"
+       }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,152 @@
+{% assign image_count = 0 %}
+
+{% capture bio_images %}
+{% if block.settings.image1 != blank %}
+    {% include 'image', class:'feature-row__image', 
+        file: block.settings.image1, 
+        default_size: 'master', 
+        alt: block.settings.image1.alt | escape %}
+
+    {% assign image_count = image_count | plus : 1 %}
+{% endif %}
+{% if block.settings.image2 != blank %}
+    {% include 'image', class:'feature-row__image', 
+        file: block.settings.image2, 
+        default_size: 'master', 
+        alt: block.settings.image2.alt | escape %}
+    
+    {% assign image_count = image_count | plus : 1 %}
+{% endif %}
+{% if block.settings.image3 != blank %}
+    {% include 'image', class:'feature-row__image', 
+        file: block.settings.image3, 
+        default_size: 'master', 
+        alt: block.settings.image3.alt | escape %}
+    
+    {% assign image_count = image_count | plus : 1 %}
+{% endif %}
+{% if block.settings.image4 != blank %}
+    {% include 'image', class:'feature-row__image', 
+        file: block.settings.image4, 
+        default_size: 'master', 
+        alt: block.settings.image4.alt | escape %}
+    
+    {% assign image_count = image_count | plus : 1 %}
+{% endif %}
+{% if block.settings.image5 != blank %}
+    {% include 'image', class:'feature-row__image', 
+        file: block.settings.image5, 
+        default_size: 'master', 
+        alt: block.settings.image5.alt | escape %}
+    
+    {% assign image_count = image_count | plus : 1 %}
+{% endif %}
+
+{% endcapture %}
+
+
+<div class="rider-details container">
+    <div class="container to-edges">
+        <div class="row">
+            <div class="col-sm-30 no-padding feature-row__image {% if image_count > 1 %} bio-slider owl-carousel owl-theme{% endif %}">
+                {{ bio_images }}
+            </div>
+            <div class="col-sm-26 no-padding offset-sm-2 feature-row__text {% if section.settings.bio_content_space == 'space' %} d-grid{% endif %}">
+                <div class="header_part">
+                    {% if block.settings.bio_title1 != blank %}
+                    <p class="header_btn" 
+                        style="
+                            {% if block.settings.bio_title1_color %}
+                                color:{{ block.settings.bio_title1_color }};
+                            {% endif %}
+                            {% if block.settings.bio_title1_margin_bottom != blank %}
+                                margin-bottom: {{ block.settings.bio_title1_margin_bottom }}px;
+                            {% endif %}
+                            {% if block.settings.bio_title1_border_bottom > 0 %}
+                                border-bottom: {{ block.settings.bio_title1_border_bottom }}px solid;
+                            {% endif %}">{{ block.settings.bio_title1 }}</p>
+                    {% endif %}
+                    {% if block.settings.bio_title2 != blank %}
+                        <p style="
+                            {% if block.settings.bio_title2_color %}
+                                color:{{ block.settings.bio_title2_color }};
+                            {% endif %}">{{ block.settings.bio_title2 }}</p>
+                    {% endif %}
+                </div>
+                <div class="content align-items-bottom {% if section.settings.bio_content_space == 'space' %} d-grid{% endif %}">
+                    {% capture title %}
+                        {% if block.settings.title != blank %}
+                        <h2 class="h3 
+                            {% if block.settings.facebook != blank 
+                                or block.settings.instagram != blank
+                                or block.settings.youtube != blank %} col no-padding{% endif %}">{{ block.settings.title }}</h2>
+                        {% endif %}
+                    {% endcapture %}
+                
+                    <div class="rte-setting featured-row__subtext">
+                        {% if block.settings.facebook != blank 
+                            or block.settings.instagram != blank
+                            or block.settings.youtube != blank %}
+                            
+                        <div class="d-flex">
+                            {{ title }}
+                            <ul class="list--inline col-auto social-icons">
+                                <li>
+                                    <a class="social-icons__link" href="{{ block.settings.facebook }}" 
+                                        title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Facebook' }}">
+                                        {% include 'icon-facebook' %}
+                                        <span class="icon__fallback-text">Facebook</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="social-icons__link" href="{{ block.settings.instagram }}" 
+                                    title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Instagram' }}">
+                                    {% include 'icon-instagram' %}
+                                    <span class="icon__fallback-text">Instagram</span>
+                                    </a>
+                                </li>
+        
+                                <li>
+                                    <a class="social-icons__link" href="{{ block.settings.youtube }}" 
+                                        title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'YouTube' }}">
+                                    {% include 'icon-youtube' %}
+                                    <span class="icon__fallback-text">YouTube</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        {% else %}
+                            {{ title }}
+                        {% endif %}
+
+                        {% if block.settings.bio_description != blank %}
+                            {{ block.settings.bio_description }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    {% if image_count > 0 %}
+    $('.bio-slider').owlCarousel({
+       loop: true,
+       margin: 10,
+       nav: false,
+       dots: false,
+       responsive: {
+           0: {
+               items: 1
+           },
+           600: {
+               items: 1
+           },
+           1000: {
+               items: 1
+           }
+       }
+    })
+    {% endif %}
+</script>

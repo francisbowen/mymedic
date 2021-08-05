@@ -53,7 +53,7 @@
     },
     "newsletter_form": {
       "newsletter_email": "Join our mailing list",
-      "email_placeholder": "Email address",
+      "email_placeholder": "Email your email address",
       "confirmation": "Thanks for subscribing",
       "submit": "Subscribe"
     },
@@ -161,10 +161,12 @@
   },
   "customer": {
     "account": {
-      "title": "My Account",
+      "title": "Your Account",
       "details": "Account Details",
       "view_addresses": "View Addresses",
-      "return": "Return to Account Details"
+      "return": "Return to Account Details",
+      "email": "EMAIL",
+      "shiping_address": "SHIPPING ADDRESS"
     },
     "activate_account": {
       "title": "Activate Account",

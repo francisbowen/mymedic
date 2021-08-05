@@ -1,0 +1,75 @@
+{% assign firstImage = blank %}
+
+{% for image in product.images %}
+    {% if image.alt contains 'featured_video' %}
+        {% capture featured_video_section %}{{ featured_video_section }}
+            {% if image.alt contains 'featured_video_youtube_' %}
+                {% assign videourl = "https://www.youtube.com/watch?v=" | append: image.alt | remove: 'featured_video_youtube_' %}
+            {% elsif image.alt contains 'featured_video_vimeo' %}
+                {% assign videourl = "https://player.vimeo.com/video/" | append: image.alt | remove: 'featured_video_vimeo' %}
+            {% endif %}
+
+            {% if videourl != '' %}
+                <div class="col-md-30 item">
+                    {% assign firstImage = image.src %}
+                    {% assign backgroundimage = image.src | img_url: 'master' %}
+                    <div class="image-bar__item" style="background-image: url({{ backgroundimage }});background-position: center;">
+                        <div class="image-bar__content image-bar__overlay">
+                            <div class="image-bar__text">
+                                {% if title == blank %}
+                                    {% assign title = 'product overview' %}
+                                {% elsif title == 'product overview' %}
+                                    {% assign title = 'product walk-thru' %}
+                                {% endif %}
+
+                                <h3 class="image-bar__caption">{{ title }}</h3>
+                                <a class="button {{ section.settings.btn_layout }}" href="#" aria-label="#">
+                                  <span class="btn transparent" data-fancybox 
+                                    data-video-url="{{ videourl }}" href="{{ videourl }}">WATCH VIDEO ></span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endcapture %}
+    {% endif %}
+{% endfor %}
+
+<style>
+    {% if section.settings.section_height == 'maintain_ratio' and firstImage != blank %}
+      .image-bar--maintain_ratio .image-bar__item {
+        {% capture img_width %}{{ firstImage.width }}{% endcapture %}
+        {% capture img_height %}{{ firstImage.height | times: 100 }}{% endcapture %}
+        {% capture rounddown %}{{ img_height | divided_by: img_width }}{% endcapture %}
+        padding-top: {{ rounddown | plus: 1 }}%;
+        position: relative;
+        height: 100%;
+      }
+      .image-bar--maintain_ratio .image-bar__item .image-bar__content {
+        height: auto;
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+      }
+      {% endif %}
+</style>
+    
+
+{% if featured_video_section != blank %}
+<div class="featured-video-section image-bar-section">
+    <div class="{{ section.settings.contained }}">
+        <div class="row image-bar image-bar--{{ section.settings.section_height }}">
+            {{ featured_video_section }}
+        </div>
+    </div>
+</div>
+{% else %}
+<style>
+    #shopify-section-{{ section.id }} {
+        display: none;
+    }
+</style>
+{% endif %}

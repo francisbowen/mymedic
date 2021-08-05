@@ -1,0 +1,104 @@
+<div class="category-board">
+    <div style="display:flex; flex-wrap: wrap;">
+
+        <div class="kit-type-buttons" {% if advanced_item_count == 0 %} style="display:none" {% endif %}>
+            <div class="d-flex align-items-center">
+                <span class="title">KIT TYPE:</span>
+                <span class="btn">Standard</span>
+                <span class="btn disactive" id="advanced_btn">Pro</span>
+            </div>
+        </div>
+        <div class="categories">
+            <div class="d-flex">
+                <span class="title">CATEGORIES:</span>
+
+                <div class="contents">
+                    {% assign product_catagori_arr = product_catagogies_all | split: ',' %}
+                    {% assign catagori_arr = all_categories_index | split: ',' %}
+
+                    {% for index in catagori_arr %}
+                        {% assign intIndex = index | plus: 0 %}
+                        {% assign catagory_title = section.blocks[intIndex].settings.catagory_title | downcase %}
+
+                        <div id="block-{{ section.blocks[intIndex].id }}" 
+                            class="category-item btn
+                            {% if product_catagori_arr contains catagory_title %}
+                            {% else %} disable{% endif %}"
+                            data-item-name="{{ catagory_title | downcase | replace: ' ', '_' | replace: '&','_' }}"
+                            alt="{{ catagory_title | downcase | replace: ' ', '_' | replace: '&','_' }}" >
+                            <style>
+                                #shopify-section-{{ section.id }} .category-board .category-item.btn#block-{{ section.blocks[intIndex].id }} {
+                                    {% if section.blocks[intIndex].settings.color != blank %}
+                                        color: {{ section.blocks[intIndex].settings.color }};
+                                    {% endif %}
+                                    {% if section.blocks[intIndex].settings.background_color != blank %}
+                                        background-color: {{ section.blocks[intIndex].settings.background_color }};
+                                    {% endif %}
+                                    {% if section.blocks[intIndex].settings.label_size != blank %}
+                                        font-size: {{ section.blocks[intIndex].settings.label_size }}px;
+                                    {% endif %}
+
+                                    {% if section.blocks[intIndex].settings.enable_manual_width %}
+                                        width: {{ section.blocks[intIndex].settings.manual_width }}px;
+                                        min-width: {{ section.blocks[intIndex].settings.manual_width }}px;
+                                    {% endif %}
+
+                                    {% if section.blocks[intIndex].settings.button_status == 'disable_all' %}
+                                        display: none;
+                                    {% endif %}
+                                }
+                                @media screen and (min-width: 768px) {
+                                    #shopify-section-{{ section.id }} .category-board .category-item.btn#block-{{ section.blocks[intIndex].id }} {
+                                        {% if section.blocks[intIndex].settings.button_status == 'disable_desktop' %}
+                                            display: none;
+                                        {% endif %}
+                                    }
+                                }
+                                @media screen and (max-width: 767px) {
+                                    #shopify-section-{{ section.id }} .category-board .category-item.btn#block-{{ section.blocks[intIndex].id }} {
+                                        {% if section.blocks[intIndex].settings.label_size_mobile != blank %}
+                                            font-size: {{ section.blocks[intIndex].settings.label_size_mobile }}px;
+                                        {% endif %}
+                                        {% if section.blocks[intIndex].settings.enable_manual_width %}
+                                            width: {{ section.blocks[intIndex].settings.manual_width_mobile }}px;
+                                            min-width: {{ section.blocks[intIndex].settings.manual_width_mobile }}px;
+                                        {% endif %}
+
+                                        {% if section.blocks[intIndex].settings.button_status == 'disable_mobile' %}
+                                            display: none;
+                                        {% endif %}
+                                    }
+                                }
+                                #shopify-section-{{ section.id }} .category-board .category-item.btn#block-{{ section.blocks[intIndex].id }}:hover {
+                                    {% if section.blocks[intIndex].settings.color_hover != blank %}
+                                    color: {{ section.blocks[intIndex].settings.color_hover }};
+                                    {% endif %}
+                                    {% if section.blocks[intIndex].settings.background_color_hover != blank %}
+                                    background-color: {{ section.blocks[intIndex].settings.background_color_hover }};
+                                    {% endif %}
+                                }
+    
+                                #shopify-section-{{ section.id }} #product-what-inside-grid .what-inside-item.{{ section.blocks[intIndex].settings.catagory_title | downcase | replace: ' ', '_' | replace: '&','_' }} .tooltip-icon {
+                                    {% if section.blocks[intIndex].settings.background_color != blank %}
+                                    background-color: {{ section.blocks[intIndex].settings.background_color }};
+                                    {% endif %}
+                                }
+                            </style>
+                            <span>{{ section.blocks[intIndex].settings.catagory_title }}</span></div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="grid" id="product-what-inside-grid" 
+    data-column={{ section.settings.column_count }} data-column-mobile={{ section.settings.column_count_mobile }}>
+    <div class="inside-grid-overlay"></div>
+    {% if whatinside_featured_image != blank %}
+    <div class="what-inside-item featured_image">
+        <img src="{{ whatinside_featured_image | img_url: '300x' }}" alt="" >
+    </div>
+    {% endif %}
+    {{ contents_whatsInside }}
+</div>

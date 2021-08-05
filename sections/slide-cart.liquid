@@ -1,0 +1,307 @@
+<style>
+    #shopify-section-{{ section.id }} .cart-sidebar .cart-sidebar--header h2 {
+        {% if section.settings.title_size != blank %}
+            font-size: {{ section.settings.title_size }}px;
+        {% endif %}
+        {% if section.settings.title_color != blank %}
+            color: {{ section.settings.title_color }};
+        {% endif %}
+    }
+    #shopify-section-{{ section.id }} .cart-sidebar .cart-to-back a {
+        {% if section.settings.back_to_cart_size != blank %}
+            font-size: {{ section.settings.back_to_cart_size }}px;
+        {% endif %}
+        {% if section.settings.back_to_cart_color != blank %}
+            color: {{ section.settings.back_to_cart_color }};
+        {% endif %}
+    }
+    #shopify-section-{{ section.id }} .cart-sidebar--footer .cart-sidebar--footer-subtotal h6, .cart-sidebar--footer-subtotal .h6,
+    #shopify-section-{{ section.id }} .cart-sidebar--footer .cart-sidebar--footer-subtotal .cart-subtotals {
+        {% if section.settings.subtotal_size != blank %}
+            font-size: {{ section.settings.subtotal_size }}px;
+        {% endif %}
+        {% if section.settings.subtotal_color != blank %}
+            color: {{ section.settings.subtotal_color }};
+        {% endif %}
+    }
+    #shopify-section-{{ section.id }} .cart-sidebar--footer .cart-sidebar--footer-buttons .btn-checkout {
+        {% if section.settings.checkout_btn_size != blank %}
+            font-size: {{ section.settings.checkout_btn_size }}px;
+        {% endif %}
+        {% if section.settings.checkout_btn_color != blank %}
+            color: {{ section.settings.checkout_btn_color }};
+        {% endif %}
+        {% if section.settings.checkout_btn_background_color != blank %}
+            background-color: {{ section.settings.checkout_btn_background_color }};
+        {% endif %}
+    }
+
+    @media (max-width: 767px) {
+        #shopify-section-{{ section.id }} .cart-sidebar .cart-sidebar--header h2 {
+            {% if section.settings.title_size_mobile != blank %}
+                font-size: {{ section.settings.title_size_mobile }}px;
+            {% endif %}
+        }
+        #shopify-section-{{ section.id }} .cart-sidebar .cart-to-back a {
+            {% if section.settings.back_to_cart_size_mobile != blank %}
+                font-size: {{ section.settings.back_to_cart_size_mobile }}px;
+            {% endif %}
+        }
+        #shopify-section-{{ section.id }} .cart-sidebar--footer .cart-sidebar--footer-subtotal h6,.cart-sidebar--footer-subtotal .h6,
+        #shopify-section-{{ section.id }} .cart-sidebar--footer .cart-sidebar--footer-subtotal .cart-subtotals {
+            {% if section.settings.subtotal_size_mobile != blank %}
+                font-size: {{ section.settings.subtotal_size_mobile }}px;
+            {% endif %}
+        }
+        #shopify-section-{{ section.id }} .cart-sidebar--footer .cart-sidebar--footer-buttons .btn-checkout {
+            {% if section.settings.checkout_btn_size_mobile != blank %}
+                font-size: {{ section.settings.checkout_btn_size_mobile }}px;
+            {% endif %}
+        }
+    }
+
+    
+</style>
+
+<div class="cart-black-overlay"></div>
+<div class="cart-sidebar closed">
+  <div class="cart-sidebar-container">
+    <div class="cart-sidebar--header">
+      <h2>{% if section.settings.title != blank %}{{ section.settings.title }}{% else %}Checkout{% endif %}</h2>
+      <a class="cart_close_btn"><em class="fal fa-times"></em></a>
+    </div>
+    <div class="cart-to-back">
+      <a href="/cart">{% if section.settings.back_to_cart != blank %}{{ section.settings.back_to_cart }}{% else %}<< Back To Cart{% endif %}</a>
+    </div>
+  </div>
+
+  <div class="cart-sidebar--footer">
+    <div class="d-flex justify-content-between cart-sidebar--footer-subtotal">
+      <h3 class="h6">{% if section.settings.subtotal %}{{ section.settings.subtotal }}{% else %}subtotal{% endif %}</h3>
+      <h4 class="h5" class="cart-subtotals">{{ cart.total_price | money}}</h4>
+    </div>
+    <div class="cart-sidebar--footer-buttons text-center">
+      <a href="/checkout" class="btn btn-checkout">{% if section.settings.checkout_btn != blank %}{{ section.settings.checkout_btn }}{% else %}Checkout{% endif %}</a>
+      {% comment %}
+      <a href="/" class="btn-continue">{{ 'general.404.link' | t }}</a>
+      {% endcomment %}
+      <a href="/" class="btn-shipping">Shipping & Taxes Calculated At Checkout</a>
+    </div>
+  </div>
+
+  <div class="shopping-cart cart-sidebar--items-wrapper{% if cart.item_count > 0 %} filled{% endif %}">
+    <p id="your-cart">Your Cart({{ cart.item_count }})</p>
+    <ul class="shopping-cart-items">
+      {% if cart.item_count > 0 %}
+        {% for item in cart.items %}
+          <li class="cart-sidebar-item">
+            <a class="delete-cart-item" data-itemid="{{ item.key }}"><em class="fal fa-times"></em></a>
+            <div class="d-flex align-items-center">
+              <a href="{{ item.url }}" class="align-self-stretch cart-sidebar-item--image">
+                {% include 'image', file: item.image, default_size: '200x' %}
+              </a>
+              <div class="cart-sidebar-item--product-info flex-grow-1 justify-content-between d-flex">
+                <div class="item-product-info">
+                  <h5 class="h6"><a href="{{ item.url }}">{{ item.product.title }}</a></h5>
+                  <p>QTY: {{ item.quantity }}</p>
+                  {% unless item.product.has_only_default_variant %}
+                    {% for option in item.options_with_values %}
+                      <p>{{ option.name }}: {{ option.value }}</p>
+                    {% endfor %}
+                  {% endunless %}
+                </div>
+
+                <div class="cart-sidebar-item--updates">
+
+                  <div class="h5 cart-sidebar-item--price text-right">
+                    {% if item.total_discount > 0 %}
+                      <b>{{ item.message }}</b><br />
+                      <s>{{ item.original_price | money }}</s>
+                    {% endif %}
+                    {{ item.final_price | money }}
+                  </div>
+
+                  <div class="cart-sidebar-item--qty">
+                    <div class="cart-item--qty product-form__item--quantity"  data-item="{{ item.variant_id }}">
+                      <div class="quantitiy-button quantity-down">-</div>
+
+                      <label class="noshow" for="Quantity">Quantity</label>
+                      <input type="number" id="Quantity" name="quantity" value="{{ item.quantity }}" min="0" 
+                        class="product-form__input" pattern="[0-9]*">
+
+                        <div class="quantitiy-button quantity-up">+</div>
+                    </div>
+
+                    {% comment %}
+                    <select class="cart-prod-qty pretty-dropdown" data-item="{{ item.variant_id }}" name="cart-prod-qty">
+                      {% for i in (1..10) %}
+                        <option value="{{i}}"{% if i == item.quantity %} selected{% endif %}>{{i}}</option>
+                      {% endfor %}
+                    </select>
+                    {% endcomment %}
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+          </li>
+        {% endfor %}
+      {% else %}
+        <li class="cart-sidebar-empty text-center">{{ 'cart.general.empty' | t }}</li>
+      {% endif %}
+    </ul>
+  </div>
+
+</div>
+
+{% include 'cart-scripts' %}
+
+{% schema %}
+{
+    "name": "Slide cart",
+    "settings": [
+        {
+            "type": "header",
+            "content": "Heading"
+        },
+        {
+            "type": "text",
+            "id": "title",
+            "label": "Slide top Heading",
+            "default": "CHECKOUT"
+        },
+        {
+            "type": "range",
+            "id": "title_size",
+            "label": "Font size",
+            "min": 10,
+            "max": 100,
+            "step": 1,
+            "default": 27
+        },
+        {
+            "type": "range",
+            "id": "title_size_mobile",
+            "label": "Font size (mobile)",
+            "min": 10,
+            "max": 100,
+            "step": 1,
+            "default": 20
+        },
+        {
+            "type": "color",
+            "id": "title_color",
+            "label": "Color",
+            "default": "#999"
+        },
+        {
+            "type": "header",
+            "content": "Back to cart"
+        },
+        {
+            "type": "text",
+            "id": "back_to_cart",
+            "label": "Back to cart",
+            "default": "<< Back To Cart"
+        },
+        {
+            "type": "range",
+            "id": "back_to_cart_size",
+            "label": "Font size",
+            "min": 10,
+            "max": 100,
+            "step": 1,
+            "default": 16
+        },
+        {
+            "type": "range",
+            "id": "back_to_cart_size_mobile",
+            "label": "Font size (mobile)",
+            "min": 10,
+            "max": 100,
+            "step": 1,
+            "default": 14
+        },
+        {
+            "type": "color",
+            "id": "back_to_cart_color",
+            "label": "Color",
+            "default": "#999"
+        },
+        {
+            "type": "header",
+            "content": "Subtotal"
+        },
+        {
+            "type": "text",
+            "id": "subtotal",
+            "label": "Subtotal",
+            "default": "Subtotal"
+        },
+        {
+            "type": "range",
+            "id": "subtotal_size",
+            "label": "Font size",
+            "min": 10,
+            "max": 100,
+            "step": 1,
+            "default": 18
+        },
+        {
+            "type": "range",
+            "id": "subtotal_size_mobile",
+            "label": "Font size (mobile)",
+            "min": 10,
+            "max": 100,
+            "step": 1,
+            "default": 16
+        },
+        {
+            "type": "color",
+            "id": "subtotal_color",
+            "label": "Color",
+            "default": "#231f20"
+        },
+        {
+            "type": "header",
+            "content": "Checkout Button"
+        },
+        {
+            "type": "text",
+            "id": "checkout_btn",
+            "label": "Btn text",
+            "default": "CHECKOUT"
+        },
+        {
+            "type": "range",
+            "id": "checkout_btn_size",
+            "label": "Font size",
+            "min": 10,
+            "max": 100,
+            "step": 1,
+            "default": 14
+        },
+        {
+            "type": "range",
+            "id": "checkout_btn_size_mobile",
+            "label": "Font size (mobile)",
+            "min": 10,
+            "max": 100,
+            "step": 1,
+            "default": 14
+        },
+        {
+            "type": "color",
+            "id": "checkout_btn_color",
+            "label": "Color",
+            "default": "#fff"
+        },
+        {
+            "type": "color",
+            "id": "checkout_btn_background_color",
+            "label": "Background color",
+            "default": "#e0222d"
+        }
+    ]
+}
+{% endschema %}

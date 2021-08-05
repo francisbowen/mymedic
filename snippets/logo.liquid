@@ -1,9 +1,12 @@
-<img {% if svg %}src="{{ logo }}"
+<img {% if svg %}
      src="{{ logo }}"
      {% else %}
      src="{{ logo | img_url: logo_size }}"
+     {% comment %}
      srcset="{{ logo | img_url: logo_size }} 1x, {{ logo | img_url: logo_size, scale: 2 }} 2x"
+     {% endcomment %}
      {% endif %}
      alt="{{ shop.name }}"
-     itemprop="logo">
+     itemprop="logo"
+     class="{{ class }}">
 <span class="visually-hidden">{{ shop.name }}</span>

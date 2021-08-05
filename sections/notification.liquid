@@ -1,5 +1,5 @@
 {% if section.settings.message %}
-  <style>
+  {% style %}
     .notification-bar {
       background-color: {{ section.settings.color_bg }};
     }
@@ -7,35 +7,56 @@
     .notification-bar__message {
       color: {{ section.settings.color_text }};
     }
-  </style>
+
+    {% include 'css-loop', css: section.settings.custom_css, id: section.id  %}
+  {% endstyle %}
+
+  {% if section.settings.is_sticky %}
+  <div id="sticky-notification-anchor"></div>
+  {% endif %}
 
   <div class="notification-bar">
     {% if section.settings.message %}
       {% if section.settings.message_icon != blank %}
         {% capture message_icon %}<i class="fa {{ section.settings.message_icon }}"></i>{% endcapture %}
       {% endif %}
-      {% if section.settings.message_link != blank %}
-        <a href="{{ section.settings.message_link }}" class="notification-bar__message">
-          {% if section.settings.align_message_icon == 'left' and section.settings.message_icon != blank %}{{ message_icon }}{% endif %}
-          {{ section.settings.message_text | escape }}
-          {% if section.settings.align_message_icon == 'right' and section.settings.message_icon != blank %}{{ message_icon }}{% endif %}
-        </a>
-      {% else %}
-        <span class="notification-bar__message">
-          {% if section.settings.align_message_icon == 'left' and section.settings.message_icon != blank %}{{ message_icon }}{% endif %}
-          {{ section.settings.message_text | escape }}
-          {% if section.settings.align_message_icon == 'right' and section.settings.message_icon != blank %}{{ message_icon }}{% endif %}
-        </span>
-      {% endif %}
+
+      <span class="notification-bar__message">
+        {% if section.settings.align_message_icon == 'left' and section.settings.message_icon != blank %}{{ message_icon }}{% endif %}
+        {{ section.settings.message_richtext }}
+        {% if section.settings.align_message_icon == 'right' and section.settings.message_icon != blank %}{{ message_icon }}{% endif %}
+      </span>        
     {% endif %}
   </div>
 
   <script>
     $(window).load(function(){
       var menOffset = $('.notification-bar').outerHeight();
-      $('.mobile-nav-wrapper').css('top','-'+menOffset+'px');
+      // $('.mobile-nav-wrapper').css('top','-'+menOffset+'px');
     });
   </script>
+
+  {% if section.settings.is_sticky %}
+    <script>
+      console.log('div_top 111111');
+
+      function sticky_relocate_notification () {
+        var window_top = $(window).scrollTop();
+        var div_top = $('#sticky-notification-anchor').offset().top;
+        
+        if (window_top > div_top) {
+          $('.notification-bar').addClass('sticky-notification');
+        } else {
+          $('.notification-bar').removeClass('sticky-notification');
+        }
+      }
+
+      $(window).load(function() {
+        sticky_relocate_notification();
+        $(window).scroll(sticky_relocate_notification);
+      });
+    </script>
+  {% endif %}
 {% endif %}
 
 {% schema %}
@@ -49,10 +70,9 @@
         "default": false
       },
       {
-        "type": "text",
-        "id": "message_text",
-        "label": "Announcement text",
-        "default": "Announce something here"
+        "type": "richtext",
+        "id": "message_richtext",
+        "label": "Announcement text"
       },
       {
         "type": "text",
@@ -71,12 +91,6 @@
         ]
       },
       {
-        "type": "url",
-        "id": "message_link",
-        "label": "Announcement link",
-        "info": "Optional"
-      },
-      {
         "type": "color",
         "id": "color_bg",
         "label": "Announcement color",
@@ -87,6 +101,16 @@
         "id": "color_text",
         "label": "Announcement text color",
         "default": "#fff"
+      },
+      {
+        "type": "textarea",
+        "id": "custom_css",
+        "label": "Custom CSS"
+      },
+      {
+        "type": "checkbox",
+        "id": "is_sticky",
+        "label": "Is Sticky"
       }
     ]
   }

@@ -1,0 +1,117 @@
+{% assign advanced_item_count = 0 %}
+<div class="whats-inside-item-container">
+    {% for block in section.blocks %}
+        {% assign advanced_tag_name = block.settings.tag_name | append: '-advanced' %}
+        {% assign advanced_only_tag_name = block.settings.tag_name | append: '-advanced-only' %}
+        {% assign basic_only_tag_name = block.settings.tag_name | append: '-basic-only' %}
+
+        {% if block.settings.catagory != blank %}
+            {% assign catagory_str = block.settings.catagory | downcase | replace: ' ', '_' | replace: '&','_' %}
+        {% endif %}
+
+        {% if product.tags contains block.settings.tag_name 
+            or product.tags contains basic_only_tag_name 
+            or product.tags contains advanced_tag_name 
+            or product.tags contains advanced_only_tag_name %}
+            <div class="what-inside-item 
+                {% if product.tags contains basic_only_tag_name %} basic_only {% else %} 
+                    {% if product.tags contains advanced_only_tag_name %} advanced_only 
+                        {% assign advanced_item_count = advanced_item_count | plus: 1 %}
+                    {% elsif product.tags contains advanced_tag_name %} advanced 
+                        {% assign advanced_item_count = advanced_item_count | plus: 1 %}
+                    {% endif %}
+                {% endif %}              
+                {% if catagory_str != blank %}{{ catagory_str }}{% endif %}" 
+                {% if catagory_str != blank %}data-catagory-name="{{ catagory_str }}"{% endif %}>
+
+                {% if block.settings.image != blank %}
+                <img src="{{ block.settings.image | img_url: 'master' }}" alt="" >
+                {% endif %}
+                <span class="tooltip-icon"></span>
+                <div class="tooltip-contents">
+                    <h4 class="title">{{ block.settings.tooltip_icon }}{{ block.settings.tooltip_title }}</h4>
+                    <p class="description">{{ block.settings.tooltip_descrtipion }}</p>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+<script>
+  $(document).ready(function(){	
+    $(".whats-inside-item-container .what-inside-item").each(function( index ) {
+        var catagory_name = $(this).attr('data-catagory-name');
+        console.log('catagory_name = ', catagory_name);
+        if ($(`.category-item.btn[data-item-name='${catagory_name}']`).hasClass('disable')) {
+            $(`.category-item.btn[data-item-name='${catagory_name}']`).removeClass('disable');
+        }
+    });
+    var divContent = $('.whats-inside-item-container').contents();
+    $('#product-what-inside-grid').append(divContent);
+
+    {% if advanced_item_count > 0 %}
+        show_kittype_buttons();
+    {% endif %}
+
+    check_whats_inside_items();
+  });	
+</script>
+
+{% schema %}
+{
+  "name": "Product - what's inside",
+  "settings": [ 
+  ],
+ "blocks": [
+    {
+        "type": "what-inside-item",
+        "name": "What's inside - Item",
+        "settings": [
+   
+ {
+     "type": "header",
+     "content": "What Inside item - options"
+ },
+     {
+         "type": "text",
+         "id": "title",
+         "label": "Title",
+         "default": "Item name"
+     },
+     {
+         "type": "text",
+         "id": "tag_name",
+         "label": "Tag Name"
+     },
+     {
+         "type": "text",
+         "id": "catagory",
+         "label": "Catagory"
+     },
+     {
+         "type": "image_picker",
+         "id": "image",
+         "label": "Image"
+     },
+     {
+         "type": "textarea",
+         "id": "tooltip_icon",
+         "label": "Tooptip Icon"
+     },
+     {
+         "type": "text",
+         "id": "tooltip_title",
+         "label": "Tooltip Title"
+     },
+     {
+         "type": "textarea",
+         "id": "tooltip_descrtipion",
+         "label": "Tooltip Description"
+     }
+
+    
+   ]
+ }
+]
+}
+{% endschema %}

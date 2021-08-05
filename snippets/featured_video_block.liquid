@@ -1,0 +1,58 @@
+{% if image_alt contains 'featured_video_youtube_' %}
+    {% assign videodetails =  image.alt | remove: 'featured_video_youtube_' %}
+    {% assign videoInfos = videodetails | split: '/' %}
+{% elsif image_alt contains 'featured_video_vimeo' %}
+    {% assign videodetails = image.alt | remove: 'featured_video_vimeo_' %}
+    {% assign videoInfos = videodetails | split: '/' %}
+{% elsif image_alt contains 'product_youtube_' %}
+    {% assign videodetails = image.alt | remove: 'product_youtube_' %}
+    {% assign videoInfos = videodetails | split: '/' %}
+{% elsif image_alt contains 'product_vimeo_' %}
+    {% assign videodetails = image.alt | remove: 'product_vimeo_' %}
+    {% assign videoInfos = videodetails | split: '/' %}
+{% endif %}
+
+{% if videoInfos.size > 0 %}
+    {% assign backgroundimage = image.src | img_url: 'master' %}
+
+    {% if image_alt contains 'featured_video_youtube_' or image_alt contains 'product_youtube' %}
+        {% assign videoUrl = "https://www.youtube.com/watch?v=" | append: videoInfos[0] %}
+        {% assign videoType = 'youtube' %}
+    {% elsif image_alt contains 'featured_video_vimeo' or image_alt contains 'product_vimeo_' %}
+        {% assign videoUrl = "https://player.vimeo.com/video/" | append: videoInfos[0] %}
+        {% assign videoType = 'vimeo' %}
+    {% endif %}
+
+    <div class="col-md-30 item">
+        <div class="image-bar__item" style="background-image: url({{ backgroundimage }}); background-position: center;
+                background-repeat: no-repeat;">                
+            <span class="button" 
+                {% if section.settings.featured_video_play_mode == 'popup' %}
+                    data-fancybox  
+                    href="{{ videoUrl }}"
+                {% else %}
+                    data-video-type = "{{ videoType }}"
+                    data-video-id = "{{ videoInfos[0] }}"
+                {% endif %}>
+                {% include 'svg-video-play' %}
+            </span>
+            {% if section.settings.featured_video_play_mode == 'classic' %}
+            <div class="video_content hide">
+                {% if image_alt contains 'featured_video_youtube_' or image_alt contains 'product_youtube' %}
+                <iframe src="//www.youtube.com/embed/{{ videoInfos[0] }}?rel=0&showinfo=0&vq=720" 
+                    width="850" height="480" frameborder="0" allowfullscreen></iframe>                  
+                {% elsif image_alt contains 'featured_video_vimeo' or image_alt contains 'product_vimeo_' %}
+                    <iframe src="https://player.vimeo.com/video/{{ videoInfos[0] }}?autoplay=0&loop=1&title=1&byline=0&portrait=0&controls=1" 
+                        frameborder="0" allow="autoplay; fullscreen;" allowfullscreen></iframe>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+        {% if videoInfos[1] != blank %}
+            <h2 class="mega-title">{{ videoInfos[1] }}</h2>
+        {% endif %}
+        {% if videoInfos[2] != blank %}
+            <div class="rte-setting mega-subtitle"><p>{{ videoInfos[2] }}</p></div>
+        {% endif %}
+    </div>
+{% endif %}

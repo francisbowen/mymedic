@@ -44,7 +44,8 @@
   {% else %}
 
     <fieldset class="swatch clearfix" data-option-index="{{ option_index }}" data-option-id="{{ product.id }}">
-      <div class="d-inline-flex flex-wrap swatch--{{ swatch | handleize }}">
+      {% assign type = swatch | handleize %}
+      <div class="d-inline-flex flex-wrap swatch--{{ swatch | handleize }} {% if type == 'color' %} swatch-color{% else %} swatch-rectangle{% endif %}">
       <legend class="label">{{ swatch }}</legend>
         {% assign values = '' %}
         {% for variant in product.variants %}
@@ -59,9 +60,11 @@
               {% endif %}
               <input id="swatch-{{ product.id }}{{ option_index }}-{{ value | handle }}" class="{% unless variant.available %}disabled{% endunless %}" type="radio" name="option-{{ product.id }}{{ option_index }}" value="{{ value | escape }}"{% if option.selected_value == value %} checked{% endif %} />
               {% if is_color %}
-                <label for="swatch-{{ product.id }}{{ option_index }}-{{ value | handle }}"{% if settings.color_swatchimage %} style="background-image: url({{ variant.image.src | img_url: '300x' }});"{% endif %}>
-                  <img class="crossed-out" src="{{ 'soldout.png' | asset_url }}" />
-                </label>
+
+                  <label for="swatch-{{ product.id }}{{ option_index }}-{{ value | handle }}"{% if settings.color_swatchimage %} style="background-image: url({{ variant.image.src | img_url: '300x' }});"{% endif %}>
+                    <img class="crossed-out" src="{{ 'soldout.png' | asset_url }}" />
+                  </label>
+                  
               {% else %}
                 <label for="swatch-{{ product.id }}{{ option_index }}-{{ value | handle }}">
                   {{ value }}
